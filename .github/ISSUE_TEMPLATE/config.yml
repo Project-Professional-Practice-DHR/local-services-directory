@@ -1,8 +1,0 @@
-blank_issues_enabled: false
-contact_links:
-  - name: Project Discussion
-    url: https://github.com/your-username/local-services-directory/discussions
-    about: Please ask and answer questions here.
-  - name: Project Documentation
-    url: https://github.com/your-username/local-services-directory/wiki
-    about: Check our documentation before creating an issue.
