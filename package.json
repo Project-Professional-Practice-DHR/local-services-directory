@@ -1,16 +1,22 @@
 {
-  "name": "backend",
+  "name": "local-services-directory",
   "version": "1.0.0",
+  "description": "A comprehensive platform connecting users with verified local service professionals.",
   "main": "index.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Project-Professional-Practice-DHR/local-services-directory.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "bugs": {
+    "url": "https://github.com/Project-Professional-Practice-DHR/local-services-directory/issues"
+  },
+  "homepage": "https://github.com/Project-Professional-Practice-DHR/local-services-directory#readme",
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
