@@ -130,5 +130,5 @@ dist
 .pnp.*
 
 # Additional entries for backend
-backend/.env
+.env
 backend/node_modules/

@@ -1,0 +1,14 @@
+config:
+  target: 'https://your-app-url.com'  # Replace with your app URL
+  phases:
+    - duration: 60  # Test duration in seconds
+      arrivalRate: 10  # Number of users per second
+    - duration: 60
+      arrivalRate: 20
+
+scenarios:
+  - flow:
+      - post:
+          url: '/upload'
+          formData:
+            file: './path_to_your_file.jpeg'
