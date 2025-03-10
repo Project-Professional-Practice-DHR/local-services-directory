@@ -160,6 +160,7 @@ app.use('/api/admin/payments', paymentRoutes); // Payment routes
 app.use('/api/admin/payouts', payoutRoutes); // Payout routes
 app.use('/api/admin/reviews', reviewRoutes); // Review routes
 app.use('/api/admin/services', serviceRoutes); // Service routes
+app.use('/api/search', require('./routes/api/search')); // Search routes
 
 // Test Route (for verifying if the server is running)
 app.get("/", async (req, res) => {

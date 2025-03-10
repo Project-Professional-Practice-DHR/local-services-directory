@@ -4,7 +4,7 @@ const User = require('../../models/User');
 const Booking = require('../../models/Booking');
 const Service = require('../../models/Service');
 const Payment = require('../../models/Payment');
-const mongoose = require('mongoose');
+const mongoose = require('sequelize');
 
 // Get user growth metrics
 exports.getUserGrowthMetrics = async (req, res) => {
