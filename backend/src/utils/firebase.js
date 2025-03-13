@@ -15,7 +15,7 @@ const initializeFirebase = () => {
         credential: admin.credential.cert(credentials),
       });
 
-      console.log('Firebase Admin SDK initialized using environment variables.');
+      console.log('\x1b[36m⚡ FIREBASE ADMIN SDK INITIALIZED USING ENVIRONMENT VARIABLES\x1b[0m');
     }
     // Or check for a service account file path in environment variables
     else if (process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {

@@ -109,6 +109,59 @@ exports.confirmPayment = async (req, res) => {
   }
 };
 
+// Get payment details - THIS IS THE MISSING FUNCTION
+exports.getPaymentDetails = async (req, res) => {
+  try {
+    const { paymentId } = req.params;
+    
+    // Find payment with related booking information
+    const payment = await Payment.findOne({
+      where: { id: paymentId },
+      include: [
+        {
+          model: Booking,
+          include: [
+            { model: ServiceProviderProfile, attributes: ['id', 'businessName', 'UserId'] },
+            { model: User, as: 'Customer', attributes: ['id', 'firstName', 'lastName', 'email'] }
+          ]
+        }
+      ]
+    });
+    
+    if (!payment) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Payment not found' 
+      });
+    }
+    
+    // Check if user is authorized to view this payment
+    const isCustomer = payment.Booking.customerId === req.user.id;
+    const isServiceProvider = payment.Booking.ServiceProviderProfile.UserId === req.user.id;
+    const isAdmin = req.user.role === 'admin';
+    
+    if (!isCustomer && !isServiceProvider && !isAdmin) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'You are not authorized to view this payment' 
+      });
+    }
+    
+    return res.status(200).json({
+      success: true,
+      payment
+    });
+    
+  } catch (error) {
+    console.error('Get payment details error:', error);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Error retrieving payment details', 
+      error: error.message 
+    });
+  }
+};
+
 // Process refund
 exports.processRefund = async (req, res) => {
   try {

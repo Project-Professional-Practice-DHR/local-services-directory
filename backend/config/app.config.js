@@ -26,7 +26,7 @@ module.exports = {
     testConnection: async function() {
       try {
         await sequelize.authenticate();
-        console.log('Database connection has been established successfully.');
+        console.log('\x1b[34m🌐 DATABASE CONNECTION HAS BEEN ESTABLISHED SUCCESSFULLY\x1b[0m');
         return true;
       } catch (error) {
         console.error('Unable to connect to the database:', error);
@@ -37,7 +37,7 @@ module.exports = {
     syncDatabase: async function() {
       try {
         await sequelize.sync({ alter: process.env.DB_ALTER === 'true' });
-        console.log('Database synchronized successfully');
+        console.log('\x1b[35m🔄 DATABASE SYNCHRONIZED SUCCESSFULLY\x1b[0m');
         return true;
       } catch (error) {
         console.error('Error synchronizing database:', error);

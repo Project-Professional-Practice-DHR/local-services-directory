@@ -1,4 +1,4 @@
-const { logger, Sentry } = require('../config/logger');
+const { logger, Sentry } = require('../utils/logger');
 
 // Class for API errors with status codes
 class ApiError extends Error {
