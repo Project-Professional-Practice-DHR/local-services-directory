@@ -1,22 +1,21 @@
 // File: src/middleware/auth.js
-
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
-const sequelize = require('../../config/app.config').database.sequelize;
+require('dotenv').config();
 
 // Verify JWT token
 exports.verifyToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ success: false, message: 'Authorization token required' });
     }
-    
+
     const token = authHeader.split(' ')[1];
 
     // Verify the token
-    const decoded = jwt.verify(token, config.jwtSecret);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Find the user by ID, excluding the password field
     const user = await User.findByPk(decoded.id, {
@@ -44,7 +43,7 @@ exports.verifyToken = async (req, res, next) => {
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({ success: false, message: 'Invalid authentication token' });
     }
-    
+
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({ success: false, message: 'Authentication token expired' });
     }
