@@ -131,4 +131,9 @@ dist
 
 # Additional entries for backend
 .env
+.env.development
+.env.production
+.env.test
+.env.staging
+.env.local
 backend/node_modules/
