@@ -1,60 +1,34 @@
-FROM node:18-alpine AS builder
-
-# Set working directory
-WORKDIR /app
-
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm ci
-
-# Copy source code
-COPY . .
-
-# Build the application
-RUN npm run build
-
-# Remove development dependencies
-RUN npm prune --production
-
-# Second stage: runtime
+# Use Node.js LTS as the base image
 FROM node:18-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Create non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# Install PostgreSQL client (for database backups)
+RUN apk add --no-cache postgresql-client
 
-# Create necessary directories with proper permissions
-RUN mkdir -p logs uploads temp && \
-    chown -R appuser:appgroup logs uploads temp
+# Install application dependencies
+# Copy package.json and package-lock.json first to leverage Docker cache
+COPY package*.json ./
+RUN npm ci --only=production
 
-# Copy built application from builder stage
-COPY --from=builder --chown=appuser:appgroup /app/node_modules ./node_modules
-COPY --from=builder --chown=appuser:appgroup /app/dist ./dist
-COPY --from=builder --chown=appuser:appgroup /app/package.json ./
-COPY --from=builder --chown=appuser:appgroup /app/scripts ./scripts
-COPY --from=builder --chown=appuser:appgroup /app/ecosystem.config.js ./
+# Copy application code
+COPY . .
 
-# Make scripts executable
-RUN chmod +x ./scripts/*.sh
+# Create directories for logs, uploads, and backups with appropriate permissions
+RUN mkdir -p logs uploads backups && \
+    chmod -R 755 logs uploads backups
 
-# Install PM2 globally
-RUN npm install pm2 -g
-
-# Set environment variables
-ENV NODE_ENV=production
-ENV PORT=5001
-
-# Expose port
+# Expose the application port
 EXPOSE 5001
 
-# Switch to non-root user
-USER appuser
+# Set environment variables
+ENV NODE_ENV=production \
+    PORT=5001
 
-# Healthcheck
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD wget -qO- http://localhost:5001/health || exit 1
 
 # Start the application
-CMD ["pm2-runtime", "ecosystem.config.js", "--env", "production"]
+CMD ["node", "server.js"]

@@ -1,0 +1,35 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+
+# Alertmanager configuration (simple setup without actual alerts)
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      # - alertmanager:9093
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+    - targets: ['localhost:9090']
+
+  # API server
+  - job_name: 'local-services-api'
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+    - targets: ['api:5001']
+      labels:
+        service: 'local-services-api'
+        environment: '${NODE_ENV:-development}'
+
+  # Database server (if you add postgres-exporter)
+  - job_name: 'database'
+    static_configs:
+    - targets: ['db:5432']
+      labels:
+        service: 'postgres'

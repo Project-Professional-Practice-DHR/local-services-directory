@@ -12,11 +12,12 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const { check, validationResult } = require('express-validator');
 const crypto = require('crypto');
+const promClient = require('prom-client'); // Add Prometheus client
 require("dotenv").config();
 
-// Console styling utility
+// Console styling utility - keep as is since it works well
 const log = {
-  // Color styles
+  // All your existing log utility code
   colors: {
     reset: "\x1b[0m",
     black: "\x1b[30m",
@@ -114,6 +115,37 @@ const log = {
   }
 };
 
+// Create a Registry to register metrics (Prometheus monitoring)
+const register = new promClient.Registry();
+
+// Add default Prometheus metrics
+promClient.collectDefaultMetrics({ register });
+
+// Add custom metrics
+const httpRequestDurationMicroseconds = new promClient.Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'Duration of HTTP requests in microseconds',
+  labelNames: ['method', 'route', 'status_code'],
+  buckets: [0.1, 0.5, 1, 5, 10, 30]
+});
+
+const httpRequestsTotal = new promClient.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests',
+  labelNames: ['method', 'route', 'status_code']
+});
+
+const loginAttemptsTotal = new promClient.Counter({
+  name: 'login_attempts_total',
+  help: 'Total number of login attempts',
+  labelNames: ['status']
+});
+
+// Register metrics
+register.registerMetric(httpRequestDurationMicroseconds);
+register.registerMetric(httpRequestsTotal);
+register.registerMetric(loginAttemptsTotal);
+
 // Add unhandled rejection and exception handlers
 process.on('unhandledRejection', (reason, promise) => {
   log.error('Unhandled Rejection', { reason, promise });
@@ -153,7 +185,7 @@ log.item('NODE_ENV', process.env.NODE_ENV || 'Not set, defaulting to development
 log.item('GOOGLE_MAPS_API_KEY', process.env.GOOGLE_MAPS_API_KEY ? 'Set' : 'Missing', !!process.env.GOOGLE_MAPS_API_KEY);
 log.item('STRIPE_SECRET_KEY', process.env.STRIPE_SECRET_KEY ? 'Set' : 'Missing', !!process.env.STRIPE_SECRET_KEY);
 
-// Swagger configuration
+// Swagger configuration - keep your existing implementation
 log.section('API Documentation Setup');
 const swaggerOptions = {
   definition: {
@@ -177,6 +209,7 @@ const swaggerOptions = {
         description: 'Development server'
       }
     ],
+    // Your existing Swagger configuration...
     tags: [
       {
         name: 'Authentication',
@@ -341,6 +374,17 @@ app.get('/swagger.json', (req, res) => {
   res.send(swaggerSpec);
 });
 
+// Add Prometheus metrics endpoint
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
+  } catch (error) {
+    logger.error('Error generating metrics', { error });
+    res.status(500).end();
+  }
+});
+
 // Add a simple test endpoint to verify Swagger is working
 /**
  * @swagger
@@ -376,20 +420,27 @@ app.get('/api/test', (req, res) => {
 
 log.success(`API Documentation available at http://localhost:${PORT}/api-docs`);
 
-// Upload directory setup
-log.section('File Storage Setup');
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-  log.success(`Created uploads directory at ${uploadDir}`);
-} else {
-  log.info(`Using existing uploads directory at ${uploadDir}`);
-}
+// Ensure directories exist (logs, backups, uploads)
+log.section('Directory Setup');
+const dirs = [
+  { path: path.join(__dirname, 'uploads'), name: 'uploads' },
+  { path: path.join(__dirname, 'logs'), name: 'logs' },
+  { path: path.join(__dirname, 'backups'), name: 'backups' }
+];
+
+dirs.forEach(dir => {
+  if (!fs.existsSync(dir.path)) {
+    fs.mkdirSync(dir.path, { recursive: true });
+    log.success(`Created ${dir.name} directory at ${dir.path}`);
+  } else {
+    log.info(`Using existing ${dir.name} directory at ${dir.path}`);
+  }
+});
 
 // File storage configuration for uploads
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir);
+    cb(null, path.join(__dirname, 'uploads'));
   },
   filename: (req, file, cb) => {
     // Generate a unique filename
@@ -490,10 +541,45 @@ try {
   log.info('Applying middleware...');
   app.use(securityHeaders); // Apply security headers
   app.use(enableCORS); // CORS support
+  
+  // Add metrics middleware
+  app.use((req, res, next) => {
+    // Skip metrics endpoint to avoid circular references
+    if (req.path === '/metrics') {
+      return next();
+    }
+    
+    // Track request duration
+    const startTime = process.hrtime();
+    
+    // Capture original end method
+    const originalEnd = res.end;
+    
+    // Override end method to capture metrics before response is sent
+    res.end = function(...args) {
+      // Calculate request duration
+      const [seconds, nanoseconds] = process.hrtime(startTime);
+      const duration = seconds + nanoseconds / 1e9;
+      
+      // Record metrics
+      httpRequestDurationMicroseconds
+        .labels(req.method, req.path, res.statusCode)
+        .observe(duration);
+      
+      httpRequestsTotal
+        .labels(req.method, req.path, res.statusCode)
+        .inc();
+      
+      // Call the original end method
+      return originalEnd.apply(this, args);
+    };
+    
+    next();
+  });
+  
   app.use(morgan("dev")); // Request logging
   app.use(express.json()); // JSON body parser
   app.use(sanitizeInputs); // Sanitize inputs
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); // Swagger UI
   app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve uploads directory
   log.success('Middleware applied successfully');
 } catch (error) {
@@ -714,6 +800,16 @@ const safelyApplyRoutes = () => {
 
 safelyApplyRoutes();
 
+// Health check endpoint for monitoring
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "UP",
+    timestamp: new Date().toISOString(),
+    version: process.env.npm_package_version || "1.0.0",
+    environment: process.env.NODE_ENV || "development"
+  });
+});
+
 // Simple geocoding endpoint (for demonstration)
 log.section('Utility Endpoints');
 
@@ -789,6 +885,54 @@ app.post("/api/seed-database", async (req, res) => {
   }
 });
 
+// Database backup endpoint
+app.post("/api/backup-database", authenticateToken, authorize('admin'), async (req, res) => {
+  try {
+    log.info('Starting database backup process...');
+    const backupScript = require('./scripts/backup');
+    const result = await backupScript.runBackup();
+    
+    if (result.success) {
+      log.success(`Database backup created: ${result.path}`);
+      res.status(200).json({ 
+        message: 'Database backup created successfully',
+        path: result.path,
+        duration: result.duration
+      });
+    } else {
+      throw new Error(result.error);
+    }
+  } catch (error) {
+    log.error('Database backup error', error);
+    res.status(500).json({ 
+      message: 'Error creating database backup',
+      error: error.message
+    });
+  }
+});
+
+// System information endpoint for monitoring
+app.get("/api/system-info", authenticateToken, authorize('admin'), (req, res) => {
+  const os = require('os');
+  
+  // Get system information
+  const systemInfo = {
+    hostname: os.hostname(),
+    platform: os.platform(),
+    architecture: os.arch(),
+    cpus: os.cpus().length,
+    totalMemory: Math.round(os.totalmem() / (1024 * 1024)) + ' MB',
+    freeMemory: Math.round(os.freemem() / (1024 * 1024)) + ' MB',
+    uptime: Math.round(os.uptime() / 60 / 60) + ' hours',
+    loadAvg: os.loadavg(),
+    nodeVersion: process.version,
+    processUptime: Math.round(process.uptime() / 60 / 60) + ' hours'
+  };
+  
+  log.info('System information requested');
+  res.status(200).json(systemInfo);
+});
+
 // Fallback route for SPA frontend (when you add the frontend)
 app.get('*', (req, res) => {
   // Check if the request is for an API route
@@ -823,14 +967,25 @@ app.get('*', (req, res) => {
           h1 {
             color: #4285F4;
           }
-          .api-link {
+          .links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+          }
+          .link {
             display: inline-block;
-            margin: 1rem 0;
             padding: 0.5rem 1rem;
             background-color: #4285F4;
             color: white;
             text-decoration: none;
             border-radius: 4px;
+          }
+          .link.secondary {
+            background-color: #34A853;
+          }
+          .link.monitoring {
+            background-color: #EA4335;
           }
         </style>
       </head>
@@ -838,7 +993,11 @@ app.get('*', (req, res) => {
         <div class="container">
           <h1>Local Services Directory</h1>
           <p>Backend server is running. Frontend will be served from this location when it's ready.</p>
-          <a class="api-link" href="/api-docs">API Documentation</a>
+          <div class="links">
+            <a class="link" href="/api-docs">API Documentation</a>
+            <a class="link secondary" href="/health">Health Check</a>
+            <a class="link monitoring" href="/metrics">Metrics</a>
+          </div>
         </div>
       </body>
     </html>
@@ -848,6 +1007,21 @@ app.get('*', (req, res) => {
 // Global error handler
 app.use((err, req, res, next) => {
   log.error(`Global error handler caught: ${err.message}`, err);
+  
+  // Track error in Prometheus metrics
+  try {
+    const errorCounter = new promClient.Counter({
+      name: 'error_total',
+      help: 'Count of errors',
+      labelNames: ['type', 'path']
+    });
+    register.registerMetric(errorCounter);
+    errorCounter.labels(err.name || 'UnknownError', req.path).inc();
+  } catch (metricError) {
+    // Ignore metric registration errors (might happen if counter already exists)
+  }
+  
+  // Log to logger system
   logger.error(`Error: ${err.message} | Stack: ${err.stack}`);
 
   res.status(500).json({
@@ -896,14 +1070,54 @@ async function startServer() {
         throw err; // Re-throw to be caught by the outer catch
       });
 
+    // Create directories for backups if they don't exist
+    const backupsDir = path.join(__dirname, 'backups');
+    if (!fs.existsSync(backupsDir)) {
+      fs.mkdirSync(backupsDir, { recursive: true });
+      log.success(`Created backups directory at ${backupsDir}`);
+    }
+
     // Start server
     log.info('Starting Express server...');
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       log.highlight(`Server running on port ${PORT}`);
       log.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
       log.info(`API Documentation: http://localhost:${PORT}/api-docs`);
+      log.info(`Health Check: http://localhost:${PORT}/health`);
+      log.info(`Metrics: http://localhost:${PORT}/metrics`);
       log.success('Server startup complete!');
     });
+
+    // Graceful shutdown handling
+    const gracefulShutdown = (signal) => {
+      log.warning(`Received ${signal}. Starting graceful shutdown...`);
+      
+      // Close the HTTP server
+      server.close(() => {
+        log.info('HTTP server closed.');
+        
+        // Close database connections
+        sequelize.close().then(() => {
+          log.info('Database connections closed.');
+          log.success('Graceful shutdown completed.');
+          process.exit(0);
+        }).catch(err => {
+          log.error('Error closing database connections:', err);
+          process.exit(1);
+        });
+      });
+      
+      // Force shutdown after 30 seconds if graceful shutdown fails
+      setTimeout(() => {
+        log.error('Graceful shutdown timed out. Forcing exit.');
+        process.exit(1);
+      }, 30000);
+    };
+    
+    // Register signal handlers for graceful shutdown
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    
   } catch (error) {
     log.error('Failed to start server', error);
     process.exit(1);
