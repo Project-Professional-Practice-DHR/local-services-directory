@@ -75,24 +75,28 @@ jobs:
     # Deploy to Railway if on development or main branch
     - name: Install Railway CLI
       if: github.event_name == 'push' && (github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main')
-      run: npm i -g @railway/cli
+      run: npm install -g @railway/cli
+    
+    # Set up Railway token
+    - name: Setup Railway Environment
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main')
+      run: |
+        echo "$RAILWAY_TOKEN" > railway-token.txt
+        railway login --browserless < railway-token.txt
+        rm railway-token.txt
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     
     # Deploy to development environment
     - name: Deploy to Railway (Development)
       if: github.event_name == 'push' && github.ref == 'refs/heads/development'
       run: |
         echo "Deploying to Railway development environment"
-        railway login --token "$RAILWAY_TOKEN"
         railway up || echo "Railway deployment completed with warnings"
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     
     # Deploy to production environment
     - name: Deploy to Railway (Production)
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: |
         echo "Deploying to Railway production environment"
-        railway login --token "$RAILWAY_TOKEN"
         railway up || echo "Railway deployment completed with warnings"
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
