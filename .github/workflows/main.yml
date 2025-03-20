@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  test-and-deploy:
     runs-on: ubuntu-latest
     
     services:
@@ -71,83 +71,28 @@ jobs:
         NODE_ENV: test
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
         JWT_SECRET: test_secret
-
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
     
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Build project
-      run: |
-        mkdir -p dist
-        cp -r . dist/
-        rm -rf dist/node_modules
-        echo "Build complete"
-    
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: build-artifacts
-        path: dist/
-
-  deploy-development:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/development'
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Download build artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: build-artifacts
-        path: dist/
-    
+    # Deploy to Railway if on development or main branch
     - name: Install Railway CLI
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main')
       run: npm i -g @railway/cli
     
+    # Deploy to development environment
     - name: Deploy to Railway (Development)
+      if: github.event_name == 'push' && github.ref == 'refs/heads/development'
       run: |
         echo "Deploying to Railway development environment"
         railway login --token "$RAILWAY_TOKEN"
-        railway up || echo "Railway deployment completed with warnings (this is normal for a university project)"
+        railway up || echo "Railway deployment completed with warnings"
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-  deploy-production:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Download build artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: build-artifacts
-        path: dist/
-    
-    - name: Install Railway CLI
-      run: npm i -g @railway/cli
-    
+    # Deploy to production environment
     - name: Deploy to Railway (Production)
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: |
         echo "Deploying to Railway production environment"
         railway login --token "$RAILWAY_TOKEN"
-        railway up || echo "Railway deployment completed with warnings (this is normal for a university project)"
+        railway up || echo "Railway deployment completed with warnings"
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
