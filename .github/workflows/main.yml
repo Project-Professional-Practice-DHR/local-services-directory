@@ -36,9 +36,13 @@ jobs:
     
     - name: Install dependencies
       run: npm ci
-    
-    - name: Create test environment file
-      run: cp .env.test .env
+      
+    - name: Create test env file
+      run: |
+        echo "Using existing .env file for tests"
+        # Create a test-specific database URL
+        sed 's|DATABASE_URL=.*|DATABASE_URL=postgres://postgres:postgres@localhost:5432/test_db|g' .env > .env.test
+        cat .env.test
     
     - name: Run tests
       run: npm test || echo "Tests complete"
@@ -73,11 +77,13 @@ jobs:
     
     - name: Create DB backup (if on main branch)
       if: github.ref == 'refs/heads/main'
-      run: node scripts/backup.js || echo "Backup skipped"
+      run: |
+        echo "Running database backup"
+        node scripts/backup.js || echo "Backup skipped - continuing deployment"
       env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
-        NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL || env.DATABASE_URL }}
+        NEON_API_KEY: ${{ secrets.NEON_API_KEY || env.NEON_API_KEY }}
+        NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID || env.NEON_PROJECT_ID }}
     
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
@@ -99,9 +105,6 @@ jobs:
         name: build-artifacts
         path: dist/
     
-    - name: Set up environment variables
-      run: cp .env.development .env
-    
     - name: Install Railway CLI
       run: npm i -g @railway/cli
     
@@ -109,11 +112,9 @@ jobs:
       run: |
         echo "Deploying to Railway development environment"
         railway login --token "$RAILWAY_TOKEN"
-        railway link --project "$DEV_PROJECT_ID"
-        railway up || echo "Railway deployment completed"
+        railway up
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        DEV_PROJECT_ID: ${{ secrets.DEV_PROJECT_ID }}
 
   deploy-production:
     needs: build
@@ -129,9 +130,6 @@ jobs:
         name: build-artifacts
         path: dist/
     
-    - name: Set up environment variables
-      run: cp .env.production .env
-    
     - name: Install Railway CLI
       run: npm i -g @railway/cli
     
@@ -139,8 +137,6 @@ jobs:
       run: |
         echo "Deploying to Railway production environment"
         railway login --token "$RAILWAY_TOKEN"
-        railway link --project "$PROD_PROJECT_ID"
-        railway up || echo "Railway deployment completed"
+        railway up
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        PROD_PROJECT_ID: ${{ secrets.PROD_PROJECT_ID }}
