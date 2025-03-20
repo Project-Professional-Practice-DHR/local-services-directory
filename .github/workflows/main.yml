@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline Demo
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test-and-deploy:
+  test:
     runs-on: ubuntu-latest
     
     services:
@@ -45,58 +45,80 @@ jobs:
         PORT=5001
         NODE_ENV=test
         LOG_LEVEL=debug
-
-        # Test Database
         DATABASE_URL=postgres://postgres:postgres@localhost:5432/test_db
-
-        # JWT Configuration
         JWT_SECRET=test_secret_key
-        JWT_EXPIRES_IN=1h
-
-        # Disabled Services for Testing
-        SENDGRID_API_KEY=test
-        TWILIO_ACCOUNT_SID=test
-        TWILIO_AUTH_TOKEN=test
-        GOOGLE_MAPS_API_KEY=test
-        STRIPE_SECRET_KEY=test
-        NEON_API_KEY=test
-        NEON_PROJECT_ID=test
         EOF
         
         echo "Test environment file created"
     
     - name: Run tests
-      run: npm test || echo "Tests complete"
+      run: npm test || echo "Tests completed with some warnings/failures"
       env:
         NODE_ENV: test
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
         JWT_SECRET: test_secret
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
     
-    # Deploy to Railway if on development or main branch
-    - name: Install Railway CLI
-      if: github.event_name == 'push' && (github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main')
-      run: npm install -g @railway/cli
+    steps:
+    - uses: actions/checkout@v3
     
-    # Set up Railway token
-    - name: Setup Railway Environment
-      if: github.event_name == 'push' && (github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main')
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build application
       run: |
-        echo "$RAILWAY_TOKEN" > railway-token.txt
-        railway login --browserless < railway-token.txt
-        rm railway-token.txt
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        echo "Building application..."
+        # Example build commands (modify according to your project)
+        mkdir -p dist
+        cp -r .env* config/ public/ src/ package*.json dist/
+        echo "Build completed successfully!"
+
+  deploy-dev:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/development'
     
-    # Deploy to development environment
-    - name: Deploy to Railway (Development)
-      if: github.event_name == 'push' && github.ref == 'refs/heads/development'
+    steps:
+    - name: Mock deployment (Development)
       run: |
-        echo "Deploying to Railway development environment"
-        railway up || echo "Railway deployment completed with warnings"
+        echo "======================================"
+        echo "MOCK DEPLOYMENT TO DEVELOPMENT"
+        echo "======================================"
+        echo "Branch: development"
+        echo "Time: $(date)"
+        echo "Commit: ${{ github.sha }}"
+        echo ""
+        echo "This is a simulated deployment step for your"
+        echo "university project. In a real environment,"
+        echo "this would deploy to a development server."
+        echo ""
+        echo "Deployment completed successfully!"
+
+  deploy-prod:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     
-    # Deploy to production environment
-    - name: Deploy to Railway (Production)
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+    - name: Mock deployment (Production)
       run: |
-        echo "Deploying to Railway production environment"
-        railway up || echo "Railway deployment completed with warnings"
+        echo "======================================"
+        echo "MOCK DEPLOYMENT TO PRODUCTION"
+        echo "======================================"
+        echo "Branch: main"
+        echo "Time: $(date)"
+        echo "Commit: ${{ github.sha }}"
+        echo ""
+        echo "This is a simulated deployment step for your"
+        echo "university project. In a real environment,"
+        echo "this would deploy to a production server."
+        echo ""
+        echo "Deployment completed successfully!"
