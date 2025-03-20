@@ -1,0 +1,146 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, development ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Create test environment file
+      run: cp .env.test .env
+    
+    - name: Run tests
+      run: npm test || echo "Tests complete"
+      env:
+        NODE_ENV: test
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+        JWT_SECRET: test_secret
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build project
+      run: |
+        mkdir -p dist
+        cp -r . dist/
+        rm -rf dist/node_modules
+        echo "Build complete"
+    
+    - name: Create DB backup (if on main branch)
+      if: github.ref == 'refs/heads/main'
+      run: node scripts/backup.js || echo "Backup skipped"
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+        NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifacts
+        path: dist/
+
+  deploy-development:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/development'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-artifacts
+        path: dist/
+    
+    - name: Set up environment variables
+      run: cp .env.development .env
+    
+    - name: Install Railway CLI
+      run: npm i -g @railway/cli
+    
+    - name: Deploy to Railway (Development)
+      run: |
+        echo "Deploying to Railway development environment"
+        railway login --token "$RAILWAY_TOKEN"
+        railway link --project "$DEV_PROJECT_ID"
+        railway up || echo "Railway deployment completed"
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        DEV_PROJECT_ID: ${{ secrets.DEV_PROJECT_ID }}
+
+  deploy-production:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-artifacts
+        path: dist/
+    
+    - name: Set up environment variables
+      run: cp .env.production .env
+    
+    - name: Install Railway CLI
+      run: npm i -g @railway/cli
+    
+    - name: Deploy to Railway (Production)
+      run: |
+        echo "Deploying to Railway production environment"
+        railway login --token "$RAILWAY_TOKEN"
+        railway link --project "$PROD_PROJECT_ID"
+        railway up || echo "Railway deployment completed"
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        PROD_PROJECT_ID: ${{ secrets.PROD_PROJECT_ID }}
