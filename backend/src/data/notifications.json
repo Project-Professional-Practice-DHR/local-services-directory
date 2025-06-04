@@ -1,0 +1,162 @@
+[
+    {
+      "id": "e8f9a0b1-c2d3-8e4f-5a6b-7c8d9e0f1a2b",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "type": "booking",
+      "title": "Booking Confirmation",
+      "content": "Your booking for Standard Home Cleaning with Jane's Home Services has been confirmed for March 25, 2025 at 10:00 AM.",
+      "isRead": true,
+      "data": {
+        "bookingId": "b0c1d2e3-f4a5-3b6c-7d8e-9f0a1b2c3d4e",
+        "serviceName": "Standard Home Cleaning",
+        "providerName": "Jane's Home Services",
+        "bookingDate": "2025-03-25T10:00:00Z"
+      },
+      "createdAt": "2025-03-15T15:45:00Z",
+      "updatedAt": "2025-03-15T16:00:00Z"
+    },
+    {
+      "id": "f9a0b1c2-d3e4-9f5a-6b7c-8d9e0f1a2b3c",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+      "type": "booking",
+      "title": "New Booking",
+      "content": "You have a new booking for Standard Home Cleaning on March 25, 2025 at 10:00 AM with John Doe.",
+      "isRead": true,
+      "data": {
+        "bookingId": "b0c1d2e3-f4a5-3b6c-7d8e-9f0a1b2c3d4e",
+        "serviceName": "Standard Home Cleaning",
+        "customerName": "John Doe",
+        "bookingDate": "2025-03-25T10:00:00Z"
+      },
+      "createdAt": "2025-03-15T15:45:00Z",
+      "updatedAt": "2025-03-15T16:10:00Z"
+    },
+    {
+      "id": "a0b1c2d3-e4f5-0a6b-7c8d-9e0f1a2b3c4d",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "type": "payment",
+      "title": "Payment Successful",
+      "content": "Your payment of $120.00 for Standard Home Cleaning has been processed successfully.",
+      "isRead": true,
+      "data": {
+        "paymentId": "a5b6c7d8-e9f0-8a1b-2c3d-4e5f6a7b8c9d",
+        "amount": 120.00,
+        "serviceName": "Standard Home Cleaning",
+        "bookingId": "b0c1d2e3-f4a5-3b6c-7d8e-9f0a1b2c3d4e"
+      },
+      "createdAt": "2025-03-15T15:45:00Z",
+      "updatedAt": "2025-03-15T16:00:00Z"
+    },
+    {
+      "id": "b1c2d3e4-f5a6-1b7c-8d9e-0f1a2b3c4d5e",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "type": "booking",
+      "title": "Booking Confirmation",
+      "content": "Your booking for Women's Haircut & Style with Sarah's Beauty Salon has been confirmed for March 27, 2025 at 2:00 PM.",
+      "isRead": true,
+      "data": {
+        "bookingId": "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f",
+        "serviceName": "Women's Haircut & Style",
+        "providerName": "Sarah's Beauty Salon",
+        "bookingDate": "2025-03-27T14:00:00Z"
+      },
+      "createdAt": "2025-03-17T10:20:00Z",
+      "updatedAt": "2025-03-17T10:35:00Z"
+    },
+    {
+      "id": "c2d3e4f5-a6b7-2c8d-9e0f-1a2b3c4d5e6f",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d482",
+      "type": "booking",
+      "title": "New Booking",
+      "content": "You have a new booking for Women's Haircut & Style on March 27, 2025 at 2:00 PM with John Doe.",
+      "isRead": true,
+      "data": {
+        "bookingId": "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f",
+        "serviceName": "Women's Haircut & Style",
+        "customerName": "John Doe",
+        "bookingDate": "2025-03-27T14:00:00Z"
+      },
+      "createdAt": "2025-03-17T10:20:00Z",
+      "updatedAt": "2025-03-17T10:40:00Z"
+    },
+    {
+      "id": "d3e4f5a6-b7c8-3d9e-0f1a-2b3c4d5e6f7a",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+      "type": "booking",
+      "title": "Booking Confirmation",
+      "content": "Your booking for Smartphone Screen Replacement with Tech Repair Masters has been confirmed for March 20, 2025 at 11:00 AM.",
+      "isRead": true,
+      "data": {
+        "bookingId": "d2e3f4a5-b6c7-5d8e-9f0a-1b2c3d4e5f6a",
+        "serviceName": "Smartphone Screen Replacement",
+        "providerName": "Tech Repair Masters",
+        "bookingDate": "2025-03-20T11:00:00Z"
+      },
+      "createdAt": "2025-03-18T08:50:00Z",
+      "updatedAt": "2025-03-18T09:05:00Z"
+    },
+    {
+      "id": "e4f5a6b7-c8d9-4e0f-1a2b-3c4d5e6f7a8b",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d481",
+      "type": "payment",
+      "title": "Payment Received",
+      "content": "You have received a payment of $149.00 for Smartphone Screen Replacement service.",
+      "isRead": true,
+      "data": {
+        "paymentId": "c7d8e9f0-a1b2-0c3d-4e5f-6a7b8c9d0e1f",
+        "amount": 149.00,
+        "serviceName": "Smartphone Screen Replacement",
+        "bookingId": "d2e3f4a5-b6c7-5d8e-9f0a-1b2c3d4e5f6a"
+      },
+      "createdAt": "2025-03-18T08:50:00Z",
+      "updatedAt": "2025-03-18T09:30:00Z"
+    },
+    {
+      "id": "f5a6b7c8-d9e0-5f1a-2b3c-4d5e6f7a8b9c",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+      "type": "booking",
+      "title": "Booking Complete",
+      "content": "Your Smartphone Screen Replacement service has been completed successfully. Thank you for using Tech Repair Masters!",
+      "isRead": true,
+      "data": {
+        "bookingId": "d2e3f4a5-b6c7-5d8e-9f0a-1b2c3d4e5f6a",
+        "serviceName": "Smartphone Screen Replacement",
+        "providerName": "Tech Repair Masters",
+        "bookingDate": "2025-03-20T11:00:00Z"
+      },
+      "createdAt": "2025-03-20T13:30:00Z",
+      "updatedAt": "2025-03-20T14:15:00Z"
+    },
+    {
+      "id": "a6b7c8d9-e0f1-6a2b-3c4d-5e6f7a8b9c0d",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+      "type": "booking",
+      "title": "Booking Confirmation",
+      "content": "Your booking for Move-In/Move-Out Cleaning with Jane's Home Services has been confirmed for March 30, 2025 at 9:00 AM.",
+      "isRead": true,
+      "data": {
+        "bookingId": "e3f4a5b6-c7d8-6e9f-0a1b-2c3d4e5f6a7b",
+        "serviceName": "Move-In/Move-Out Cleaning",
+        "providerName": "Jane's Home Services",
+        "bookingDate": "2025-03-30T09:00:00Z"
+      },
+      "createdAt": "2025-03-20T17:20:00Z",
+      "updatedAt": "2025-03-20T17:45:00Z"
+    },
+    {
+      "id": "b7c8d9e0-f1a2-7b3c-4d5e-6f7a8b9c0d1e",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+      "type": "booking",
+      "title": "New Booking",
+      "content": "You have a new booking for Move-In/Move-Out Cleaning on March 30, 2025 at 9:00 AM with Mike Customer.",
+      "isRead": true,
+      "data": {
+        "bookingId": "e3f4a5b6-c7d8-6e9f-0a1b-2c3d4e5f6a7b",
+        "serviceName": "Move-In/Move-Out Cleaning",
+        "customerName": "Mike Customer",
+        "bookingDate": "2025-03-30T09:00:00Z"
+      },
+      "createdAt": "2025-03-20T17:20:00Z",
+      "updatedAt": "2025-03-20T17:40:00Z"
+    }
+  ]

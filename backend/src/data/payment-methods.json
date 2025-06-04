@@ -1,0 +1,67 @@
+[
+    {
+      "id": "e8f9a0b1-c2d3-7e4f-5a6b-7c8d9e0f1a2b",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "cardNumber": "4242424242424242",
+      "expiryDate": "12/26",
+      "cvc": "123",
+      "billingAddress": "123 Main Street, San Francisco, CA 94105",
+      "isDefault": true,
+      "cardType": "visa",
+      "lastFourDigits": "4242",
+      "createdAt": "2024-11-15T00:00:00Z",
+      "updatedAt": "2024-11-15T00:00:00Z"
+    },
+    {
+      "id": "f9a0b1c2-d3e4-8f5a-6b7c-8d9e0f1a2b3c",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "cardNumber": "5555555555554444",
+      "expiryDate": "10/25",
+      "cvc": "321",
+      "billingAddress": "123 Main Street, San Francisco, CA 94105",
+      "isDefault": false,
+      "cardType": "mastercard",
+      "lastFourDigits": "4444",
+      "createdAt": "2025-01-20T00:00:00Z",
+      "updatedAt": "2025-01-20T00:00:00Z"
+    },
+    {
+      "id": "a0b1c2d3-e4f5-9a6b-7c8d-9e0f1a2b3c4d",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+      "cardNumber": "4000056655665556",
+      "expiryDate": "03/27",
+      "cvc": "987",
+      "billingAddress": "456 Park Avenue, Austin, TX 78701",
+      "isDefault": true,
+      "cardType": "visa",
+      "lastFourDigits": "5556",
+      "createdAt": "2025-01-10T00:00:00Z",
+      "updatedAt": "2025-01-10T00:00:00Z"
+    },
+    {
+      "id": "b1c2d3e4-f5a6-0b7c-8d9e-0f1a2b3c4d5e",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+      "cardNumber": "378282246310005",
+      "expiryDate": "05/26",
+      "cvc": "4321",
+      "billingAddress": "789 Business Center, San Francisco, CA 94105",
+      "isDefault": true,
+      "cardType": "amex",
+      "lastFourDigits": "0005",
+      "createdAt": "2024-12-01T00:00:00Z",
+      "updatedAt": "2024-12-01T00:00:00Z"
+    },
+    {
+      "id": "c2d3e4f5-a6b7-1c8d-9e0f-1a2b3c4d5e6f",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d482",
+      "cardNumber": "6011111111111117",
+      "expiryDate": "08/25",
+      "cvc": "654",
+      "billingAddress": "321 Fashion Blvd, Los Angeles, CA 90028",
+      "isDefault": true,
+      "cardType": "discover",
+      "lastFourDigits": "1117",
+      "createdAt": "2024-12-15T00:00:00Z",
+      "updatedAt": "2024-12-15T00:00:00Z"
+    }
+  ]

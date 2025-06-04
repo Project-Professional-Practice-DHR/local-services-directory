@@ -1,0 +1,18 @@
+# Crontab entries for Local Services Directory application
+
+# Environment variables
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+APP_DIR=/var/www/local-services-directory-production
+
+# Database backups - Run daily at 2 AM
+0 2 * * * cd $APP_DIR && ./scripts/backup-database.sh >> $APP_DIR/logs/backup.log 2>&1
+
+# Health check - Run every 5 minutes
+*/5 * * * * curl -s -o /dev/null -w "%{http_code}" https://api.yourservicedirectory.com/health | grep 200 || bash $APP_DIR/scripts/alert.sh "API Health Check Failed"
+
+# Temporary file cleanup - Run weekly on Sunday at 1 AM
+0 1 * * 0 find $APP_DIR/temp -type f -mtime +7 -delete
+
+# Log rotation - Run daily at 1 AM
+0 1 * * * /usr/sbin/logrotate -f $APP_DIR/logrotate.conf

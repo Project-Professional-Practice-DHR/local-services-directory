@@ -1,0 +1,198 @@
+/* General layout */
+.contact-page {
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+  line-height: 1.6;
+  background-color: #fff;
+}
+
+/* Hero section */
+.contact-hero {
+  background: linear-gradient(135deg, #4e54c8, #8f94fb);
+  padding: 80px 20px;
+  color: #fff;
+  text-align: center;
+}
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+.hero-content p {
+  font-size: 1.2rem;
+}
+
+/* Section */
+.modern-section {
+  padding: 60px 20px;
+}
+.section-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  align-items: center;
+}
+.section-grid.reverse {
+  flex-direction: row-reverse;
+}
+.section-content {
+  flex: 1;
+}
+.section-image {
+  flex: 1;
+  text-align: center;
+}
+.rounded-image {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Badges */
+.section-badge {
+  display: inline-block;
+  background-color: #4e54c8;
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.section-badge.center {
+  display: block;
+  text-align: center;
+  margin: 0 auto 12px;
+}
+
+/* Section header */
+.section-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.section-header h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+.section-header p {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Contact methods */
+.contact-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+}
+.method-card {
+  background-color: #f9f9f9;
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  transition: 0.3s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+.method-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+.method-icon {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+/* Social media */
+.social-media {
+  margin-top: 20px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+.social-icon {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #fff;
+  transition: background 0.3s, transform 0.3s;
+}
+.social-icon svg {
+  width: 20px;
+  height: 20px;
+}
+.social-icon.facebook {
+  background-color: #3b5998;
+}
+.social-icon.twitter {
+  background-color: #1da1f2;
+}
+.social-icon.instagram {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
+}
+.social-icon.linkedin {
+  background-color: #0077b5;
+}
+.social-icon:hover {
+  transform: scale(1.1);
+}
+
+/* FAQ cards */
+.faq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+.faq-item {
+  background: #f9f9f9;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+.faq-item h3 {
+  margin-bottom: 10px;
+}
+
+/* Map */
+.map-container {
+  margin-top: 30px;
+}
+.rounded-map {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+/* CTA section */
+.cta-section {
+  background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%);
+  color: white;
+  text-align: center;
+  padding: 80px 20px;
+  border-radius: 0;
+}
+.cta-content h2 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+.cta-buttons {
+  margin-top: 20px;
+}
+.cta-button {
+  display: inline-block;
+  padding: 12px 25px;
+  font-size: 1rem;
+  border-radius: 30px;
+  margin: 0 10px;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+.cta-button.primary {
+  background-color: #fff;
+  color: #2575fc;
+}
+.cta-button.primary:hover {
+  background-color: #e0e0e0;
+}

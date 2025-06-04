@@ -1,0 +1,132 @@
+[
+    {
+      "id": "e5f6a7b8-c9d0-3e1f-2a3b-4c5d6e7f8a9b",
+      "senderId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "receiverId": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+      "content": "Hi Jane, I'm looking forward to my cleaning appointment. Could you please bring eco-friendly cleaning supplies? I have pets and would prefer non-toxic products.",
+      "bookingId": "b0c1d2e3-f4a5-3b6c-7d8e-9f0a1b2c3d4e",
+      "isRead": true,
+      "readAt": "2025-03-15T14:45:00Z",
+      "attachments": [],
+      "createdAt": "2025-03-15T14:35:00Z",
+      "updatedAt": "2025-03-15T14:45:00Z"
+    },
+    {
+      "id": "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c",
+      "senderId": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+      "receiverId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "content": "Hello John! Absolutely, I always bring eco-friendly cleaning supplies. They're safe for pets and just as effective. Looking forward to seeing you on March 25th at 10 AM!",
+      "bookingId": "b0c1d2e3-f4a5-3b6c-7d8e-9f0a1b2c3d4e",
+      "isRead": true,
+      "readAt": "2025-03-15T15:10:00Z",
+      "attachments": [],
+      "createdAt": "2025-03-15T14:50:00Z",
+      "updatedAt": "2025-03-15T15:10:00Z"
+    },
+    {
+      "id": "a7b8c9d0-e1f2-5a3b-4c5d-6e7f8a9b0c1d",
+      "senderId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "receiverId": "f47ac10b-58cc-4372-a567-0e02b2c3d482",
+      "content": "Hi Sarah, I'm interested in getting a modern bob haircut with layers. Do you have any photos of similar styles you've done that I could look at?",
+      "bookingId": "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f",
+      "isRead": true,
+      "readAt": "2025-03-17T09:20:00Z",
+      "attachments": [],
+      "createdAt": "2025-03-17T09:05:00Z",
+      "updatedAt": "2025-03-17T09:20:00Z"
+    },
+    {
+      "id": "b8c9d0e1-f2a3-6b4c-5d6e-7f8a9b0c1d2e",
+      "senderId": "f47ac10b-58cc-4372-a567-0e02b2c3d482",
+      "receiverId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "content": "Hello! I'd be happy to show you some examples. Here are a few modern bob styles I've created recently. Let me know if any of these are close to what you're looking for!",
+      "bookingId": "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f",
+      "isRead": true,
+      "readAt": "2025-03-17T09:40:00Z",
+      "attachments": [
+        {
+          "type": "image",
+          "url": "https://example.com/haircuts/bob1.jpg",
+          "name": "Modern Bob - Style 1"
+        },
+        {
+          "type": "image",
+          "url": "https://example.com/haircuts/bob2.jpg",
+          "name": "Layered Bob - Style 2"
+        },
+        {
+          "type": "image",
+          "url": "https://example.com/haircuts/bob3.jpg",
+          "name": "Asymmetric Bob - Style 3"
+        }
+      ],
+      "createdAt": "2025-03-17T09:25:00Z",
+      "updatedAt": "2025-03-17T09:40:00Z"
+    },
+    {
+      "id": "c9d0e1f2-a3b4-7c5d-6e7f-8a9b0c1d2e3f",
+      "senderId": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+      "receiverId": "f47ac10b-58cc-4372-a567-0e02b2c3d481",
+      "content": "Hi there, I have an iPhone 13 with a cracked screen that needs replacing ASAP. Do you have the parts in stock? And approximately how long will the repair take?",
+      "bookingId": "d2e3f4a5-b6c7-5d8e-9f0a-1b2c3d4e5f6a",
+      "isRead": true,
+      "readAt": "2025-03-18T08:55:00Z",
+      "attachments": [
+        {
+          "type": "image",
+          "url": "https://example.com/photos/cracked_screen.jpg",
+          "name": "Cracked iPhone Screen"
+        }
+      ],
+      "createdAt": "2025-03-18T08:40:00Z",
+      "updatedAt": "2025-03-18T08:55:00Z"
+    },
+    {
+      "id": "d0e1f2a3-b4c5-8d6e-7f8a-9b0c1d2e3f4a",
+      "senderId": "f47ac10b-58cc-4372-a567-0e02b2c3d481",
+      "receiverId": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+      "content": "Hello Mike! Yes, we have iPhone 13 screens in stock. The repair typically takes about 1-2 hours. I can fit you in tomorrow at 11am if that works for you? We'll also add a complimentary screen protector to help prevent future damage.",
+      "bookingId": "d2e3f4a5-b6c7-5d8e-9f0a-1b2c3d4e5f6a",
+      "isRead": true,
+      "readAt": "2025-03-18T09:10:00Z",
+      "attachments": [],
+      "createdAt": "2025-03-18T09:00:00Z",
+      "updatedAt": "2025-03-18T09:10:00Z"
+    },
+    {
+      "id": "e1f2a3b4-c5d6-9e7f-8a9b-0c1d2e3f4a5b",
+      "senderId": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+      "receiverId": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+      "content": "That's perfect! I'll see you tomorrow at 11am. Thank you for the quick response and the complimentary screen protector - that's very thoughtful.",
+      "bookingId": "d2e3f4a5-b6c7-5d8e-9f0a-1b2c3d4e5f6a",
+      "isRead": true,
+      "readAt": "2025-03-18T09:25:00Z",
+      "attachments": [],
+      "createdAt": "2025-03-18T09:15:00Z",
+      "updatedAt": "2025-03-18T09:25:00Z"
+    },
+    {
+      "id": "f2a3b4c5-d6e7-0f8a-9b0c-1d2e3f4a5b6c",
+      "senderId": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+      "receiverId": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+      "content": "Hi Jane, I'm moving out of my apartment at the end of the month and need a thorough cleaning. The place is about 800 sq ft with 1 bedroom, 1 bathroom, kitchen, and living room. Could you let me know if your quote of $350 includes cleaning inside the oven and refrigerator?",
+      "bookingId": "e3f4a5b6-c7d8-6e9f-0a1b-2c3d4e5f6a7b",
+      "isRead": true,
+      "readAt": "2025-03-20T17:30:00Z",
+      "attachments": [],
+      "createdAt": "2025-03-20T17:15:00Z",
+      "updatedAt": "2025-03-20T17:30:00Z"
+    },
+    {
+      "id": "a3b4c5d6-e7f8-1a9b-0c1d-2e3f4a5b6c7d",
+      "senderId": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+      "receiverId": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+      "content": "Hello Mike! Yes, our move-out cleaning service is comprehensive and includes deep cleaning of all appliances, including the oven and refrigerator. We'll also clean inside cabinets, wipe down all surfaces, clean light fixtures, and ensure the bathroom and kitchen are spotless. Is there anything specific you're concerned about that I should know?",
+      "bookingId": "e3f4a5b6-c7d8-6e9f-0a1b-2c3d4e5f6a7b",
+      "isRead": true,
+      "readAt": "2025-03-20T17:50:00Z",
+      "attachments": [],
+      "createdAt": "2025-03-20T17:35:00Z",
+      "updatedAt": "2025-03-20T17:50:00Z"
+    }
+  ]

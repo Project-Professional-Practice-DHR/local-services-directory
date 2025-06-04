@@ -1,0 +1,77 @@
+[
+    {
+      "id": "c8d9e0f1-a2b3-8c4d-5e6f-7a8b9c0d1e2f",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "token": "dKT7IKJKsksl38dkDKfjel29DKSLekdkK3k2D9SKekdlS",
+      "deviceType": "Android",
+      "deviceInfo": {
+        "model": "Samsung Galaxy S22",
+        "osVersion": "Android 13",
+        "appVersion": "1.2.3",
+        "lastLogin": "2025-03-15T08:30:00Z"
+      },
+      "isActive": true,
+      "createdAt": "2024-11-01T12:00:00Z",
+      "updatedAt": "2025-03-15T08:30:00Z"
+    },
+    {
+      "id": "d9e0f1a2-b3c4-9d5e-6f7a-8b9c0d1e2f3a",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+      "token": "kFji3k2lDKsoi39DkfJI20skDKf39dkSDkf302kSDkfl",
+      "deviceType": "iOS",
+      "deviceInfo": {
+        "model": "iPhone 15 Pro",
+        "osVersion": "iOS 19.3",
+        "appVersion": "1.2.3",
+        "lastLogin": "2025-03-15T09:15:00Z"
+      },
+      "isActive": true,
+      "createdAt": "2024-11-15T14:30:00Z",
+      "updatedAt": "2025-03-15T09:15:00Z"
+    },
+    {
+      "id": "e0f1a2b3-c4d5-0e6f-7a8b-9c0d1e2f3a4b",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d481",
+      "token": "dkSDkf302DKfj2k3lDKs9d2kDKfjel29dkSDkf302dkS",
+      "deviceType": "Desktop",
+      "deviceInfo": {
+        "model": "MacBook Pro 16-inch",
+        "osVersion": "macOS 16.2",
+        "appVersion": "1.2.3",
+        "lastLogin": "2025-03-10T09:00:00Z"
+      },
+      "isActive": true,
+      "createdAt": "2024-10-05T10:00:00Z",
+      "updatedAt": "2025-03-10T09:00:00Z"
+    },
+    {
+      "id": "f1a2b3c4-d5e6-1f7a-8b9c-0d1e2f3a4b5c",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d482",
+      "token": "kDKfjel29dkSDkf302dKT7IKJKsksl38dkDKfjel29D",
+      "deviceType": "iOS",
+      "deviceInfo": {
+        "model": "iPad Pro 12.9-inch",
+        "osVersion": "iOS 19.3",
+        "appVersion": "1.2.3",
+        "lastLogin": "2025-03-12T11:30:00Z"
+      },
+      "isActive": true,
+      "createdAt": "2024-12-10T13:45:00Z",
+      "updatedAt": "2025-03-12T11:30:00Z"
+    },
+    {
+      "id": "a2b3c4d5-e6f7-2a8b-9c0d-1e2f3a4b5c6d",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+      "token": "Dkf39dkSDkf302kSDkflKfji3k2lDKsoi39DkfJI20sk",
+      "deviceType": "Android",
+      "deviceInfo": {
+        "model": "Google Pixel 8",
+        "osVersion": "Android 15",
+        "appVersion": "1.2.3",
+        "lastLogin": "2025-03-15T16:20:00Z"
+      },
+      "isActive": true,
+      "createdAt": "2025-01-15T09:30:00Z",
+      "updatedAt": "2025-03-15T16:20:00Z"
+    }
+  ]

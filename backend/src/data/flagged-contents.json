@@ -1,0 +1,85 @@
+[
+    {
+      "id": "b8c9d0e1-f2a3-6b4c-5d6e-7f8a9b0c1d2e",
+      "contentType": "Review",
+      "contentId": "d3f4e5f6-a7b8-5c9d-0e1f-2a3b4c5d6e7f",
+      "contentauthorId": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+      "contentSummary": "This service was terrible! The technician arrived late, was unprofessional, and did not fix my device. Total waste of money! DO NOT USE!!!",
+      "flagReason": "abusive_language",
+      "reportedbyId": "f47ac10b-58cc-4372-a567-0e02b2c3d481",
+      "automated": false,
+      "severity": "medium",
+      "reportCount": 1,
+      "reports": [
+        {
+          "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d481",
+          "reason": "The review contains aggressive language and unfounded accusations",
+          "timestamp": "2025-03-10T14:25:00Z"
+        }
+      ],
+      "detectedIssues": ["abusive_language", "excessive_capitalization"],
+      "status": "pending",
+      "moderatedbyId": null,
+      "moderatedAt": null,
+      "moderationNotes": null,
+      "createdAt": "2025-03-10T14:25:00Z",
+      "updatedAt": "2025-03-10T14:25:00Z"
+    },
+    {
+      "id": "c9d0e1f2-a3b4-7c5d-6e7f-8a9b0c1d2e3f",
+      "contentType": "Message",
+      "contentId": "e5f4d3c2-b1a0-7e9d-8c7b-6a5b4a3b2c1d",
+      "contentauthorId": "f47ac10b-58cc-4372-a567-0e02b2c3d482",
+      "contentSummary": "Hey there, I found your number from your profile. Let's meet outside the app to avoid fees. Contact me at 555-123-4567 or email@example.com",
+      "flagReason": "contact_outside_platform",
+      "reportedbyId": null,
+      "automated": true,
+      "severity": "high",
+      "reportCount": 1,
+      "reports": [
+        {
+          "system": "content_filter",
+          "reason": "Detected attempt to move communication outside platform",
+          "timestamp": "2025-03-15T10:10:00Z"
+        }
+      ],
+      "detectedIssues": ["external_contact_info", "fee_avoidance"],
+      "status": "under_review",
+      "moderatedbyId": "f47ac10b-58cc-4372-a567-0e02b2c3d481",
+      "moderatedAt": "2025-03-15T11:30:00Z",
+      "moderationNotes": "Reviewing communication history between users",
+      "createdAt": "2025-03-15T10:10:00Z",
+      "updatedAt": "2025-03-15T11:30:00Z"
+    },
+    {
+      "id": "d0e1f2a3-b4c5-8d6e-7f8a-9b0c1d2e3f4a",
+      "contentType": "ServiceDescription",
+      "contentId": "f1e2d3c4-b5a6-4f7e-8d9c-0b1a2b3c4d5e",
+      "contentauthorId": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+      "contentSummary": "Special discount massage service. Available for private in-home visits at any time. Send pictures beforehand to get a personalized quote. Cash only.",
+      "flagReason": "inappropriate_content",
+      "reportedbyId": "f47ac10b-58cc-4372-a567-0e02b2c3d481",
+      "automated": true,
+      "severity": "high",
+      "reportCount": 2,
+      "reports": [
+        {
+          "system": "content_filter",
+          "reason": "Suspicious service description with multiple red flags",
+          "timestamp": "2025-03-18T09:30:00Z"
+        },
+        {
+          "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d481",
+          "reason": "This listing appears to be for inappropriate services",
+          "timestamp": "2025-03-18T10:15:00Z"
+        }
+      ],
+      "detectedIssues": ["suspicious_service", "cash_only", "request_for_photos"],
+      "status": "removed",
+      "moderatedbyId": "f47ac10b-58cc-4372-a567-0e02b2c3d481",
+      "moderatedAt": "2025-03-18T11:20:00Z",
+      "moderationNotes": "Service listing removed due to policy violations. User account under review.",
+      "createdAt": "2025-03-18T09:30:00Z",
+      "updatedAt": "2025-03-18T11:20:00Z"
+    }
+  ]

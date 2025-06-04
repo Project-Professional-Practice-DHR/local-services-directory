@@ -1,0 +1,143 @@
+[
+    {
+      "id": "f0a1b2c3-d4e5-8f6a-7b8c-9d0e1f2a3b4c",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "amount": 120.00,
+      "platformFee": 18.00,
+      "providerPayout": 102.00,
+      "status": "completed",
+      "transactionType": "payment",
+      "paymentId": "a5b6c7d8-e9f0-8a1b-2c3d-4e5f6a7b8c9d",
+      "metadata": {
+        "serviceName": "Standard Home Cleaning",
+        "serviceId": "f2a3b4c5-d6e7-5f8a-9b0c-1d2e3f4a5b6c",
+        "providerName": "Jane's Home Services",
+        "providerId": "f47ac10b-58cc-4372-a567-0e02b2c3d480"
+      },
+      "createdAt": "2025-03-15T15:45:00Z",
+      "updatedAt": "2025-03-15T15:45:00Z"
+    },
+    {
+      "id": "a1b2c3d4-e5f6-9a7b-8c9d-0e1f2a3b4c5d",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "amount": 85.00,
+      "platformFee": 12.75,
+      "providerPayout": 72.25,
+      "status": "completed",
+      "transactionType": "payment",
+      "paymentId": "b6c7d8e9-f0a1-9b2c-3d4e-5f6a7b8c9d0e",
+      "metadata": {
+        "serviceName": "Women's Haircut & Style",
+        "serviceId": "b4c5d6e7-f8a9-7b0c-1d2e-3f4a5b6c7d8e",
+        "providerName": "Sarah's Beauty Salon",
+        "providerId": "f47ac10b-58cc-4372-a567-0e02b2c3d482"
+      },
+      "createdAt": "2025-03-17T10:20:00Z",
+      "updatedAt": "2025-03-17T10:20:00Z"
+    },
+    {
+      "id": "b2c3d4e5-f6a7-0b8c-9d0e-1f2a3b4c5d6e",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+      "amount": 149.00,
+      "platformFee": 22.35,
+      "providerPayout": 126.65,
+      "status": "completed",
+      "transactionType": "payment",
+      "paymentId": "c7d8e9f0-a1b2-0c3d-4e5f-6a7b8c9d0e1f",
+      "metadata": {
+        "serviceName": "Smartphone Screen Replacement",
+        "serviceId": "d6e7f8a9-b0c1-9d2e-3f4a-5b6c7d8e9f0a",
+        "providerName": "Tech Repair Masters",
+        "providerId": "f47ac10b-58cc-4372-a567-0e02b2c3d480"
+      },
+      "createdAt": "2025-03-18T08:50:00Z",
+      "updatedAt": "2025-03-18T08:50:00Z"
+    },
+    {
+      "id": "c3d4e5f6-a7b8-1c9d-0e1f-2a3b4c5d6e7f",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+      "amount": 350.00,
+      "platformFee": 52.50,
+      "providerPayout": 297.50,
+      "status": "pending",
+      "transactionType": "payment",
+      "paymentId": "d8e9f0a1-b2c3-1d4e-5f6a-7b8c9d0e1f2a",
+      "metadata": {
+        "serviceName": "Move-In/Move-Out Cleaning",
+        "serviceId": "f8a9b0c1-d2e3-1f4a-5b6c-7d8e9f0a1b2c",
+        "providerName": "Jane's Home Services",
+        "providerId": "f47ac10b-58cc-4372-a567-0e02b2c3d480"
+      },
+      "createdAt": "2025-03-20T17:20:00Z",
+      "updatedAt": "2025-03-20T17:20:00Z"
+    },
+    {
+      "id": "d4e5f6a7-b8c9-2d0e-1f2a-3b4c5d6e7f8a",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "amount": 70.00,
+      "platformFee": 10.50,
+      "providerPayout": 59.50,
+      "status": "completed",
+      "transactionType": "payment",
+      "paymentId": "e9f0a1b2-c3d4-2e5f-6a7b-8c9d0e1f2a3b",
+      "metadata": {
+        "serviceName": "Manicure & Pedicure Combo",
+        "serviceId": "c5d6e7f8-a9b0-8c1d-2e3f-4a5b6c7d8e9f",
+        "providerName": "Sarah's Beauty Salon",
+        "providerId": "f47ac10b-58cc-4372-a567-0e02b2c3d482"
+      },
+      "createdAt": "2025-03-19T11:15:00Z",
+      "updatedAt": "2025-03-19T11:15:00Z"
+    },
+    {
+      "id": "e5f6a7b8-c9d0-3e1f-2a3b-4c5d6e7f8a9b",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+      "amount": 102.00,
+      "platformFee": 0.00,
+      "providerPayout": 102.00,
+      "status": "completed",
+      "transactionType": "payout",
+      "paymentId": null,
+      "metadata": {
+        "payoutId": "c7d8e9f0-a1b2-9c3d-4e5f-6a7b8c9d0e1f",
+        "payoutMethod": "bank_transfer",
+        "serviceCount": 1
+      },
+      "createdAt": "2025-03-22T10:30:00Z",
+      "updatedAt": "2025-03-22T10:30:00Z"
+    },
+    {
+      "id": "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d482",
+      "amount": 72.25,
+      "platformFee": 0.00,
+      "providerPayout": 72.25,
+      "status": "completed",
+      "transactionType": "payout",
+      "paymentId": null,
+      "metadata": {
+        "payoutId": "d8e9f0a1-b2c3-0d4e-5f6a-7b8c9d0e1f2a",
+        "payoutMethod": "paypal",
+        "serviceCount": 1
+      },
+      "createdAt": "2025-03-24T09:15:00Z",
+      "updatedAt": "2025-03-24T09:15:00Z"
+    },
+    {
+      "id": "a7b8c9d0-e1f2-5a3b-4c5d-6e7f8a9b0c1d",
+      "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+      "amount": 126.65,
+      "platformFee": 0.00,
+      "providerPayout": 126.65,
+      "status": "completed",
+      "transactionType": "payout",
+      "paymentId": null,
+      "metadata": {
+        "payoutId": "e9f0a1b2-c3d4-1e5f-6a7b-8c9d0e1f2a3b",
+        "payoutMethod": "bank_transfer",
+        "serviceCount": 1
+      },
+      "createdAt": "2025-03-25T11:20:00Z",
+      "updatedAt": "2025-03-25T11:20:00Z"
+    }
+  ]

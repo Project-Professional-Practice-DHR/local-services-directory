@@ -1,0 +1,83 @@
+[
+    {
+      "id": "b9c0d1e2-f3a4-8b5c-6d7e-8f9a0b1c2d3e",
+      "providerId": "a1b2c3d4-e5f6-4a5b-9c8d-1e2f3a4b5c6d",
+      "imageUrl": "https://example.com/portfolios/cleaning1.jpg",
+      "description": "Complete home cleaning for a 3-bedroom house. Deep cleaned carpets, kitchen appliances, and bathroom fixtures.",
+      "order": 1,
+      "createdAt": "2024-12-01T00:00:00Z",
+      "updatedAt": "2024-12-01T00:00:00Z"
+    },
+    {
+      "id": "c0d1e2f3-a4b5-9c6d-7e8f-9a0b1c2d3e4f",
+      "providerId": "a1b2c3d4-e5f6-4a5b-9c8d-1e2f3a4b5c6d",
+      "imageUrl": "https://example.com/portfolios/cleaning2.jpg",
+      "description": "Move-out cleaning for a luxury apartment. Restored all surfaces to pristine condition, leading to full security deposit return for the client.",
+      "order": 2,
+      "createdAt": "2024-12-05T00:00:00Z",
+      "updatedAt": "2024-12-05T00:00:00Z"
+    },
+    {
+      "id": "d1e2f3a4-b5c6-0d7e-8f9a-0b1c2d3e4f5a",
+      "providerId": "a1b2c3d4-e5f6-4a5b-9c8d-1e2f3a4b5c6d",
+      "imageUrl": "https://example.com/portfolios/cleaning3.jpg",
+      "description": "Kitchen deep cleaning service. Degreased and sanitized all surfaces, cleaned inside cabinets, and restored appliances to like-new condition.",
+      "order": 3,
+      "createdAt": "2024-12-10T00:00:00Z",
+      "updatedAt": "2024-12-10T00:00:00Z"
+    },
+    {
+      "id": "e2f3a4b5-c6d7-1e8f-9a0b-1c2d3e4f5a6b",
+      "providerId": "b2c3d4e5-f6a7-5b6c-0d1e-2f3a4b5c6d7e",
+      "imageUrl": "https://example.com/portfolios/beauty1.jpg",
+      "description": "Modern bob haircut with subtle balayage highlights. Created a stylish yet low-maintenance look for a client with an active lifestyle.",
+      "order": 1,
+      "createdAt": "2025-01-05T00:00:00Z",
+      "updatedAt": "2025-01-05T00:00:00Z"
+    },
+    {
+      "id": "f3a4b5c6-d7e8-2f9a-0b1c-2d3e4f5a6b7c",
+      "providerId": "b2c3d4e5-f6a7-5b6c-0d1e-2f3a4b5c6d7e",
+      "imageUrl": "https://example.com/portfolios/beauty2.jpg",
+      "description": "Bridal makeup and hairstyling for a summer wedding. Created a natural yet elegant look that lasted throughout the ceremony and reception.",
+      "order": 2,
+      "createdAt": "2025-01-10T00:00:00Z",
+      "updatedAt": "2025-01-10T00:00:00Z"
+    },
+    {
+      "id": "a4b5c6d7-e8f9-3a0b-1c2d-3e4f5a6b7c8d",
+      "providerId": "b2c3d4e5-f6a7-5b6c-0d1e-2f3a4b5c6d7e",
+      "imageUrl": "https://example.com/portfolios/beauty3.jpg",
+      "description": "Gel manicure with custom nail art. Created a unique design tailored to the client's personal style for a special event.",
+      "order": 3,
+      "createdAt": "2025-01-15T00:00:00Z",
+      "updatedAt": "2025-01-15T00:00:00Z"
+    },
+    {
+      "id": "b5c6d7e8-f9a0-4b1c-2d3e-4f5a6b7c8d9e",
+      "providerId": "c3d4e5f6-a7b8-6c7d-1e2f-3a4b5c6d7e8f",
+      "imageUrl": "https://example.com/portfolios/tech1.jpg",
+      "description": "iPhone screen replacement and data recovery for a client who dropped their phone in water. Saved all personal photos and contacts.",
+      "order": 1,
+      "createdAt": "2024-11-01T00:00:00Z",
+      "updatedAt": "2024-11-01T00:00:00Z"
+    },
+    {
+      "id": "c6d7e8f9-a0b1-5c2d-3e4f-5a6b7c8d9e0f",
+      "providerId": "c3d4e5f6-a7b8-6c7d-1e2f-3a4b5c6d7e8f",
+      "imageUrl": "https://example.com/portfolios/tech2.jpg",
+      "description": "Gaming PC build and optimization. Assembled a high-performance custom system for a professional gamer with specific cooling and lighting requirements.",
+      "order": 2,
+      "createdAt": "2024-11-10T00:00:00Z",
+      "updatedAt": "2024-11-10T00:00:00Z"
+    },
+    {
+      "id": "d7e8f9a0-b1c2-6d3e-4f5a-6b7c8d9e0f1a",
+      "providerId": "c3d4e5f6-a7b8-6c7d-1e2f-3a4b5c6d7e8f",
+      "imageUrl": "https://example.com/portfolios/tech3.jpg",
+      "description": "Business network setup for a small marketing firm. Installed and configured secure Wi-Fi, file sharing, and backup systems for a team of 15 employees.",
+      "order": 3,
+      "createdAt": "2024-11-20T00:00:00Z",
+      "updatedAt": "2024-11-20T00:00:00Z"
+    }
+  ]

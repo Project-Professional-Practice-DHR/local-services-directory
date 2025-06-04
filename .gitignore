@@ -106,50 +106,38 @@ Desktop.ini
 
 # Cache directories
 .cache/
-.temp/
-.tmp/
+# Comment in the public line in if your project uses Gatsby and not Next.js
+# https://nextjs.org/blog/next-9-1#public-directory-support
+# public
 
-# Local development SSL certificates
-*.pem
-*.crt
-*.key
+# vuepress build output
+.vuepress/dist
 
-# Compiled binary addons
-build/Release
+# vuepress v2.x temp and cache directory
+.temp
+.cache
 
-# Database dumps
-/database/dumps/
-*.dump
+# Docusaurus cache and generated files
+.docusaurus
 
-# Uploads directory (if you store uploads locally during development)
-/uploads
-/public/uploads
+# Serverless directories
+.serverless/
 
-# Frontend specific
-# dependencies
-/frontend/node_modules
-/frontend/.pnp
-/frontend/.pnp.js
+# FuseBox cache
+.fusebox/
 
-# testing
-/frontend/coverage
+# DynamoDB Local files
+.dynamodb/
 
-# production
-/frontend/build
+# TernJS port file
+.tern-port
 
-# misc
-/frontend/.DS_Store
-/frontend/.env.local
-/frontend/.env.development.local
-/frontend/.env.test.local
-/frontend/.env.production.local
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
 
-/frontend/npm-debug.log*
-/frontend/yarn-debug.log*
-/frontend/yarn-error.log*
-
-# Backend specific
-/backend/node_modules
-/backend/dist
-/backend/logs
-/backend/.env
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*

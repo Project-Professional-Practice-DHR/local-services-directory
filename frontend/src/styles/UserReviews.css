@@ -1,0 +1,220 @@
+/* UserReviews.css - Non-conflicting with Navbar.css */
+
+/* Reviews Section */
+.user-reviews-section {
+    margin-bottom: 2rem;
+  }
+  
+  .user-reviews-section h2 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0.5rem;
+  }
+  
+  /* Reviews List */
+  .user-reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  /* Review Card */
+  .user-review-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    padding: 1.5rem;
+  }
+  
+  .user-review-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Review Header */
+  .user-review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .user-review-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  .user-review-date {
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+  
+  .user-edited-label {
+    font-style: italic;
+    color: #6c757d;
+  }
+  
+  /* Review Rating */
+  .user-review-rating {
+    margin-bottom: 1rem;
+  }
+  
+  .user-star {
+    color: #d1d1d1;
+    font-size: 1.5rem;
+    margin-right: 0.25rem;
+  }
+  
+  .user-star.filled {
+    color: #ffc107;
+  }
+  
+  .user-star.clickable {
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  
+  .user-star.clickable:hover {
+    transform: scale(1.2);
+  }
+  
+  /* Review Comment */
+  .user-review-comment {
+    margin-bottom: 1.5rem;
+    color: #495057;
+    line-height: 1.6;
+  }
+  
+  /* Review Actions */
+  .user-review-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+  }
+  
+  .user-edit-review-btn,
+  .user-delete-review-btn,
+  .user-save-review-btn,
+  .user-cancel-edit-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s, color 0.2s;
+    border: none;
+  }
+  
+  .user-edit-review-btn {
+    background-color: #e9ecef;
+    color: #495057;
+  }
+  
+  .user-edit-review-btn:hover {
+    background-color: #dee2e6;
+  }
+  
+  .user-delete-review-btn {
+    background-color: #fff;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+  }
+  
+  .user-delete-review-btn:hover {
+    background-color: #dc3545;
+    color: #fff;
+  }
+  
+  .user-save-review-btn {
+    background-color: #198754;
+    color: #fff;
+  }
+  
+  .user-save-review-btn:hover {
+    background-color: #157347;
+  }
+  
+  .user-cancel-edit-btn {
+    background-color: #6c757d;
+    color: #fff;
+  }
+  
+  .user-cancel-edit-btn:hover {
+    background-color: #5c636a;
+  }
+  
+  /* Edit Review Form */
+  .user-edit-review-form {
+    width: 100%;
+  }
+  
+  .user-edit-review-form h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  .user-rating-input {
+    margin-bottom: 1rem;
+  }
+  
+  .user-rating-input label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #495057;
+    font-weight: 500;
+  }
+  
+  .user-star-rating {
+    display: flex;
+  }
+  
+  /* Empty Section */
+  .user-empty-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 0;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px dashed #dee2e6;
+  }
+  
+  .user-empty-icon {
+    font-size: 3rem;
+    color: #adb5bd;
+    margin-bottom: 1rem;
+  }
+  
+  .user-empty-section p {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .user-review-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    
+    .user-review-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .user-form-buttons {
+      flex-direction: column;
+    }
+  }

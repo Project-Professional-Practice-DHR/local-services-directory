@@ -1,0 +1,57 @@
+[
+  {
+    "id": "b3c4d5e6-f7a8-3b9c-0d1e-2f3a4b5c6d7e",
+    "name": "Free",
+    "price": 0.00,
+    "features": "Basic listing, up to 3 services, standard search visibility",
+    "stripePriceId": null,
+    "isActive": true,
+    "duration": 0,
+    "createdAt": "2024-09-01T00:00:00Z",
+    "updatedAt": "2024-09-01T00:00:00Z"
+  },
+  {
+    "id": "c4d5e6f7-a8b9-4c0d-1e2f-3a4b5c6d7e8f",
+    "name": "Basic",
+    "price": 29.99,
+    "features": "Enhanced listing, up to 10 services, better search visibility, message system, booking management",
+    "stripePriceId": "price_basic_monthly",
+    "isActive": true,
+    "duration": 30,
+    "createdAt": "2024-09-01T00:00:00Z",
+    "updatedAt": "2024-09-01T00:00:00Z"
+  },
+  {
+    "id": "d5e6f7a8-b9c0-5d1e-2f3a-4b5c6d7e8f9a",
+    "name": "Premium",
+    "price": 99.99,
+    "features": "Premium listing, unlimited services, top search visibility, message system, booking management, featured placement, analytics dashboard, priority support",
+    "stripePriceId": "price_premium_monthly",
+    "isActive": true,
+    "duration": 30,
+    "createdAt": "2024-09-01T00:00:00Z",
+    "updatedAt": "2024-09-01T00:00:00Z"
+  },
+  {
+    "id": "e6f7a8b9-c0d1-6e2f-3a4b-5c6d7e8f9a0b",
+    "name": "Basic Annual",
+    "price": 299.99,
+    "features": "Enhanced listing, up to 10 services, better search visibility, message system, booking management",
+    "stripePriceId": "price_basic_annual",
+    "isActive": true,
+    "duration": 365,
+    "createdAt": "2024-09-01T00:00:00Z",
+    "updatedAt": "2024-09-01T00:00:00Z"
+  },
+  {
+    "id": "f7a8b9c0-d1e2-7f3a-4b5c-6d7e8f9a0b1c",
+      "name": "Premium Annual",
+      "price": 999.99,
+      "features": "Premium listing, unlimited services, top search visibility, message system, booking management, featured placement, analytics dashboard, priority support",
+      "stripePriceId": "price_premium_annual",
+      "isActive": true,
+      "duration": 365,
+      "createdAt": "2024-09-01T00:00:00Z",
+      "updatedAt": "2024-09-01T00:00:00Z"
+    }
+]
