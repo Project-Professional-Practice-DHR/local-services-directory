@@ -1,4 +1,5 @@
-const { Booking, Service, ServiceProviderProfile, User, Payment } = require('../models');
+const { Booking, Service, ServiceProviderProfile, User, Payment, Review } = require('../models');
+const { Op } = require('sequelize');
 const { v4: uuidv4 } = require('uuid');
 const { sendBookingConfirmation } = require('../utils/emailService');
 const { sendBookingConfirmationSMS } = require('../utils/smsService');
@@ -14,7 +15,8 @@ exports.createBooking = async (req, res) => {
       include: [
         {
           model: ServiceProviderProfile,
-          attributes: ['id', 'businessName', 'User_id']
+          as: 'provider',
+          attributes: ['id', 'businessName', 'userId']
         }
       ]
     });
@@ -37,19 +39,19 @@ exports.createBooking = async (req, res) => {
       notes,
       price: service.price,
       bookingReference,
-      ServiceId: serviceId,
-      ServiceProviderProfileId: service.ServiceProviderProfile.id,
+      serviceId,
+      providerId: service.provider.id,
       customerId: req.user.id
     });
     
     // Get provider's user for notifications
-    const provider = await User.findByPk(service.ServiceProviderProfile.user_id);
+    const provider = await User.findByPk(service.provider.userId);
     
     // Send booking confirmation to customer
     await sendBookingConfirmation(
       req.user,
       booking,
-      service.ServiceProviderProfile
+      service.provider
     );
     
     // Send SMS if phone number available
@@ -57,7 +59,7 @@ exports.createBooking = async (req, res) => {
       await sendBookingConfirmationSMS(
         req.user.phoneNumber,
         booking,
-        service.ServiceProviderProfile
+        service.provider
       );
     }
     
@@ -84,14 +86,17 @@ exports.getMyBookings = async (req, res) => {
       include: [
         {
           model: Service,
+          as: 'service',
           attributes: ['id', 'name', 'description']
         },
         {
           model: ServiceProviderProfile,
+          as: 'provider',
           attributes: ['id', 'businessName', 'address', 'city', 'state']
         },
         {
           model: Payment,
+          as: 'payment',
           attributes: ['id', 'amount', 'paymentStatus', 'paymentDate']
         }
       ],
@@ -118,7 +123,7 @@ exports.getProviderBookings = async (req, res) => {
   try {
     // Get provider profile
     const providerProfile = await ServiceProviderProfile.findOne({
-      where: { User_dd: req.user.id }
+      where: { userId: req.user.id }
     });
     
     if (!providerProfile) {
@@ -132,7 +137,7 @@ exports.getProviderBookings = async (req, res) => {
     
     // Build filter
     const whereClause = {
-      ServiceProviderProfileId: providerProfile.id
+      providerId: providerProfile.id
     };
     
     if (status) {
@@ -158,15 +163,17 @@ exports.getProviderBookings = async (req, res) => {
       include: [
         {
           model: Service,
+          as: 'service',
           attributes: ['id', 'name']
         },
         {
           model: User,
-          as: 'Customer',
+          as: 'customer',
           attributes: ['id', 'firstName', 'lastName', 'email', 'phoneNumber']
         },
         {
           model: Payment,
+          as: 'payment',
           attributes: ['id', 'amount', 'paymentStatus']
         }
       ],
@@ -203,7 +210,7 @@ exports.updateBookingStatus = async (req, res) => {
     
     // Get provider profile
     const providerProfile = await ServiceProviderProfile.findOne({
-      where: { UserId: req.user.id }
+      where: { userId: req.user.id }
     });
     
     // Find booking
@@ -212,17 +219,18 @@ exports.updateBookingStatus = async (req, res) => {
         id,
         [Op.or]: [
           { customerId: req.user.id },
-          { ServiceProviderProfileId: providerProfile?.id }
+          { providerId: providerProfile?.id }
         ]
       },
       include: [
         {
           model: User,
-          as: 'Customer',
+          as: 'customer',
           attributes: ['id', 'firstName', 'lastName', 'email', 'phoneNumber']
         },
         {
           model: ServiceProviderProfile,
+          as: 'provider',
           attributes: ['id', 'businessName']
         }
       ]
@@ -267,7 +275,7 @@ exports.getBookingDetails = async (req, res) => {
     
     // Get provider profile
     const providerProfile = await ServiceProviderProfile.findOne({
-      where: { UserId: req.user.id }
+      where: { userId: req.user.id }
     });
     
     // Find booking
@@ -276,30 +284,34 @@ exports.getBookingDetails = async (req, res) => {
         id,
         [Op.or]: [
           { customerId: req.user.id },
-          { ServiceProviderProfileId: providerProfile?.id }
+          { providerId: providerProfile?.id }
         ]
       },
       include: [
         {
           model: User,
-          as: 'Customer',
+          as: 'customer',
           attributes: ['id', 'firstName', 'lastName', 'email', 'phoneNumber']
         },
         {
           model: Service,
+          as: 'service',
           attributes: ['id', 'name', 'description', 'price', 'duration']
         },
         {
           model: ServiceProviderProfile,
+          as: 'provider',
           attributes: ['id', 'businessName', 'address', 'city', 'state', 'zipCode', 'latitude', 'longitude']
         },
         {
           model: Payment,
+          as: 'payment',
           attributes: ['id', 'amount', 'paymentMethod', 'paymentStatus', 'paymentDate', 'transactionId']
         },
         {
           model: Review,
-          attributes: ['id', 'rating', 'comment', 'createdAt']
+          as: 'review',
+          attributes: ['id', 'rating', 'reviewText', 'createdAt']
         }
       ]
     });

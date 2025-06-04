@@ -1,33 +1,38 @@
 const { Op } = require('sequelize');
-const { Message, Conversation, User, Booking } = require('../models');
+const { Message, User, Booking, sequelize } = require('../models');
 const { createNotification } = require('./notificationController');
 
 exports.sendMessage = async (req, res) => {
-  const transaction = await Message.sequelize.transaction();
+  const transaction = await sequelize.transaction();
   
   try {
-    const { receiverId, content, booking_id, attachments = [] } = req.body;
-    const sender_id = req.user.id;
+    const { receiverId, content, bookingId, attachments = [] } = req.body;
+    const senderId = req.user.id;
     
     // Validate recipient exists
-    const receiver = await User.findByPk(receiver_id);
+    const receiver = await User.findByPk(receiverId);
     if (!receiver) {
       await transaction.rollback();
       return res.status(404).json({ message: 'Recipient not found' });
     }
     
     // Validate booking if provided
-    let booking = null;
-    if (booking_id) {
-      booking = await Booking.findByPk(booking_id);
+    if (bookingId) {
+      const booking = await Booking.findByPk(bookingId, {
+        include: [{
+          model: User,
+          as: 'provider'
+        }]
+      });
+      
       if (!booking) {
         await transaction.rollback();
         return res.status(404).json({ message: 'Booking not found' });
       }
       
       // Ensure user is part of this booking
-      const isProvider = booking.serviceId.providerId === sender_id;
-      const isCustomer = booking.userId === sender_id;
+      const isProvider = booking.provider.id === senderId;
+      const isCustomer = booking.userId === senderId;
       
       if (!isProvider && !isCustomer) {
         await transaction.rollback();
@@ -35,54 +40,24 @@ exports.sendMessage = async (req, res) => {
       }
     }
     
-    // Find or create conversation
-    let conversation = await Conversation.findOne({
-      where: {
-        participants: { [Op.contains]: [sender_id, receiver_id] },
-        ...(bookingId && { bookingId })
-      },
-      transaction
-    });
-
-    if (!conversation) {
-      conversation = await Conversation.create({
-        participants: [sender_id, receiver_id],
-        unreadCount: { [receiverId]: 1 },
-        ...(bookingId && { booking_id })
-      }, { transaction });
-    } else {
-      // Update unread count for receiver
-      const currentCount = conversation.unreadCount?.[receiver_id] || 0;
-      conversation.unreadCount[receiver_id] = currentCount + 1;
-    }
-
     // Create message
     const message = await Message.create({
-      sender_id,
-      receiver_id,
+      senderId,
+      receiverId,
       content,
-      ...(booking_id && { booking_id }),
-      attachments
+      bookingId,
+      isRead: false,
+      attachments: attachments
     }, { transaction });
-
-    // Update conversation with last message
-    conversation.lastMessage = {
-      content,
-      sender: sender_id,
-      timestamp: new Date()
-    };
-    
-    await conversation.save({ transaction });
 
     // Create notification for receiver
     await createNotification({
-      userId: receiver_id,
+      userId: receiverId,
       type: 'message',
       title: 'New Message',
-      content: `You have a new message from ${req.user.name}`,
+      content: `You have a new message from ${req.user.firstName} ${req.user.lastName}`,
       data: {
-        sender_id,
-        conversationId: conversation.id,
+        senderId,
         messageId: message.id
       }
     }, transaction);
@@ -91,7 +66,11 @@ exports.sendMessage = async (req, res) => {
 
     // Fetch sender details for response
     const populatedMessage = await Message.findByPk(message.id, {
-      include: [{ model: User, as: 'sender', attributes: ['name', 'profileImage'] }]
+      include: [{ 
+        model: User, 
+        as: 'sender', 
+        attributes: ['id', 'firstName', 'lastName'] 
+      }]
     });
 
     res.status(201).json({
@@ -106,91 +85,180 @@ exports.sendMessage = async (req, res) => {
   }
 };
 
-exports.getConversations = async (req, res) => {
+exports.getMessagesBetweenUsers = async (req, res) => {
   try {
+    const { otherUserId } = req.params;
     const userId = req.user.id;
 
-    const conversations = await Conversation.findAll({
-      where: { participants: { [Op.contains]: [userId] } },
-      include: [
-        { model: User, as: 'participants', attributes: ['id', 'name', 'profileImage'] },
-        { model: Booking, as: 'booking', attributes: ['date', 'status'] }
-      ],
-      order: [['updatedAt', 'DESC']]
-    });
-
-    // Format the conversations for the client
-    const formattedConversations = conversations.map(conv => {
-      const otherParticipant = conv.participants.find(p => p.id !== userId);
-      
-      return {
-        id: conv.id,
-        participant: otherParticipant,
-        lastMessage: conv.lastMessage,
-        unreadCount: conv.unreadCount?.[userId] || 0,
-        booking: conv.booking,
-        updatedAt: conv.updatedAt
-      };
-    });
-
-    res.status(200).json({ conversations: formattedConversations });
-  } catch (error) {
-    console.error('Error getting conversations:', error);
-    res.status(500).json({ message: 'Failed to get conversations', error: error.message });
-  }
-};
-
-exports.getMessages = async (req, res) => {
-  try {
-    const { conversationId } = req.params;
-    const userId = req.user.id;
-
-    // Verify conversation exists and user is a participant
-    const conversation = await Conversation.findOne({
-      where: {
-        id: conversationId,
-        participants: { [Op.contains]: [userId] }
-      }
-    });
-
-    if (!conversation) {
-      return res.status(404).json({ message: 'Conversation not found' });
-    }
-
-    // Get the other participant
-    const otherParticipantId = conversation.participants.find(id => id !== userId);
-
-    // Get messages for this conversation
+    // Get messages between the two users
     const messages = await Message.findAll({
       where: {
         [Op.or]: [
-          { sender_id: userId, receiverId: otherParticipantId },
-          { sender_id: otherParticipantId, receiverId: userId }
+          { senderId: userId, receiverId: otherUserId },
+          { senderId: otherUserId, receiverId: userId }
         ]
       },
-      include: [{ model: User, as: 'sender', attributes: ['name', 'profileImage'] }],
+      include: [
+        { 
+          model: User, 
+          as: 'sender', 
+          attributes: ['id', 'firstName', 'lastName'] 
+        }
+      ],
       order: [['createdAt', 'ASC']]
     });
 
-    // Mark messages as read
+    // Mark unread messages as read
     await Message.update(
-      { is_read: true, readAt: new Date() },
+      { 
+        isRead: true, 
+        readAt: new Date() 
+      },
       {
         where: {
           receiverId: userId,
-          is_read: false
+          senderId: otherUserId,
+          isRead: false
         }
       }
     );
-
-    // Reset unread count for this user
-    conversation.unreadCount[userId] = 0;
-    await conversation.save();
 
     res.status(200).json({ messages });
   } catch (error) {
     console.error('Error getting messages:', error);
     res.status(500).json({ message: 'Failed to get messages', error: error.message });
+  }
+};
+
+exports.getMessagesForBooking = async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const userId = req.user.id;
+
+    // Verify booking exists and user is a participant
+    const booking = await Booking.findByPk(bookingId, {
+      include: [
+        { model: User, as: 'customer' },
+        { model: User, as: 'provider' }
+      ]
+    });
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    // Check if user is part of this booking
+    const isProvider = booking.provider.id === userId;
+    const isCustomer = booking.customer.id === userId;
+    
+    if (!isProvider && !isCustomer) {
+      return res.status(403).json({ message: 'Not authorized to view messages for this booking' });
+    }
+
+    // Get all messages for this booking
+    const messages = await Message.findAll({
+      where: { bookingId },
+      include: [
+        { 
+          model: User, 
+          as: 'sender', 
+          attributes: ['id', 'firstName', 'lastName'] 
+        }
+      ],
+      order: [['createdAt', 'ASC']]
+    });
+
+    // Mark any unread messages as read
+    await Message.update(
+      { 
+        isRead: true, 
+        readAt: new Date() 
+      },
+      {
+        where: {
+          bookingId,
+          receiverId: userId,
+          isRead: false
+        }
+      }
+    );
+
+    res.status(200).json({ messages });
+  } catch (error) {
+    console.error('Error getting booking messages:', error);
+    res.status(500).json({ message: 'Failed to get booking messages', error: error.message });
+  }
+};
+
+exports.getRecentConversations = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Get unique users who have messaged with this user
+    const conversations = await Message.findAll({
+      attributes: [
+        [sequelize.fn('DISTINCT', sequelize.col('senderId')), 'userId'],
+        [sequelize.fn('MAX', sequelize.col('createdAt')), 'lastMessageAt']
+      ],
+      where: {
+        [Op.or]: [
+          { senderId: { [Op.ne]: userId }, receiverId: userId },
+          { senderId: userId }
+        ]
+      },
+      group: ['senderId'],
+      order: [[sequelize.fn('MAX', sequelize.col('createdAt')), 'DESC']],
+      raw: true
+    });
+
+    // Get the most recent message and user details for each conversation
+    const conversationsWithDetails = await Promise.all(
+      conversations.map(async (conv) => {
+        const otherUserId = conv.userId === userId 
+          ? (await Message.findOne({
+              where: { senderId: userId },
+              order: [['createdAt', 'DESC']],
+              attributes: ['receiverId'],
+              raw: true
+            })).receiverId
+          : conv.userId;
+
+        const lastMessage = await Message.findOne({
+          where: {
+            [Op.or]: [
+              { senderId: userId, receiverId: otherUserId },
+              { senderId: otherUserId, receiverId: userId }
+            ]
+          },
+          order: [['createdAt', 'DESC']],
+          raw: true
+        });
+
+        const otherUser = await User.findByPk(otherUserId, {
+          attributes: ['id', 'firstName', 'lastName'],
+          raw: true
+        });
+
+        const unreadCount = await Message.count({
+          where: {
+            senderId: otherUserId,
+            receiverId: userId,
+            isRead: false
+          }
+        });
+
+        return {
+          user: otherUser,
+          lastMessage,
+          unreadCount
+        };
+      })
+    );
+
+    res.status(200).json({ conversations: conversationsWithDetails });
+  } catch (error) {
+    console.error('Error getting conversations:', error);
+    res.status(500).json({ message: 'Failed to get conversations', error: error.message });
   }
 };
 
@@ -208,26 +276,74 @@ exports.markAsRead = async (req, res) => {
     }
 
     // Mark as read
-    message.is_read = true;
+    message.isRead = true;
     message.readAt = new Date();
     await message.save();
-
-    // Update conversation unread count
-    const conversation = await Conversation.findOne({
-      where: { participants: { [Op.contains]: [userId, message.sender_id] } }
-    });
-
-    if (conversation) {
-      const currentCount = conversation.unreadCount?.[userId] || 0;
-      if (currentCount > 0) {
-        conversation.unreadCount[userId] = currentCount - 1;
-        await conversation.save();
-      }
-    }
 
     res.status(200).json({ message: 'Message marked as read' });
   } catch (error) {
     console.error('Error marking message as read:', error);
     res.status(500).json({ message: 'Failed to mark message as read', error: error.message });
+  }
+};
+
+exports.markAllAsRead = async (req, res) => {
+  try {
+    const { senderId } = req.body;
+    const userId = req.user.id;
+
+    if (!senderId) {
+      return res.status(400).json({ message: 'Sender ID is required' });
+    }
+
+    // Mark all messages from this sender as read
+    const result = await Message.update(
+      { 
+        isRead: true, 
+        readAt: new Date() 
+      },
+      {
+        where: {
+          senderId,
+          receiverId: userId,
+          isRead: false
+        }
+      }
+    );
+
+    res.status(200).json({ 
+      message: 'All messages marked as read',
+      count: result[0]
+    });
+  } catch (error) {
+    console.error('Error marking messages as read:', error);
+    res.status(500).json({ message: 'Failed to mark messages as read', error: error.message });
+  }
+};
+
+exports.deleteMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const userId = req.user.id;
+
+    // Find the message
+    const message = await Message.findOne({
+      where: { 
+        id: messageId,
+        senderId: userId // Can only delete messages you sent
+      }
+    });
+
+    if (!message) {
+      return res.status(404).json({ message: 'Message not found or you are not authorized to delete it' });
+    }
+
+    // Delete the message
+    await message.destroy();
+
+    res.status(200).json({ message: 'Message deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting message:', error);
+    res.status(500).json({ message: 'Failed to delete message', error: error.message });
   }
 };

@@ -1,33 +1,55 @@
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../../config/app.config').database.sequelize;
-class ServiceProvider extends Model {}
+'use strict';
+const { Model } = require('sequelize');
 
-ServiceProvider.init({
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
-  },
-  userId: {
-    type: DataTypes.UUID,
-    allowNull: false
-  },
-  businessName: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  businessDescription: {
-    type: DataTypes.TEXT,
-    allowNull: false
-  },
-  latitude: {
-    type: DataTypes.FLOAT,
-    allowNull: false
-  },
-  longitude: {
-    type: DataTypes.FLOAT,
-    allowNull: false
+module.exports = (sequelize, DataTypes) => {
+  class ServiceProvider extends Model {
+    static associate(models) {
+      ServiceProvider.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'user'
+      });
+      
+      // Optional additional associations
+      // ServiceProvider.hasMany(models.Service, {
+      //   foreignKey: 'providerId',
+      //   as: 'services'
+      // });
+    }
   }
-}, { sequelize, modelName: 'serviceProvider' });
-
-module.exports = ServiceProvider;
+  
+  ServiceProvider.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: false
+    },
+    businessName: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    businessDescription: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    latitude: {
+      type: DataTypes.FLOAT,
+      allowNull: false
+    },
+    longitude: {
+      type: DataTypes.FLOAT,
+      allowNull: false
+    }
+  }, {
+    sequelize,
+    modelName: 'ServiceProvider',
+    tableName: 'ServiceProviders',
+    underscored: false,
+    freezeTableName: true
+  });
+  
+  return ServiceProvider;
+};

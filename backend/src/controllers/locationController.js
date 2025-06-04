@@ -1,10 +1,11 @@
-const User = require('../models/User');
-const Service = require('../models/Service');
+const { User, Service } = require('../models');
 const mapsUtil = require('../utils/maps');
+const { Op } = require('sequelize');
+const Sequelize = require('sequelize');
 
 exports.updateUserLocation = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user.id;
     const { address } = req.body;
     
     if (!address) {
@@ -15,25 +16,25 @@ exports.updateUserLocation = async (req, res) => {
     const geoData = await mapsUtil.geocodeAddress(address);
     
     // Update user with location data
-    const user = await User.findByIdAndUpdate(
-      userId,
-      {
-        address: geoData.formattedAddress,
-        location: {
-          type: 'Point',
-          coordinates: [geoData.lng, geoData.lat] // GeoJSON format: [longitude, latitude]
-        }
-      },
-      { new: true }
-    );
+    const user = await User.findByPk(userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    await user.update({
+      address: geoData.formattedAddress,
+      latitude: geoData.lat,
+      longitude: geoData.lng
+    });
     
     res.status(200).json({
       message: 'Location updated successfully',
       user: {
         address: user.address,
         location: {
-          lat: geoData.lat,
-          lng: geoData.lng
+          lat: user.latitude,
+          lng: user.longitude
         }
       }
     });
@@ -99,109 +100,119 @@ exports.reverseGeocode = async (req, res) => {
 };
 
 exports.calculateDistance = async (req, res) => {
-    try {
-      const { origin, destination } = req.body;
-      
-      if (!origin || !destination) {
-        return res.status(400).json({ message: 'Origin and destination are required' });
-      }
-      
-      const distance = await mapsUtil.calculateDistance(origin, destination);
-      
-      res.status(200).json(distance);
-    } catch (error) {
-      console.error('Distance calculation error:', error);
-      res.status(500).json({ message: 'Failed to calculate distance', error: error.message });
+  try {
+    const { origin, destination } = req.body;
+    
+    if (!origin || !destination) {
+      return res.status(400).json({ message: 'Origin and destination are required' });
     }
-  };
-  
-  exports.findNearbyProviders = async (req, res) => {
-    try {
-      const { lat, lng, radius = 10, serviceType } = req.query;
+    
+    const distance = await mapsUtil.calculateDistance(origin, destination);
+    
+    res.status(200).json(distance);
+  } catch (error) {
+    console.error('Distance calculation error:', error);
+    res.status(500).json({ message: 'Failed to calculate distance', error: error.message });
+  }
+};
+
+exports.findNearbyProviders = async (req, res) => {
+  try {
+    const { lat, lng, radius = 10, serviceType } = req.query;
+    
+    if (!lat || !lng) {
+      return res.status(400).json({ message: 'Location coordinates are required' });
+    }
+    
+    // Convert to numbers
+    const latitude = parseFloat(lat);
+    const longitude = parseFloat(lng);
+    const radiusKm = parseFloat(radius);
+    
+    // Validate inputs
+    if (isNaN(latitude) || isNaN(longitude) || isNaN(radiusKm)) {
+      return res.status(400).json({ message: 'Invalid parameters' });
+    }
+    
+    // Calculate distance using Haversine formula (directly in SQL)
+    const distanceCalculation = Sequelize.literal(`
+      (
+        6371 * acos(
+          cos(radians(${latitude})) * 
+          cos(radians(latitude)) * 
+          cos(radians(longitude) - 
+          radians(${longitude})) + 
+          sin(radians(${latitude})) * 
+          sin(radians(latitude))
+        )
+      )
+    `);
+    
+    // Base query
+    let query = {
+      role: 'provider',
+      isVerified: true,
+      status: 'active'
+    };
+    
+    // Add service type filter if provided
+    if (serviceType) {
+      // First find services of this type
+      const services = await Service.findAll({
+        where: { type: serviceType },
+        attributes: ['providerId'],
+        raw: true
+      });
       
-      if (!lat || !lng) {
-        return res.status(400).json({ message: 'Location coordinates are required' });
+      if (services.length > 0) {
+        const providerIds = services.map(service => service.providerId);
+        query.id = { [Op.in]: providerIds };
+      } else {
+        // No services of this type
+        return res.status(200).json({ providers: [] });
       }
-      
-      // Convert to numbers
-      const latitude = parseFloat(lat);
-      const longitude = parseFloat(lng);
-      const radiusKm = parseFloat(radius);
-      
-      // Validate inputs
-      if (isNaN(latitude) || isNaN(longitude) || isNaN(radiusKm)) {
-        return res.status(400).json({ message: 'Invalid parameters' });
-      }
-      
-      // Find providers within radius
-      const query = {
-        'location.type': 'Point',
-        'location.coordinates': {
-          $near: {
-            $geometry: {
-              type: 'Point',
-              coordinates: [longitude, latitude] // GeoJSON format: [longitude, latitude]
-            },
-            $maxDistance: radiusKm * 1000 // Convert km to meters
-          }
-        },
-        role: 'provider',
-        'accountStatus.isVerified': true
-      };
-      
-      // Add service type filter if provided
-      let providers;
-      
-      if (serviceType) {
-        // Find services of this type first
-        const services = await Service.find({ category: serviceType })
-          .distinct('providerId');
-        
-        // Then find providers with those IDs who are also within the radius
-        if (services.length > 0) {
-          query._id = { $in: services };
-        } else {
-          // No services of this type
-          return res.status(200).json({ providers: [] });
+    }
+    
+    // Find providers within radius
+    const providers = await User.findAll({
+      attributes: [
+        'id', 
+        'firstName', 
+        'lastName', 
+        'businessName', 
+        'address', 
+        'latitude', 
+        'longitude',
+        'rating',
+        'reviewCount',
+        [distanceCalculation, 'distance']
+      ],
+      where: query,
+      having: Sequelize.literal(`distance <= ${radiusKm}`),
+      order: [[Sequelize.literal('distance'), 'ASC']]
+    });
+    
+    // Format the response
+    const providersWithDistance = providers.map(provider => {
+      const distance = provider.getDataValue('distance');
+      return {
+        id: provider.id,
+        name: `${provider.firstName} ${provider.lastName}`,
+        businessName: provider.businessName,
+        address: provider.address,
+        rating: provider.rating,
+        reviewCount: provider.reviewCount,
+        distance: {
+          kilometers: distance,
+          miles: distance * 0.621371, // Convert km to miles
+          text: `${distance.toFixed(1)} km`
         }
-      }
-      
-      providers = await User.find(query)
-        .select('name businessName address location rating reviewCount');
-      
-      // Calculate exact distances for each provider
-      const providersWithDistance = await Promise.all(
-        providers.map(async (provider) => {
-          const providerCoords = {
-            lat: provider.location.coordinates[1],
-            lng: provider.location.coordinates[0]
-          };
-          
-          const userCoords = { lat: latitude, lng: longitude };
-          const distance = await mapsUtil.calculateDistance(userCoords, providerCoords);
-          
-          return {
-            _id: provider._id,
-            name: provider.name,
-            businessName: provider.businessName,
-            address: provider.address,
-            rating: provider.rating,
-            reviewCount: provider.reviewCount,
-            distance: {
-              kilometers: distance.kilometers,
-              miles: distance.miles,
-              text: distance.text
-            }
-          };
-        })
-      );
-      
-      // Sort by distance
-      providersWithDistance.sort((a, b) => a.distance.kilometers - b.distance.kilometers);
-      
-      res.status(200).json({ providers: providersWithDistance });
-    } catch (error) {
-      console.error('Error finding nearby providers:', error);
-      res.status(500).json({ message: 'Failed to find nearby providers', error: error.message });
-    }
-  };
+      };
+    });
+    
+    res.status(200).json({ providers: providersWithDistance });
+  } catch (error) {
+    console.error('Error finding nearby providers:', error);
+    res.status(500).json({ message: 'Failed to find nearby providers', error: error.message });
+  }
+};

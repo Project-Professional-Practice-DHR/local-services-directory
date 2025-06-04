@@ -1,32 +1,48 @@
-// src/config/database.js
 const { Sequelize } = require('sequelize');
-require('dotenv').config();
+const path = require('path');
+// Load .env from the parent directory
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
-// Initialize Sequelize with the DATABASE_URL from your .env
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: 'postgres', // Set dialect explicitly if needed
+// Check if DATABASE_URL is defined
+const dbUrl = process.env.DATABASE_URL;
+if (!dbUrl) {
+  console.error('DATABASE_URL is not defined in your environment variables!');
+  console.error('Please make sure you have a .env file with DATABASE_URL defined.');
+  process.exit(1);
+}
+
+// Initialize Sequelize with the DATABASE_URL
+const sequelize = new Sequelize(dbUrl, {
+  dialect: 'postgres',
   logging: process.env.DATABASE_LOGGING === 'true' ? console.log : false,
   define: {
     underscored: true,
     timestamps: true,
-    paranoid: true,  // Soft delete
+    paranoid: true,
   },
   pool: {
     max: 5,
     min: 0,
     acquire: 30000,
     idle: 10000
+  },
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
   }
 });
 
 // Test database connection
 async function testConnection() {
   try {
-    await sequelize.authenticate();  // This will test if the connection is successful
+    await sequelize.authenticate();
     console.log('✅ Connected to PostgreSQL database');
+    return true;
   } catch (error) {
     console.error('❌ Database connection error:', error);
-    process.exit(1);
+    return false;
   }
 }
 

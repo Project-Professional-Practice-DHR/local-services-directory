@@ -1,0 +1,101 @@
+[
+    {
+      "id": "a5b6c7d8-e9f0-8a1b-2c3d-4e5f6a7b8c9d",
+      "amount": 120.00,
+      "paymentMethod": "credit_card",
+      "paymentStatus": "completed",
+      "transactionId": "txn_1234567890abcdef",
+      "paymentDate": "2025-03-15T15:45:00Z",
+      "paidAt": "2025-03-15T15:45:00Z",
+      "refundStatus": "none",
+      "refundAmount": null,
+      "metadata": {
+        "cardBrand": "Visa",
+        "last4": "4242",
+        "processingFee": 3.60
+      },
+      "bookingId": "b0c1d2e3-f4a5-3b6c-7d8e-9f0a1b2c3d4e",
+      "payoutId": "c7d8e9f0-a1b2-9c3d-4e5f-6a7b8c9d0e1f",
+      "createdAt": "2025-03-15T15:45:00Z",
+      "updatedAt": "2025-03-15T15:45:00Z"
+    },
+    {
+      "id": "b6c7d8e9-f0a1-9b2c-3d4e-5f6a7b8c9d0e",
+      "amount": 85.00,
+      "paymentMethod": "credit_card",
+      "paymentStatus": "completed",
+      "transactionId": "txn_abcdef1234567890",
+      "paymentDate": "2025-03-17T10:20:00Z",
+      "paidAt": "2025-03-17T10:20:00Z",
+      "refundStatus": "none",
+      "refundAmount": null,
+      "metadata": {
+        "cardBrand": "Mastercard",
+        "last4": "5678",
+        "processingFee": 2.55
+      },
+      "bookingId": "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f",
+      "payoutId": "d8e9f0a1-b2c3-0d4e-5f6a-7b8c9d0e1f2a",
+      "createdAt": "2025-03-17T10:20:00Z",
+      "updatedAt": "2025-03-17T10:20:00Z"
+    },
+    {
+      "id": "c7d8e9f0-a1b2-0c3d-4e5f-6a7b8c9d0e1f",
+      "amount": 149.00,
+      "paymentMethod": "paypal",
+      "paymentStatus": "completed",
+      "transactionId": "txn_paypal_12345abcde",
+      "paymentDate": "2025-03-18T08:50:00Z",
+      "paidAt": "2025-03-18T08:50:00Z",
+      "refundStatus": "none",
+      "refundAmount": null,
+      "metadata": {
+        "paypalEmail": "mike.customer@example.com",
+        "processingFee": 4.47
+      },
+      "bookingId": "d2e3f4a5-b6c7-5d8e-9f0a-1b2c3d4e5f6a",
+      "payoutId": "e9f0a1b2-c3d4-1e5f-6a7b-8c9d0e1f2a3b",
+      "createdAt": "2025-03-18T08:50:00Z",
+      "updatedAt": "2025-03-18T08:50:00Z"
+    },
+    {
+      "id": "d8e9f0a1-b2c3-1d4e-5f6a-7b8c9d0e1f2a",
+      "amount": 175.00,
+      "paymentMethod": "credit_card",
+      "paymentStatus": "pending",
+      "transactionId": null,
+      "paymentDate": "2025-03-20T17:20:00Z",
+      "paidAt": null,
+      "refundStatus": "none",
+      "refundAmount": null,
+      "metadata": {
+        "cardBrand": "Visa",
+        "last4": "1234",
+        "processingFee": 5.25
+      },
+      "bookingId": "e3f4a5b6-c7d8-6e9f-0a1b-2c3d4e5f6a7b",
+      "payoutId": null,
+      "createdAt": "2025-03-20T17:20:00Z",
+      "updatedAt": "2025-03-20T17:20:00Z"
+    },
+    {
+      "id": "e9f0a1b2-c3d4-2e5f-6a7b-8c9d0e1f2a3b",
+      "amount": 70.00,
+      "paymentMethod": "credit_card",
+      "paymentStatus": "completed",
+      "transactionId": "txn_987654321fedcba",
+      "paymentDate": "2025-03-19T11:15:00Z",
+      "paidAt": "2025-03-19T11:15:00Z",
+      "refundStatus": "none",
+      "refundAmount": null,
+      "metadata": {
+        "cardBrand": "Discover",
+        "last4": "9012",
+        "processingFee": 2.10
+      },
+      "bookingId": "f4a5b6c7-d8e9-7f0a-1b2c-3d4e5f6a7b8c",
+      "payoutId": "f0a1b2c3-d4e5-2f6a-7b8c-9d0e1f2a3b4c",
+      "createdAt": "2025-03-19T11:15:00Z",
+      "updatedAt": "2025-03-19T11:15:00Z"
+    }
+  ]

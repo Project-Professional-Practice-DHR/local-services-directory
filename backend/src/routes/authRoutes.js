@@ -27,7 +27,6 @@ const {
  *     User:
  *       type: object
  *       required:
- *         - username
  *         - email
  *         - password
  *       properties:
@@ -35,9 +34,6 @@ const {
  *           type: string
  *           format: uuid
  *           description: The auto-generated ID of the user
- *         username:
- *           type: string
- *           description: Username for login
  *         email:
  *           type: string
  *           format: email
@@ -48,18 +44,18 @@ const {
  *         lastName:
  *           type: string
  *           description: User's last name
- *         phone:
+ *         phoneNumber:
  *           type: string
  *           description: Phone number
  *         profilePicture:
  *           type: string
  *           format: uri
  *           description: URL to profile picture
- *         userType:
+ *         role:
  *           type: string
  *           enum: [customer, provider, admin]
  *           description: User role/type
- *         is_verified:
+ *         isVerified:
  *           type: boolean
  *           description: Whether email is verified
  *         createdAt:
@@ -68,14 +64,13 @@ const {
  *           description: Account creation timestamp
  *       example:
  *         id: "123e4567-e89b-12d3-a456-426614174000"
- *         username: "johndoe"
  *         email: "john.doe@example.com"
  *         firstName: "John"
  *         lastName: "Doe"
- *         phone: "+1234567890"
+ *         phoneNumber: "+1234567890"
  *         profilePicture: "/uploads/profiles/john-profile.jpg"
- *         userType: "customer"
- *         is_verified: true
+ *         role: "customer"
+ *         isVerified: true
  *         createdAt: "2023-01-01T00:00:00.000Z"
  *     
  *     LoginResponse:
@@ -98,11 +93,9 @@ const {
  *             id:
  *               type: string
  *               format: uuid
- *             username:
- *               type: string
  *             email:
  *               type: string
- *             userType:
+ *             role:
  *               type: string
  *               enum: [customer, provider, admin]
  *             profilePicture:
@@ -125,15 +118,19 @@ const {
  *           schema:
  *             type: object
  *             required:
- *               - username
+ *               - firstName
+ *               - lastName
  *               - email
  *               - password
- *               - userType
  *             properties:
- *               username:
+ *               firstName:
  *                 type: string
- *                 minLength: 3
- *                 example: "johndoe"
+ *                 minLength: 2
+ *                 example: "John"
+ *               lastName:
+ *                 type: string
+ *                 minLength: 2
+ *                 example: "Doe"
  *               email:
  *                 type: string
  *                 format: email
@@ -143,16 +140,10 @@ const {
  *                 format: password
  *                 minLength: 8
  *                 example: "secureP@ssw0rd"
- *               firstName:
- *                 type: string
- *                 example: "John"
- *               lastName:
- *                 type: string
- *                 example: "Doe"
- *               phone:
+ *               phoneNumber:
  *                 type: string
  *                 example: "+1234567890"
- *               userType:
+ *               role:
  *                 type: string
  *                 enum: [customer, provider]
  *                 example: "customer"
@@ -164,47 +155,19 @@ const {
  *             schema:
  *               type: object
  *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
  *                 message:
  *                   type: string
  *                   example: "Registration successful. Please check your email for verification."
- *                 userId:
+ *                 token:
  *                   type: string
- *                   format: uuid
- *       400:
- *         description: Validation error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Validation error"
- *                 errors:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       field:
- *                         type: string
- *                       message:
- *                         type: string
- *       409:
- *         description: Username or email already exists
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Username or email already exists"
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
  */
 router.post(
   '/register',
@@ -226,13 +189,13 @@ router.post(
  *           schema:
  *             type: object
  *             required:
- *               - username
+ *               - email
  *               - password
  *             properties:
- *               username:
+ *               email:
  *                 type: string
- *                 description: Username or email
- *                 example: "johndoe"
+ *                 format: email
+ *                 example: "john.doe@example.com"
  *               password:
  *                 type: string
  *                 format: password
@@ -240,39 +203,6 @@ router.post(
  *     responses:
  *       200:
  *         description: Login successful
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/LoginResponse'
- *       400:
- *         description: Invalid credentials
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Invalid credentials"
- *       403:
- *         description: Email not verified
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Please verify your email before logging in"
- *                 needsVerification:
- *                   type: boolean
- *                   example: true
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
   '/login',
@@ -297,30 +227,6 @@ router.post(
  *     responses:
  *       200:
  *         description: Email verified successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Email verified successfully"
- *       400:
- *         description: Invalid or expired token
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Invalid or expired verification token"
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get(
   '/verify/:token',
@@ -349,41 +255,15 @@ router.get(
  *     responses:
  *       200:
  *         description: Token refreshed successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *                   description: New JWT access token
- *       400:
- *         description: Invalid refresh token
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Invalid refresh token"
- *       401:
- *         description: Expired refresh token
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Refresh token expired"
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
+// Add refresh token endpoint if implemented
+if (AuthController.refreshToken) {
+  router.post(
+    '/refresh-token',
+    validateRequest(refreshTokenSchema),
+    AuthController.refreshToken
+  );
+}
 
 /**
  * @swagger
@@ -408,30 +288,6 @@ router.get(
  *     responses:
  *       200:
  *         description: Password reset email sent
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Password reset instructions sent to your email"
- *       404:
- *         description: Email not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "No account found with that email"
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
   '/forgot-password',
@@ -461,54 +317,15 @@ router.post(
  *             type: object
  *             required:
  *               - password
- *               - confirmPassword
  *             properties:
  *               password:
  *                 type: string
  *                 format: password
  *                 minLength: 8
  *                 description: New password
- *               confirmPassword:
- *                 type: string
- *                 format: password
- *                 description: Confirm new password
  *     responses:
  *       200:
  *         description: Password reset successful
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Password reset successful"
- *       400:
- *         description: Invalid input or passwords don't match
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Passwords do not match"
- *       401:
- *         description: Invalid or expired token
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Password reset token is invalid or has expired"
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
   '/reset-password/:token',
@@ -528,26 +345,76 @@ router.post(
  *     responses:
  *       200:
  *         description: User details retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 user:
- *                   $ref: '#/components/schemas/User'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get(
   '/me',
   verifyToken,
   AuthController.getCurrentUser
+);
+
+/**
+ * @swagger
+ * /api/auth/profile:
+ *   put:
+ *     summary: Update user profile
+ *     description: Update the profile of the currently authenticated user
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               phoneNumber:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ */
+router.put(
+  '/profile',
+  verifyToken,
+  AuthController.updateProfile
+);
+
+/**
+ * @swagger
+ * /api/auth/change-password:
+ *   post:
+ *     summary: Change password
+ *     description: Change the password of the currently authenticated user
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ */
+router.post(
+  '/change-password',
+  verifyToken,
+  AuthController.changePassword
 );
 
 /**
@@ -562,22 +429,6 @@ router.get(
  *     responses:
  *       200:
  *         description: Logout successful
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Logout successful"
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
   '/logout',

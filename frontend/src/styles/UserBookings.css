@@ -1,0 +1,213 @@
+/* UserBookings.css */
+
+/* Bookings Section */
+.user-bookings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .user-bookings-category {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+  
+  .user-bookings-category h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-size: 1.4rem;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 0.75rem;
+  }
+  
+  .user-bookings-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .user-booking-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    border: 1px solid #e9ecef;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+  }
+  
+  .user-booking-card:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+  }
+  
+  .user-past-booking {
+    opacity: 0.8;
+  }
+  
+  .user-booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .user-booking-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  .user-booking-status {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    text-transform: capitalize;
+  }
+  
+  .user-booking-status.confirmed {
+    background-color: #d1e7dd;
+    color: #0f5132;
+  }
+  
+  .user-booking-status.pending {
+    background-color: #fff3cd;
+    color: #664d03;
+  }
+  
+  .user-booking-status.completed {
+    background-color: #d1e7dd;
+    color: #0f5132;
+  }
+  
+  .user-booking-status.cancelled {
+    background-color: #f8d7da;
+    color: #842029;
+  }
+  
+  .user-booking-details {
+    margin-bottom: 1rem;
+  }
+  
+  .user-booking-details p {
+    margin: 0.5rem 0;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .user-booking-details i {
+    color: hsl(240, 84%, 67%);
+    margin-right: 0.5rem;
+  }
+  
+  .user-booking-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  
+  .user-view-booking-details-btn,
+  .user-cancel-booking-btn,
+  .user-add-review-btn {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s, transform 0.1s;
+  }
+  
+  .user-view-booking-details-btn {
+    background-color: #e9ecef;
+    color: #212529;
+  }
+  
+  .user-view-booking-details-btn:hover {
+    background-color: #dee2e6;
+    transform: translateY(-2px);
+  }
+  
+  .user-cancel-booking-btn {
+    background-color: #f8d7da;
+    color: #842029;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .user-cancel-booking-btn:hover {
+    background-color: #f1b0b7;
+    transform: translateY(-2px);
+  }
+  
+  .user-add-review-btn {
+    background-color: #cfe2ff;
+    color: #084298;
+  }
+  
+  .user-add-review-btn:hover {
+    background-color: #b6d4fe;
+    transform: translateY(-2px);
+  }
+  
+  /* Empty Bookings Section */
+  .user-empty-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .user-empty-icon {
+    font-size: 4rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+  }
+  
+  .user-empty-section p {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+  }
+  
+  .user-browse-services-btn {
+    padding: 0.75rem 1.5rem;
+    background-color: hsl(240, 84%, 67%);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+  }
+  
+  .user-browse-services-btn:hover {
+    background-color: hsl(240, 84%, 57%);
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .user-bookings-list {
+      grid-template-columns: 1fr;
+    }
+    
+    .user-booking-actions {
+      flex-direction: column;
+    }
+    
+    .user-view-booking-details-btn,
+    .user-cancel-booking-btn,
+    .user-add-review-btn {
+      width: 100%;
+    }
+  }

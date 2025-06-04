@@ -1,0 +1,1642 @@
+{
+  "services": [
+    {
+      "id": "322a6c73-c6a3-402b-b997-4cc603e43471",
+      "name": "Professional Home Cleaning",
+      "category": "Cleaning",
+      "description": "Comprehensive home cleaning service with eco-friendly products. We provide thorough cleaning for all areas of your home, ensuring a spotless and sanitized living space.",
+      "rating": 4.8,
+      "reviewCount": 245,
+      "image": "/images/service-1.jpg",
+      "price": "£25 per hour",
+      "features": [
+        "Deep cleaning of all rooms",
+        "Eco-friendly cleaning products",
+        "Trained and background-checked staff",
+        "Satisfaction guarantee",
+        "Regular and one-time services",
+        "Detailed attention to every area"
+      ],
+      "contactInfo": {
+        "phone": "(555) 123-4567",
+        "email": "cleaning@servicecompany.com",
+        "address": "123 Clean St, Cityville, ST 12345"
+      },
+      "originalImage": "/images/service-1.jpg"
+    },
+    {
+      "id": "795facf7-4e22-49f0-922c-bd0a356f8f5c",
+      "name": "Expert Electrical Repairs",
+      "category": "Electrician",
+      "description": "Professional electrical services for residential and commercial properties. From minor repairs to complete electrical system installations, we ensure safety and reliability.",
+      "rating": 4.9,
+      "reviewCount": 187,
+      "image": "/images/service-2.jpg",
+      "price": "£45 per hour",
+      "features": [
+        "Licensed and insured professionals",
+        "Residential and commercial services",
+        "Electrical panel upgrades",
+        "Lighting installation",
+        "Troubleshooting and repairs",
+        "24/7 emergency response"
+      ],
+      "contactInfo": {
+        "phone": "(555) 987-6543",
+        "email": "electrical@servicecompany.com",
+        "address": "456 Power Ave, Energyville, ST 67890"
+      },
+      "originalImage": "/images/service-2.jpg"
+    },
+    {
+      "id": "8222d7d8-683f-49ec-8def-35c56ca4a562",
+      "name": "Comprehensive Plumbing Solutions",
+      "category": "Plumbing",
+      "description": "Full-service plumbing company handling everything from minor repairs to major installations. We provide prompt, reliable service with a satisfaction guarantee.",
+      "rating": 4.7,
+      "reviewCount": 312,
+      "image": "/images/service-3.jpg",
+      "price": "£35 per hour",
+      "features": [
+        "Leak detection and repair",
+        "Pipe replacement",
+        "Water heater services",
+        "Drain cleaning",
+        "Fixture installation",
+        "Emergency plumbing support"
+      ],
+      "contactInfo": {
+        "phone": "(555) 456-7890",
+        "email": "plumbing@servicecompany.com",
+        "address": "789 Water Lane, Rivertown, ST 54321"
+      },
+      "originalImage": "/images/service-3.jpg"
+    },
+    {
+      "id": "5f05fd33-6d8b-4edb-be8c-ff571cb9e796",
+      "name": "Master Handyman Services",
+      "category": "Handyman",
+      "description": "Versatile home repair and maintenance services. From small fixes to major home improvements, our skilled handymen handle a wide range of household tasks.",
+      "rating": 4.6,
+      "reviewCount": 223,
+      "image": "/images/service-4.jpg",
+      "price": "£20 per hour",
+      "features": [
+        "Minor home repairs",
+        "Furniture assembly",
+        "Painting and touch-ups",
+        "Drywall repair",
+        "Furniture moving",
+        "General home maintenance"
+      ],
+      "contactInfo": {
+        "phone": "(555) 234-5678",
+        "email": "handyman@servicecompany.com",
+        "address": "101 Fix-It Street, Repairville, ST 98765"
+      },
+      "originalImage": "/images/service-4.jpg"
+    },
+    {
+      "id": "1a183903-adbf-4750-89d6-39fa468877fc",
+      "name": "Professional Painting Services",
+      "category": "Painting",
+      "description": "Expert interior and exterior painting services. We transform your space with precision, quality, and attention to detail, using premium paints and techniques.",
+      "rating": 4.8,
+      "reviewCount": 156,
+      "image": "/images/service-5.jpg",
+      "price": "£30 per hour",
+      "features": [
+        "Interior and exterior painting",
+        "Color consultation",
+        "Surface preparation",
+        "Premium paint selection",
+        "Detailed clean-up",
+        "Residential and commercial painting"
+      ],
+      "contactInfo": {
+        "phone": "(555) 876-5432",
+        "email": "painting@servicecompany.com",
+        "address": "202 Brush Lane, Colorville, ST 24680"
+      },
+      "originalImage": "/images/service-5.jpg"
+    },
+    {
+      "id": "7ea46360-bdfe-4f0e-b701-ca0ea5b7db44",
+      "name": "Expert Carpentry Solutions",
+      "category": "Carpentry",
+      "description": "Professional carpentry services for all your woodworking needs. From custom furniture to home renovations, we deliver high-quality craftsmanship.",
+      "rating": 4.7,
+      "reviewCount": 178,
+      "image": "/images/service-6.jpg",
+      "price": "£40 per hour",
+      "features": [
+        "Custom furniture construction",
+        "Home renovation",
+        "Deck and fence building",
+        "Furniture repair",
+        "Trim and molding installation",
+        "Wooden structure repairs"
+      ],
+      "contactInfo": {
+        "phone": "(555) 333-7777",
+        "email": "carpentry@servicecompany.com",
+        "address": "303 Woodwork Way, Craftsville, ST 13579"
+      },
+      "originalImage": "/images/service-6.jpg"
+    },
+    {
+      "id": "af87a34d-f93c-4951-afa2-1b4c96483bdd",
+      "name": "Professional Lawn Care",
+      "category": "Gardening",
+      "description": "Complete lawn care services including mowing, trimming, edging, and fertilization. Keep your yard looking pristine with our expert maintenance programs.",
+      "rating": 4.5,
+      "reviewCount": 195,
+      "image": "/images/service-7.jpg",
+      "price": "£22 per hour",
+      "features": [
+        "Regular mowing schedules",
+        "Edging and trimming",
+        "Fertilization programs",
+        "Weed control",
+        "Seasonal clean-ups",
+        "Eco-friendly options available"
+      ],
+      "contactInfo": {
+        "phone": "(555) 444-2233",
+        "email": "lawn@servicecompany.com",
+        "address": "505 Green Ave, Gardenville, ST 44556"
+      },
+      "originalImage": "/images/service-7.jpg"
+    },
+    {
+      "id": "7d33f855-5331-4b48-8565-3025a95dbfbd",
+      "name": "Residential HVAC Services",
+      "category": "HVAC",
+      "description": "Comprehensive heating, ventilation, and air conditioning services for homes. We handle installation, maintenance, and repairs to keep your home comfortable year-round.",
+      "rating": 4.9,
+      "reviewCount": 267,
+      "image": "/images/service-8.jpg",
+      "price": "£50 per hour",
+      "features": [
+        "New system installation",
+        "Preventative maintenance",
+        "Emergency repairs",
+        "Energy efficiency assessments",
+        "Air quality improvement",
+        "Smart thermostat installation"
+      ],
+      "contactInfo": {
+        "phone": "(555) 789-0001",
+        "email": "hvac@servicecompany.com",
+        "address": "808 Comfort Lane, Tempville, ST 55443"
+      },
+      "originalImage": "/images/service-8.jpg"
+    },
+    {
+      "id": "645e619d-5b5c-4b46-adde-059d6a2f28fb",
+      "name": "Professional Locksmith",
+      "category": "Security",
+      "description": "Fast and reliable locksmith services for residential and commercial properties. We handle lockouts, rekeying, lock installation, and security upgrades.",
+      "rating": 4.8,
+      "reviewCount": 132,
+      "image": "/images/service-9.jpg",
+      "price": "£35 per hour",
+      "features": [
+        "24/7 emergency lockout service",
+        "Lock rekeying and repair",
+        "New lock installation",
+        "Master key systems",
+        "Security assessments",
+        "Smart lock upgrades"
+      ],
+      "contactInfo": {
+        "phone": "(555) 122-3344",
+        "email": "locks@servicecompany.com",
+        "address": "909 Security Blvd, Lockville, ST 33221"
+      },
+      "originalImage": "/images/service-9.jpg"
+    },
+    {
+      "id": "6a957713-5269-4489-844d-324064dc026f",
+      "name": "Window Cleaning Service",
+      "category": "Cleaning",
+      "description": "Professional window cleaning for homes and businesses. Our skilled technicians use safe and effective techniques to leave your windows spotless and streak-free.",
+      "rating": 4.7,
+      "reviewCount": 165,
+      "image": "/images/service-10.jpg",
+      "price": "£28 per hour",
+      "features": [
+        "Interior and exterior window cleaning",
+        "Screen cleaning",
+        "Track and sill cleaning",
+        "Hard water spot removal",
+        "Multi-story capabilities",
+        "Scheduled maintenance programs"
+      ],
+      "contactInfo": {
+        "phone": "(555) 334-5566",
+        "email": "windows@servicecompany.com",
+        "address": "404 Clear View St, Shineville, ST 22334"
+      },
+      "originalImage": "/images/service-10.jpg"
+    },
+    {
+      "id": "f8836aba-092e-43fc-9b1e-d5bb2e0de5a7",
+      "name": "Roofing Repair & Installation",
+      "category": "Roofing",
+      "description": "Complete roofing services from minor repairs to full replacements. Our experienced team works with all types of roofing materials to protect your home from the elements.",
+      "rating": 4.8,
+      "reviewCount": 203,
+      "image": "/images/service-11.jpg",
+      "price": "£55 per hour",
+      "features": [
+        "Roof inspections and assessments",
+        "Leak detection and repair",
+        "Shingle replacement",
+        "Complete roof replacement",
+        "Gutter installation and repair",
+        "Emergency storm damage repair"
+      ],
+      "contactInfo": {
+        "phone": "(555) 667-8899",
+        "email": "roofing@servicecompany.com",
+        "address": "707 Shingle Way, Rooftop, ST 88990"
+      },
+      "originalImage": "/images/service-11.jpg"
+    },
+    {
+      "id": "9411f58b-d1c7-4c72-9647-69bace16fa44",
+      "name": "Interior Design Consultation",
+      "category": "Interior Design",
+      "description": "Professional interior design services to transform your living spaces. Our designers create beautiful, functional spaces tailored to your lifestyle and preferences.",
+      "rating": 4.9,
+      "reviewCount": 112,
+      "image": "/images/service-12.jpg",
+      "price": "£60 per hour",
+      "features": [
+        "Initial design consultation",
+        "Space planning and layout",
+        "Color and material selection",
+        "Furniture and accessory recommendations",
+        "Lighting design",
+        "Project management services"
+      ],
+      "contactInfo": {
+        "phone": "(555) 112-3344",
+        "email": "design@servicecompany.com",
+        "address": "505 Style Avenue, Designville, ST 44332"
+      },
+      "originalImage": "/images/service-12.jpg"
+    },
+    {
+      "id": "4c1e067e-c1f7-4fed-9adc-7cd3676e2cdb",
+      "name": "Appliance Repair Services",
+      "category": "Appliance Repair",
+      "description": "Expert repair services for all major household appliances. Our certified technicians diagnose and fix issues with refrigerators, washers, dryers, dishwashers, and more.",
+      "rating": 4.6,
+      "reviewCount": 189,
+      "image": "/images/service-13.jpg",
+      "price": "£40 per hour",
+      "features": [
+        "Same-day service available",
+        "All major brands serviced",
+        "Genuine replacement parts",
+        "90-day warranty on repairs",
+        "Preventative maintenance",
+        "Emergency services"
+      ],
+      "contactInfo": {
+        "phone": "(555) 998-7766",
+        "email": "appliance@servicecompany.com",
+        "address": "303 Fix-It Lane, Applianceville, ST 77889"
+      },
+      "originalImage": "/images/service-13.jpg"
+    },
+    {
+      "id": "db5a9e26-4ce9-4f2e-8f80-03af566effd6",
+      "name": "Pest Control Services",
+      "category": "Pest Control",
+      "description": "Comprehensive pest control solutions for homes and businesses. We safely and effectively eliminate ants, roaches, rodents, termites, and other pests with environmentally responsible methods.",
+      "rating": 4.7,
+      "reviewCount": 221,
+      "image": "/images/service-14.jpg",
+      "price": "£38 per hour",
+      "features": [
+        "Free pest inspection",
+        "Customized treatment plans",
+        "Child and pet-friendly options",
+        "Preventative services",
+        "Termite protection plans",
+        "Commercial and residential services"
+      ],
+      "contactInfo": {
+        "phone": "(555) 223-3344",
+        "email": "pestcontrol@servicecompany.com",
+        "address": "808 Clean Lane, Pestfree, ST 55443"
+      },
+      "originalImage": "/images/service-14.jpg"
+    },
+    {
+      "id": "f728cb35-7b61-4a4b-be09-612a654fd224",
+      "name": "Moving Services",
+      "category": "Moving",
+      "description": "Professional moving services for local and long-distance relocations. Our experienced team handles packing, loading, transportation, and unpacking with care and efficiency.",
+      "rating": 4.5,
+      "reviewCount": 176,
+      "image": "/images/service-15.jpg",
+      "price": "£42 per hour",
+      "features": [
+        "Free moving estimates",
+        "Professional packing services",
+        "Furniture disassembly and reassembly",
+        "Loading and unloading",
+        "Specialty item moving",
+        "Storage solutions"
+      ],
+      "contactInfo": {
+        "phone": "(555) 776-6554",
+        "email": "moving@servicecompany.com",
+        "address": "909 Transit Blvd, Moverville, ST 44556"
+      },
+      "originalImage": "/images/service-15.jpg"
+    },
+    {
+      "id": "dc593e29-40ba-48f7-8514-278c86b79721",
+      "name": "Computer Repair Services",
+      "category": "Tech Support",
+      "description": "Expert computer repair and IT support for homes and small businesses. We fix hardware issues, remove viruses, upgrade systems, and recover data to keep your technology running smoothly.",
+      "rating": 4.8,
+      "reviewCount": 145,
+      "image": "/images/service-16.jpg",
+      "price": "£45 per hour",
+      "features": [
+        "Hardware diagnostics and repair",
+        "Virus and malware removal",
+        "Data recovery services",
+        "System upgrades",
+        "Network setup and troubleshooting",
+        "Remote support available"
+      ],
+      "contactInfo": {
+        "phone": "(555) 334-9900",
+        "email": "techsupport@servicecompany.com",
+        "address": "101 Digital Avenue, Techville, ST 22337"
+      },
+      "originalImage": "/images/service-16.jpg"
+    },
+    {
+      "id": "012fbd73-4734-49dd-9a94-d9c03f99dc2e",
+      "name": "Drywall Installation & Repair",
+      "category": "Drywall",
+      "description": "Professional drywall services for new construction and repairs. Our skilled craftsmen handle installation, taping, mudding, texturing, and repairs with precision and quality.",
+      "rating": 4.7,
+      "reviewCount": 132,
+      "image": "/images/service-17.jpg",
+      "price": "£35 per hour",
+      "features": [
+        "New drywall installation",
+        "Patch and repair services",
+        "Texture matching",
+        "Water damage repair",
+        "Ceiling repair",
+        "Finishing and painting"
+      ],
+      "contactInfo": {
+        "phone": "(555) 221-7788",
+        "email": "drywall@servicecompany.com",
+        "address": "606 Smooth Wall St, Dryville, ST 55443"
+      },
+      "originalImage": "/images/service-17.jpg"
+    },
+    {
+      "id": "e66adc8c-d616-429e-85b8-45d26edc73b4",
+      "name": "Professional Car Detailing",
+      "category": "Auto Services",
+      "description": "Comprehensive auto detailing services to keep your vehicle looking its best. Our detail experts provide interior and exterior cleaning, polishing, and protection treatments.",
+      "rating": 4.9,
+      "reviewCount": 178,
+      "image": "/images/service-18.jpg",
+      "price": "£32 per hour",
+      "features": [
+        "Exterior wash and wax",
+        "Interior deep cleaning",
+        "Leather conditioning",
+        "Engine bay cleaning",
+        "Headlight restoration",
+        "Paint correction services"
+      ],
+      "contactInfo": {
+        "phone": "(555) 445-6677",
+        "email": "cardetail@servicecompany.com",
+        "address": "707 Clean Car Blvd, Autoshiny, ST 33221"
+      },
+      "originalImage": "/images/service-18.jpg"
+    },
+    {
+      "id": "13af42c7-3751-492b-8054-d0f366aa2024",
+      "name": "Professional Photography",
+      "category": "Photography",
+      "description": "Skilled photography services for portraits, events, real estate, and commercial purposes. Our photographers capture stunning images that tell your story with creativity and technical excellence.",
+      "rating": 4.8,
+      "reviewCount": 115,
+      "image": "/images/service-19.jpg",
+      "price": "£65 per hour",
+      "features": [
+        "Portrait photography",
+        "Event coverage",
+        "Real estate photography",
+        "Product photography",
+        "Photo editing",
+        "Digital and print delivery options"
+      ],
+      "contactInfo": {
+        "phone": "(555) 998-2211",
+        "email": "photography@servicecompany.com",
+        "address": "808 Capture Lane, Photoville, ST 22334"
+      },
+      "originalImage": "/images/service-19.jpg"
+    },
+    {
+      "id": "8b27684b-aa8e-4104-809d-7212070a82e5",
+      "name": "Flooring Installation Services",
+      "category": "Flooring",
+      "description": "Expert flooring installation and repair for all types of flooring materials. Our specialists work with hardwood, laminate, tile, vinyl, carpet, and more to enhance your home's beauty and value.",
+      "rating": 4.7,
+      "reviewCount": 198,
+      "image": "/images/service-20.jpg",
+      "price": "£48 per hour",
+      "features": [
+        "Hardwood floor installation",
+        "Tile and stone work",
+        "Laminate and vinyl installation",
+        "Carpet installation",
+        "Floor refinishing",
+        "Floor repair services"
+      ],
+      "contactInfo": {
+        "phone": "(555) 336-7788",
+        "email": "flooring@servicecompany.com",
+        "address": "909 Floor Lane, Tilesville, ST 77665"
+      },
+      "originalImage": "/images/service-20.jpg"
+    },
+    {
+      "id": "56cb7e59-f863-4b1a-b173-3ed75416b4bd",
+      "name": "Personal Training",
+      "category": "Fitness",
+      "description": "Customized personal training services to help you reach your fitness goals. Our certified trainers create personalized workout plans and provide motivation, guidance, and accountability.",
+      "rating": 4.9,
+      "reviewCount": 143,
+      "image": "/images/service-21.jpg",
+      "price": "£45 per hour",
+      "features": [
+        "Personalized fitness assessment",
+        "Customized workout plans",
+        "Nutritional guidance",
+        "In-home or gym-based training",
+        "Group training options",
+        "Online training available"
+      ],
+      "contactInfo": {
+        "phone": "(555) 776-5544",
+        "email": "fitness@servicecompany.com",
+        "address": "707 Fitness Way, Healthville, ST 44332"
+      },
+      "originalImage": "/images/service-21.jpg"
+    },
+    {
+      "id": "f56df840-8790-47b2-bb77-7c0028fe010e",
+      "name": "Gutter Cleaning & Repair",
+      "category": "Gutter Services",
+      "description": "Comprehensive gutter services including cleaning, repair, and installation. We keep your gutters functioning properly to protect your home from water damage and foundation issues.",
+      "rating": 4.6,
+      "reviewCount": 167,
+      "image": "/images/service-22.jpg",
+      "price": "£30 per hour",
+      "features": [
+        "Gutter cleaning and debris removal",
+        "Gutter repair and realignment",
+        "Downspout cleaning and repair",
+        "Gutter guard installation",
+        "Seamless gutter installation",
+        "Preventative maintenance programs"
+      ],
+      "contactInfo": {
+        "phone": "(555) 112-9900",
+        "email": "gutters@servicecompany.com",
+        "address": "404 Rainfall Lane, Guttersville, ST 55667"
+      },
+      "originalImage": "/images/service-22.jpg"
+    },
+    {
+      "id": "6fea526b-2e95-44f8-8131-6444f1093deb",
+      "name": "Home Security Installation",
+      "category": "Security",
+      "description": "Professional home security system installation and monitoring. We provide cutting-edge security solutions including alarms, cameras, and smart home integration to protect what matters most.",
+      "rating": 4.9,
+      "reviewCount": 156,
+      "image": "/images/service-23.jpg",
+      "price": "£52 per hour",
+      "features": [
+        "Home security assessment",
+        "Alarm system installation",
+        "Security camera installation",
+        "Smart lock integration",
+        "24/7 monitoring options",
+        "Mobile app control setup"
+      ],
+      "contactInfo": {
+        "phone": "(555) 667-3344",
+        "email": "security@servicecompany.com",
+        "address": "505 Secure Street, Safeville, ST 77889"
+      },
+      "originalImage": "/images/service-23.jpg"
+    },
+    {
+      "id": "930390ee-72d9-4dbc-8fb1-ad9ca26874d9",
+      "name": "Pool Cleaning & Maintenance",
+      "category": "Pool Services",
+      "description": "Regular pool cleaning and maintenance services to keep your swimming pool crystal clear and properly functioning. Our technicians handle chemical balancing, cleaning, and equipment maintenance.",
+      "rating": 4.7,
+      "reviewCount": 132,
+      "image": "/images/service-24.jpg",
+      "price": "£38 per hour",
+      "features": [
+        "Regular pool cleaning",
+        "Water testing and chemical balancing",
+        "Filter cleaning and maintenance",
+        "Equipment inspection and repair",
+        "Seasonal opening and closing",
+        "Green pool recovery"
+      ],
+      "contactInfo": {
+        "phone": "(555) 889-0011",
+        "email": "pools@servicecompany.com",
+        "address": "606 Blue Water Way, Poolville, ST 33445"
+      },
+      "originalImage": "/images/service-24.jpg"
+    },
+    {
+      "id": "38e04679-a22b-41ff-92e3-4005764a1203",
+      "name": "Home Organizing Services",
+      "category": "Organization",
+      "description": "Professional home organization services to declutter and optimize your living spaces. Our organizers create customized systems that bring order, efficiency, and calm to your home.",
+      "rating": 4.8,
+      "reviewCount": 109,
+      "image": "/images/service-25.jpg",
+      "price": "£35 per hour",
+      "features": [
+        "Decluttering assistance",
+        "Custom organization systems",
+        "Closet optimization",
+        "Kitchen and pantry organization",
+        "Garage organization",
+        "Paper management solutions"
+      ],
+      "contactInfo": {
+        "phone": "(555) 223-4455",
+        "email": "organize@servicecompany.com",
+        "address": "808 Tidy Lane, Orderlyville, ST 66778"
+      },
+      "originalImage": "/images/service-25.jpg"
+    },
+    {
+      "id": "cb2445f1-a70e-41ab-bb89-55de02a294ee",
+      "name": "Tree Trimming & Removal",
+      "category": "Tree Services",
+      "description": "Professional tree care services including trimming, pruning, and removal. Our certified arborists maintain the health and safety of your trees while protecting your property.",
+      "rating": 4.7,
+      "reviewCount": 187,
+      "image": "/images/service-26.jpg",
+      "price": "£60 per hour",
+      "features": [
+        "Tree health assessment",
+        "Pruning and trimming",
+        "Tree removal services",
+        "Stump grinding",
+        "Emergency storm damage service",
+        "Tree planting and transplanting"
+      ],
+      "contactInfo": {
+        "phone": "(555) 556-7788",
+        "email": "trees@servicecompany.com",
+        "address": "909 Timber Road, Treeville, ST 99001"
+      },
+      "originalImage": "/images/service-26.jpg"
+    },
+    {
+      "id": "5539daca-e5d4-467d-b755-42299c9e169d",
+      "name": "Catering Services",
+      "category": "Catering",
+      "description": "Full-service catering for events of all sizes. Our culinary team creates memorable dining experiences with customized menus, professional service, and attention to detail.",
+      "rating": 4.9,
+      "reviewCount": 135,
+      "image": "/images/service-27.jpg",
+      "price": "£40 per hour",
+      "features": [
+        "Customized menu planning",
+        "Full-service event catering",
+        "Drop-off catering options",
+        "Professional staff",
+        "Equipment rental",
+        "Beverage and bar services"
+      ],
+      "contactInfo": {
+        "phone": "(555) 112-3322",
+        "email": "catering@servicecompany.com",
+        "address": "505 Flavor Street, Catertown, ST 44556"
+      },
+      "originalImage": "/images/service-27.jpg"
+    },
+    {
+      "id": "36040265-a49b-4246-87cc-c40dc010de4b",
+      "name": "Fence Installation & Repair",
+      "category": "Fencing",
+      "description": "Professional fence installation, repair, and replacement services. Our team works with various materials including wood, vinyl, chain link, and ornamental iron to enhance your property's security and beauty.",
+      "rating": 4.6,
+      "reviewCount": 156,
+      "image": "/images/service-28.jpg",
+      "price": "£38 per hour",
+      "features": [
+        "Custom fence design",
+        "New fence installation",
+        "Fence repair services",
+        "Gate installation and repair",
+        "Privacy fence options",
+        "Commercial and residential services"
+      ],
+      "contactInfo": {
+        "phone": "(555) 778-9900",
+        "email": "fencing@servicecompany.com",
+        "address": "707 Boundary Lane, Fenceville, ST 22334"
+      },
+      "originalImage": "/images/service-28.jpg"
+    },
+    {
+      "id": "4cc1e584-c903-424e-b645-1e65341493ca",
+      "name": "Wedding Planning Services",
+      "category": "Event Planning",
+      "description": "Comprehensive wedding planning services to create your perfect day. Our experienced planners handle every detail from venue selection to day-of coordination with creativity and precision.",
+      "rating": 4.9,
+      "reviewCount": 127,
+      "image": "/images/service-29.jpg",
+      "price": "£75 per hour",
+      "features": [
+        "Full-service wedding planning",
+        "Venue selection assistance",
+        "Vendor coordination",
+        "Budget management",
+        "Design and decor planning",
+        "Day-of coordination"
+      ],
+      "contactInfo": {
+        "phone": "(555) 667-1122",
+        "email": "weddings@servicecompany.com",
+        "address": "808 Celebration Blvd, Eventville, ST 11223"
+      },
+      "originalImage": "/images/service-29.jpg"
+    },
+    {
+      "id": "dde8ac1b-d674-4b32-b42f-2cf6d8870cfc",
+      "name": "Tutoring Services",
+      "category": "Education",
+      "description": "Personalized tutoring services for students of all ages and subjects. Our qualified tutors provide individualized instruction to improve academic performance and build confidence.",
+      "rating": 4.8,
+      "reviewCount": 165,
+      "image": "/images/service-30.jpg",
+      "price": "£35 per hour",
+      "features": [
+        "One-on-one tutoring",
+        "Subject-specific expertise",
+        "Test preparation",
+        "Homework help",
+        "Study skills development",
+        "Online and in-person options"
+      ],
+      "contactInfo": {
+        "phone": "(555) 334-5566",
+        "email": "tutoring@servicecompany.com",
+        "address": "909 Learning Lane, Educationville, ST 33445"
+      },
+      "originalImage": "/images/service-30.jpg"
+    },
+    {
+      "id": "080e13ca-1835-4773-a154-a97b88fc061a",
+      "name": "Massage Therapy",
+      "category": "Wellness",
+      "description": "Professional massage therapy services to reduce stress, relieve pain, and promote overall wellness. Our licensed therapists offer a variety of massage techniques tailored to your specific needs.",
+      "rating": 4.9,
+      "reviewCount": 208,
+      "image": "/images/service-31.jpg",
+      "price": "£55 per hour",
+      "features": [
+        "Swedish massage",
+        "Deep tissue massage",
+        "Sports massage",
+        "Prenatal massage",
+        "Hot stone therapy",
+        "Corporate chair massage"
+      ],
+      "contactInfo": {
+        "phone": "(555) 221-3322",
+        "email": "massage@servicecompany.com",
+        "address": "404 Relaxation Way, Wellnessville, ST 66778"
+      },
+      "originalImage": "/images/service-31.jpg"
+    },
+    {
+      "id": "c1cd4fb1-b801-4b2f-a9cc-15bae8e5a974",
+      "name": "Dog Walking & Pet Sitting",
+      "category": "Pet Services",
+      "description": "Reliable pet care services including dog walking, pet sitting, and basic pet care. Our experienced pet lovers provide exercise, companionship, and care for your furry family members when you're away.",
+      "rating": 4.7,
+      "reviewCount": 187,
+      "image": "/images/service-32.jpg",
+      "price": "£20 per hour",
+      "features": [
+        "Regular dog walking",
+        "In-home pet sitting",
+        "Feeding and medication administration",
+        "Pet waste removal",
+        "Play and exercise time",
+        "Pet transportation services"
+      ],
+      "contactInfo": {
+        "phone": "(555) 889-7766",
+        "email": "petcare@servicecompany.com",
+        "address": "505 Paws Lane, Petville, ST 22334"
+      },
+      "originalImage": "/images/service-32.jpg"
+    },
+    {
+      "id": "ceccab49-4ba2-4abf-b7e5-a734f80e4199",
+      "name": "Resume Writing Services",
+      "category": "Career Services",
+      "description": "Professional resume writing and career document preparation. Our expert writers create compelling resumes, cover letters, and LinkedIn profiles that highlight your strengths and help you land interviews.",
+      "rating": 4.8,
+      "reviewCount": 132,
+      "image": "/images/service-33.jpg",
+      "price": "£60 per hour",
+      "features": [
+        "Resume writing and editing",
+        "Cover letter creation",
+        "LinkedIn profile optimization",
+        "Job search strategy",
+        "Interview preparation",
+        "Career coaching services"
+      ],
+      "contactInfo": {
+        "phone": "(555) 112-3344",
+        "email": "careers@servicecompany.com",
+        "address": "606 Opportunity Avenue, Careertown, ST 44556"
+      },
+      "originalImage": "/images/service-33.jpg"
+    },
+    {
+      "id": "1d2440a3-9e98-4bcb-a195-0cdf94219270",
+      "name": "Upholstery Cleaning",
+      "category": "Cleaning",
+      "description": "Professional upholstery cleaning services to refresh and extend the life of your furniture. Our specialized cleaning methods remove dirt, stains, and allergens from sofas, chairs, mattresses, and more.",
+      "rating": 4.7,
+      "reviewCount": 143,
+      "image": "/images/service-34.jpg",
+      "price": "£32 per hour",
+      "features": [
+        "Sofa and chair cleaning",
+        "Mattress cleaning and sanitizing",
+        "Stain removal treatments",
+        "Fabric protection application",
+        "Odor elimination",
+        "Commercial upholstery services"
+      ],
+      "contactInfo": {
+        "phone": "(555) 445-6677",
+        "email": "upholstery@servicecompany.com",
+        "address": "707 Clean Fabric Lane, Furnitureville, ST 55443"
+      },
+      "originalImage": "/images/service-34.jpg"
+    },
+    {
+      "id": "d0daab3e-8478-4bdb-a478-5f2b2464b31d",
+      "name": "Solar Panel Installation",
+      "category": "Solar Energy",
+      "description": "Expert solar panel installation services for residential and commercial properties. Our team provides sustainable energy solutions that reduce utility costs and environmental impact.",
+      "rating": 4.9,
+      "reviewCount": 119,
+      "image": "/images/service-35.jpg",
+      "price": "£70 per hour",
+      "features": [
+        "Solar system design",
+        "Panel installation",
+        "Battery storage solutions",
+        "Inverter installation",
+        "System monitoring setup",
+        "Permit and rebate assistance"
+      ],
+      "contactInfo": {
+        "phone": "(555) 667-8899",
+        "email": "solar@servicecompany.com",
+        "address": "808 Sunshine Way, Solarville, ST 33221"
+      },
+      "originalImage": "/images/service-35.jpg"
+    },
+    {
+      "id": "05d699d9-c6a3-4fb5-b448-51760041cf01",
+      "name": "Personal Chef Services",
+      "category": "Culinary",
+      "description": "Personalized chef services for special occasions and regular meal preparation. Our skilled chefs create delicious, customized meals in your home based on your dietary preferences and needs.",
+      "rating": 4.8,
+      "reviewCount": 156,
+      "image": "/images/service-36.jpg",
+      "price": "£65 per hour",
+      "features": [
+        "Customized menu planning",
+        "Special event cooking",
+        "Weekly meal preparation",
+        "Dietary restriction accommodation",
+        "Cooking lessons",
+        "Grocery shopping services"
+      ],
+      "contactInfo": {
+        "phone": "(555) 223-4455",
+        "email": "chef@servicecompany.com",
+        "address": "909 Culinary Boulevard, Chefville, ST 77889"
+      },
+      "originalImage": "/images/service-36.jpg"
+    },
+    {
+      "id": "ee622309-644b-45e3-ba03-701c5857e671",
+      "name": "Tax Preparation Services",
+      "category": "Financial Services",
+      "description": "Professional tax preparation and filing services for individuals and small businesses. Our experienced tax professionals maximize your refund while ensuring compliance with current tax laws.",
+      "rating": 4.7,
+      "reviewCount": 172,
+      "image": "/images/service-37.jpg",
+      "price": "£50 per hour",
+      "features": [
+        "Personal tax return preparation",
+        "Small business tax services",
+        "Tax planning and strategy",
+        "IRS representation",
+        "Prior year tax filing",
+        "Electronic filing"
+      ],
+      "contactInfo": {
+        "phone": "(555) 998-7766",
+        "email": "taxes@servicecompany.com",
+        "address": "404 Financial Avenue, Taxville, ST 11223"
+      },
+      "originalImage": "/images/service-37.jpg"
+    },
+    {
+      "id": "a621a1e1-4d25-446c-bc31-88368c24c727",
+      "name": "Furniture Assembly Service",
+      "category": "Handyman",
+      "description": "Professional furniture assembly services for items from any store. Our skilled technicians efficiently assemble furniture pieces with attention to detail and proper installation.",
+      "rating": 4.6,
+      "reviewCount": 198,
+      "image": "/images/service-38.jpg",
+      "price": "£25 per hour",
+      "features": [
+        "All furniture types assembled",
+        "IKEA specialist",
+        "Tool and equipment provided",
+        "Packaging disposal",
+        "Furniture placement",
+        "Same-day service available"
+      ],
+      "contactInfo": {
+        "phone": "(555) 776-5544",
+        "email": "assembly@servicecompany.com",
+        "address": "505 Builder Lane, Assembleville, ST 44332"
+      },
+      "originalImage": "/images/service-38.jpg"
+    },
+    {
+      "id": "33288b36-a5c9-47a7-8b55-36a5c4c4086b",
+      "name": "Lawn Irrigation Services",
+      "category": "Gardening",
+      "description": "Professional irrigation system installation, maintenance, and repair. Our specialists design efficient watering systems that keep your lawn and garden healthy while conserving water.",
+      "rating": 4.7,
+      "reviewCount": 134,
+      "image": "/images/service-39.jpg",
+      "price": "£40 per hour",
+      "features": [
+        "Irrigation system design",
+        "Sprinkler installation",
+        "Drip irrigation setup",
+        "System maintenance and repair",
+        "Smart controller installation",
+        "Seasonal system adjustments"
+      ],
+      "contactInfo": {
+        "phone": "(555) 334-5566",
+        "email": "irrigation@servicecompany.com",
+        "address": "606 Sprinkler Way, Gardenville, ST 55667"
+      },
+      "originalImage": "/images/service-39.jpg"
+    },
+    {
+      "id": "2dc8f233-2677-4f15-8915-f36e0d532d78",
+      "name": "Home Staging Services",
+      "category": "Real Estate",
+      "description": "Professional home staging to prepare your property for the market. Our designers enhance your home's appeal with strategic furniture placement, decor, and organization to attract buyers and maximize selling price.",
+      "rating": 4.9,
+      "reviewCount": 115,
+      "image": "/images/service-40.jpg",
+      "price": "£55 per hour",
+      "features": [
+        "Initial staging consultation",
+        "Furniture and accessory rental",
+        "Decluttering assistance",
+        "Room-by-room styling",
+        "Before and after photos",
+        "Virtual staging options"
+      ],
+      "contactInfo": {
+        "phone": "(555) 889-0011",
+        "email": "staging@servicecompany.com",
+        "address": "707 Showcase Avenue, Stageville, ST 66778"
+      },
+      "originalImage": "/images/service-40.jpg"
+    },
+    {
+      "id": "a5c6d8e9-84f3-41b4-8d4c-db525af0c6db",
+      "name": "Language Translation Services",
+      "category": "Language Services",
+      "description": "Professional translation services for documents, websites, and communications. Our certified translators provide accurate, culturally appropriate translations in multiple languages for businesses and individuals.",
+      "rating": 4.8,
+      "reviewCount": 127,
+      "image": "/images/service-41.jpg",
+      "price": "£45 per hour",
+      "features": [
+        "Document translation",
+        "Website localization",
+        "Business communication translation",
+        "Legal document translation",
+        "Medical translation services",
+        "Certified translations"
+      ],
+      "contactInfo": {
+        "phone": "(555) 221-7788",
+        "email": "translation@servicecompany.com",
+        "address": "808 Language Lane, Translationville, ST 33445"
+      },
+      "originalImage": "/images/service-41.jpg"
+    },
+    {
+      "id": "71f7559f-4769-4ed9-b587-b4259cd74cb5",
+      "name": "Mobile Car Wash",
+      "category": "Auto Services",
+      "description": "Convenient mobile car washing and detailing that comes to your location. Our professional team brings all necessary equipment to provide a thorough cleaning for your vehicle at home or work.",
+      "rating": 4.6,
+      "reviewCount": 183,
+      "image": "/images/service-42.jpg",
+      "price": "£28 per hour",
+      "features": [
+        "Exterior hand wash",
+        "Interior vacuuming and cleaning",
+        "Dashboard and console detailing",
+        "Tire and rim cleaning",
+        "Window cleaning",
+        "Environmentally friendly products"
+      ],
+      "contactInfo": {
+        "phone": "(555) 556-7788",
+        "email": "carwash@servicecompany.com",
+        "address": "909 Clean Car Road, Autowash, ST 22334"
+      },
+      "originalImage": "/images/service-42.jpg"
+    },
+    {
+      "id": "b3eb20d6-9b43-469b-9ead-9ffb2e4a0acc",
+      "name": "Closet Organization & Design",
+      "category": "Organization",
+      "description": "Custom closet organization and design services to maximize your storage space. Our specialists create functional, beautiful closet systems tailored to your specific needs and style preferences.",
+      "rating": 4.8,
+      "reviewCount": 142,
+      "image": "/images/service-43.jpg",
+      "price": "£42 per hour",
+      "features": [
+        "Closet assessment and measurement",
+        "Custom design planning",
+        "Storage solution installation",
+        "Closet accessory selection",
+        "Clothing organization",
+        "Seasonal rotation assistance"
+      ],
+      "contactInfo": {
+        "phone": "(555) 667-3344",
+        "email": "closets@servicecompany.com",
+        "address": "404 Organization Avenue, Storeville, ST 55443"
+      },
+      "originalImage": "/images/service-43.jpg"
+    },
+    {
+      "id": "f86b4ece-948a-4c79-8c58-95f1ccdc970f",
+      "name": "Audio-Visual Installation",
+      "category": "AV Services",
+      "description": "Professional installation of home theater systems, sound systems, and audio-visual equipment. Our technicians provide expert setup, calibration, and integration for optimal performance and enjoyment.",
+      "rating": 4.7,
+      "reviewCount": 156,
+      "image": "/images/service-44.jpg",
+      "price": "£55 per hour",
+      "features": [
+        "Home theater installation",
+        "Surround sound setup",
+        "TV mounting and calibration",
+        "Speaker installation",
+        "Smart home integration",
+        "Media room design"
+      ],
+      "contactInfo": {
+        "phone": "(555) 112-9900",
+        "email": "audiovisual@servicecompany.com",
+        "address": "505 Entertainment Blvd, Audioville, ST 77889"
+      },
+      "originalImage": "/images/service-44.jpg"
+    },
+    {
+      "id": "f3d98cbe-c094-4417-84df-322e67062507",
+      "name": "Private Yoga Instruction",
+      "category": "Fitness",
+      "description": "Personalized yoga instruction in the comfort of your home or preferred location. Our certified instructors create customized sessions tailored to your experience level, goals, and physical needs.",
+      "rating": 4.9,
+      "reviewCount": 129,
+      "image": "/images/service-45.jpg",
+      "price": "£45 per hour",
+      "features": [
+        "One-on-one instruction",
+        "Customized practice development",
+        "Alignment-focused teaching",
+        "Props and equipment provided",
+        "Meditation guidance",
+        "Special focus areas (flexibility, strength, stress reduction)"
+      ],
+      "contactInfo": {
+        "phone": "(555) 778-9900",
+        "email": "yoga@servicecompany.com",
+        "address": "606 Zen Way, Yogaville, ST 44556"
+      },
+      "originalImage": "/images/service-45.jpg"
+    },
+    {
+      "id": "b7c3aae2-7f6f-4264-9bde-719a5e1ebeef",
+      "name": "Home Appliance Installation",
+      "category": "Appliance Services",
+      "description": "Professional installation of major home appliances. Our certified technicians ensure proper setup, connection, and testing of washers, dryers, refrigerators, ovens, and other household appliances.",
+      "rating": 4.7,
+      "reviewCount": 168,
+      "image": "/images/service-46.jpg",
+      "price": "£42 per hour",
+      "features": [
+        "Appliance delivery coordination",
+        "Professional installation",
+        "Electrical and plumbing hookups",
+        "Gas line connection",
+        "Old appliance removal",
+        "Testing and demonstration"
+      ],
+      "contactInfo": {
+        "phone": "(555) 445-6677",
+        "email": "applianceinstall@servicecompany.com",
+        "address": "707 Appliance Lane, Installville, ST 33221"
+      },
+      "originalImage": "/images/service-46.jpg"
+    },
+    {
+      "id": "7e7bc1ef-9e41-42d6-9091-bed7f0d5a2c7",
+      "name": "Art Installation Services",
+      "category": "Art Services",
+      "description": "Professional art hanging and installation services for homes and businesses. Our experienced team safely and precisely installs artwork, mirrors, and decorative items with the proper hardware and techniques.",
+      "rating": 4.8,
+      "reviewCount": 115,
+      "image": "/images/service-47.jpg",
+      "price": "£38 per hour",
+      "features": [
+        "Professional art hanging",
+        "Gallery wall arrangement",
+        "Mirror installation",
+        "Art lighting setup",
+        "Security hardware installation",
+        "Consultation on placement"
+      ],
+      "contactInfo": {
+        "phone": "(555) 889-7766",
+        "email": "artinstall@servicecompany.com",
+        "address": "808 Gallery Road, Artsville, ST 66778"
+      },
+      "originalImage": "/images/service-47.jpg"
+    },
+    {
+      "id": "41da59f7-92ef-4aa5-b505-1e81b8c55f63",
+      "name": "Chimney Cleaning & Inspection",
+      "category": "Chimney Services",
+      "description": "Professional chimney sweeping, cleaning, and inspection services. Our certified technicians ensure your fireplace and chimney are clean, safe, and functioning properly to prevent fire hazards and maintain efficiency.",
+      "rating": 4.7,
+      "reviewCount": 143,
+      "image": "/images/service-48.jpg",
+      "price": "£48 per hour",
+      "features": [
+        "Chimney sweeping and cleaning",
+        "Safety inspection",
+        "Creosote removal",
+        "Chimney cap installation",
+        "Minor repair services",
+        "Fireplace maintenance"
+      ],
+      "contactInfo": {
+        "phone": "(555) 223-4455",
+        "email": "chimney@servicecompany.com",
+        "address": "909 Hearth Lane, Fireplacevillle, ST 11223"
+      },
+      "originalImage": "/images/service-48.jpg"
+    },
+    {
+      "id": "49cebff4-7164-489b-a7a7-a9e1b9a2dcaf",
+      "name": "Baby Proofing Services",
+      "category": "Child Safety",
+      "description": "Comprehensive baby proofing and child safety solutions for your home. Our experts identify potential hazards and install appropriate safety measures to create a secure environment for curious little ones.",
+      "rating": 4.9,
+      "reviewCount": 132,
+      "image": "/images/service-49.jpg",
+      "price": "£35 per hour",
+      "features": [
+        "Home safety assessment",
+        "Cabinet and drawer locks installation",
+        "Outlet covers and cord management",
+        "Furniture anchoring",
+        "Gate installation",
+        "Custom safety solutions"
+      ],
+      "contactInfo": {
+        "phone": "(555) 334-9900",
+        "email": "babyproof@servicecompany.com",
+        "address": "404 Safety Street, Childproofville, ST 33445"
+      },
+      "originalImage": "/images/service-49.jpg"
+    },
+    {
+      "id": "c414df8d-7f22-4cb0-b24c-50a55f364bf7",
+      "name": "Holiday Light Installation",
+      "category": "Seasonal Services",
+      "description": "Professional holiday light installation and removal services. Our experienced team designs and installs festive lighting displays for your home or business, handling all aspects from setup to takedown.",
+      "rating": 4.8,
+      "reviewCount": 176,
+      "image": "/images/service-50.jpg",
+      "price": "£40 per hour",
+      "features": [
+        "Custom lighting design",
+        "Professional installation",
+        "Light and material supply options",
+        "Timer setup",
+        "Post-season removal and storage",
+        "Roof and tree lighting"
+      ],
+      "contactInfo": {
+        "phone": "(555) 998-2211",
+        "email": "holidaylights@servicecompany.com",
+        "address": "505 Festive Lane, Lightville, ST 22334"
+      },
+      "originalImage": "/images/service-50.jpg"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-1",
+      "name": "Cleaning",
+      "description": "Professional cleaning services for homes and offices"
+    },
+    {
+      "id": "cat-2",
+      "name": "Electrician",
+      "description": "Electrical repair and installation services"
+    },
+    {
+      "id": "cat-3",
+      "name": "Plumbing",
+      "description": "Comprehensive plumbing solutions and repairs"
+    },
+    {
+      "id": "cat-4",
+      "name": "Handyman",
+      "description": "Versatile home repair and maintenance services"
+    },
+    {
+      "id": "cat-5",
+      "name": "Painting",
+      "description": "Professional interior and exterior painting services"
+    },
+    {
+      "id": "cat-6",
+      "name": "Carpentry",
+      "description": "Custom woodworking and carpentry solutions"
+    },
+    {
+      "id": "cat-7",
+      "name": "Gardening",
+      "description": "Lawn care and gardening services"
+    },
+    {
+      "id": "cat-8",
+      "name": "HVAC",
+      "description": "Heating, ventilation, and air conditioning services"
+    },
+    {
+      "id": "cat-9",
+      "name": "Security",
+      "description": "Home and business security services"
+    },
+    {
+      "id": "cat-10",
+      "name": "Roofing",
+      "description": "Roof repair and installation services"
+    },
+    {
+      "id": "cat-11",
+      "name": "Interior Design",
+      "description": "Professional interior design and decorating services"
+    },
+    {
+      "id": "cat-12",
+      "name": "Appliance Repair",
+      "description": "Repair services for home appliances"
+    },
+    {
+      "id": "cat-13",
+      "name": "Pest Control",
+      "description": "Pest elimination and prevention services"
+    },
+    {
+      "id": "cat-14",
+      "name": "Moving",
+      "description": "Professional moving and relocation services"
+    },
+    {
+      "id": "cat-15",
+      "name": "Tech Support",
+      "description": "Computer and technology repair services"
+    },
+    {
+      "id": "cat-16",
+      "name": "Drywall",
+      "description": "Drywall installation and repair services"
+    },
+    {
+      "id": "cat-17",
+      "name": "Auto Services",
+      "description": "Car maintenance and detailing services"
+    },
+    {
+      "id": "cat-18",
+      "name": "Photography",
+      "description": "Professional photography services"
+    },
+    {
+      "id": "cat-19",
+      "name": "Flooring",
+      "description": "Flooring installation and repair services"
+    },
+    {
+      "id": "cat-20",
+      "name": "Fitness",
+      "description": "Personal training and fitness services"
+    },
+    {
+      "id": "cat-21",
+      "name": "Gutter Services",
+      "description": "Gutter installation, cleaning, and repair"
+    },
+    {
+      "id": "cat-22",
+      "name": "Pool Services",
+      "description": "Swimming pool maintenance and repair"
+    },
+    {
+      "id": "cat-23",
+      "name": "Organization",
+      "description": "Home organization and decluttering services"
+    },
+    {
+      "id": "cat-24",
+      "name": "Tree Services",
+      "description": "Tree care, trimming, and removal services"
+    },
+    {
+      "id": "cat-25",
+      "name": "Catering",
+      "description": "Food preparation and service for events"
+    },
+    {
+      "id": "cat-26",
+      "name": "Fencing",
+      "description": "Fence installation and repair services"
+    },
+    {
+      "id": "cat-27",
+      "name": "Event Planning",
+      "description": "Professional event coordination services"
+    },
+    {
+      "id": "cat-28",
+      "name": "Education",
+      "description": "Tutoring and educational services"
+    },
+    {
+      "id": "cat-29",
+      "name": "Wellness",
+      "description": "Health and wellness services"
+    },
+    {
+      "id": "cat-30",
+      "name": "Pet Services",
+      "description": "Professional pet care services"
+    },
+    {
+      "id": "cat-31",
+      "name": "Career Services",
+      "description": "Resume writing and career development"
+    },
+    {
+      "id": "cat-32",
+      "name": "Solar Energy",
+      "description": "Solar panel installation and renewable energy"
+    },
+    {
+      "id": "cat-33",
+      "name": "Culinary",
+      "description": "Chef and cooking services"
+    },
+    {
+      "id": "cat-34",
+      "name": "Financial Services",
+      "description": "Tax preparation and financial assistance"
+    },
+    {
+      "id": "cat-35",
+      "name": "Real Estate",
+      "description": "Home staging and real estate services"
+    },
+    {
+      "id": "cat-36",
+      "name": "Language Services",
+      "description": "Translation and interpretation services"
+    },
+    {
+      "id": "cat-37",
+      "name": "AV Services",
+      "description": "Audio-visual installation and setup"
+    },
+    {
+      "id": "cat-38",
+      "name": "Appliance Services",
+      "description": "Appliance installation and maintenance"
+    },
+    {
+      "id": "cat-39",
+      "name": "Art Services",
+      "description": "Art installation and handling"
+    },
+    {
+      "id": "cat-40",
+      "name": "Chimney Services",
+      "description": "Chimney cleaning and maintenance"
+    },
+    {
+      "id": "cat-41",
+      "name": "Child Safety",
+      "description": "Baby proofing and child safety services"
+    },
+    {
+      "id": "cat-42",
+      "name": "Seasonal Services",
+      "description": "Holiday and seasonal decoration services"
+    }
+  ],
+  "relatedServices": {
+    "1": [
+      2,
+      3,
+      4,
+      10,
+      34
+    ],
+    "2": [
+      1,
+      3,
+      4,
+      8,
+      23
+    ],
+    "3": [
+      1,
+      2,
+      4,
+      8,
+      11
+    ],
+    "4": [
+      1,
+      2,
+      3,
+      5,
+      17
+    ],
+    "5": [
+      4,
+      6,
+      12,
+      17
+    ],
+    "6": [
+      4,
+      5,
+      17,
+      26
+    ],
+    "7": [
+      26,
+      39
+    ],
+    "8": [
+      2,
+      3,
+      11
+    ],
+    "9": [
+      2,
+      23
+    ],
+    "10": [
+      1,
+      34
+    ],
+    "11": [
+      3,
+      8
+    ],
+    "12": [
+      5,
+      40
+    ],
+    "13": [
+      3,
+      4,
+      8,
+      46
+    ],
+    "14": [
+      1,
+      24
+    ],
+    "15": [
+      4,
+      25
+    ],
+    "16": [
+      35,
+      44
+    ],
+    "17": [
+      4,
+      5,
+      6
+    ],
+    "18": [
+      42
+    ],
+    "19": [
+      18,
+      42
+    ],
+    "20": [
+      6,
+      17
+    ],
+    "21": [
+      31,
+      45
+    ],
+    "22": [
+      11,
+      26
+    ],
+    "23": [
+      2,
+      9,
+      44
+    ],
+    "24": [
+      14,
+      39
+    ],
+    "25": [
+      1,
+      40,
+      43
+    ],
+    "26": [
+      7,
+      22
+    ],
+    "27": [
+      15,
+      29,
+      36
+    ],
+    "28": [
+      6,
+      26
+    ],
+    "29": [
+      27,
+      36
+    ],
+    "30": [
+      33,
+      41
+    ],
+    "31": [
+      21,
+      45
+    ],
+    "32": [
+      14,
+      25
+    ],
+    "33": [
+      16,
+      30,
+      41
+    ],
+    "34": [
+      1,
+      10
+    ],
+    "35": [
+      16,
+      23
+    ],
+    "36": [
+      27,
+      29
+    ],
+    "37": [
+      33,
+      41
+    ],
+    "38": [
+      4,
+      6
+    ],
+    "39": [
+      7,
+      24
+    ],
+    "40": [
+      12,
+      25
+    ],
+    "41": [
+      30,
+      33
+    ],
+    "42": [
+      18,
+      19
+    ],
+    "43": [
+      25,
+      40
+    ],
+    "44": [
+      16,
+      23
+    ],
+    "45": [
+      21,
+      31
+    ],
+    "46": [
+      8,
+      13
+    ],
+    "47": [
+      12,
+      40
+    ],
+    "48": [
+      11,
+      14
+    ],
+    "49": [
+      15,
+      23
+    ],
+    "50": [
+      26,
+      19
+    ]
+  },
+  "reviews": {}
+}

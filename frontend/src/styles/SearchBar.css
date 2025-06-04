@@ -1,0 +1,85 @@
+/* ServicesHub Search Bar Styles */
+:root {
+  --color-primary: #4338ca;  /* Deep blue from the image */
+  --color-background: #ffffff;
+  --color-text: #1f2937;
+  --color-border: #e5e7eb;
+  --color-icon: #6b7280;
+}
+
+.services-hub-search-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.services-hub-search-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.services-hub-search-icon {
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  color: var(--color-icon);
+}
+
+.services-hub-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.services-hub-search-input {
+  flex-grow: 1;
+  padding: 0.75rem 0.5rem;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.services-hub-search-input::placeholder {
+  color: var(--color-icon);
+  opacity: 0.7;
+}
+
+.services-hub-search-button {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.services-hub-search-button:hover {
+  background-color: #3730a3;  /* Slightly darker shade */
+}
+
+.services-hub-search-button:active {
+  background-color: #312e81;  /* Even darker shade */
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 640px) {
+  .services-hub-search-container {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+
+  .services-hub-search-input {
+    padding: 0.5rem;
+  }
+
+  .services-hub-search-button {
+    padding: 0.75rem 1rem;
+  }
+}

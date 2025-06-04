@@ -1,47 +1,63 @@
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../../config/app.config').database.sequelize;
-const ServiceProvider = require('./ServiceProvider');
-const Category = require('./ServiceCategory');
+'use strict';
+const { Model } = require('sequelize');
 
-class Service extends Model {}
-
-Service.init({
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
-  },
-  providerId: {
-    type: DataTypes.UUID,
-    allowNull: false,
-    references: {
-      model: ServiceProvider,
-      key: 'id'
-    }
-  },
-  title: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  description: {
-    type: DataTypes.TEXT,
-    allowNull: false
-  },
-  price: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
-  },
-  categoryId: {
-    type: DataTypes.UUID,
-    allowNull: false,
-    references: {
-      model: Category,
-      key: 'id'
+module.exports = (sequelize, DataTypes) => {
+  class Service extends Model {
+    static associate(models) {
+      Service.belongsTo(models.ServiceCategory, {
+        foreignKey: 'serviceCategoryId',
+        as: 'category'
+      });
+      
+      Service.belongsTo(models.ServiceProviderProfile, {
+        foreignKey: 'providerId',
+        as: 'provider'
+      });
+      
+      Service.hasMany(models.Booking, {
+        foreignKey: 'serviceId',
+        as: 'bookings'
+      });
     }
   }
-}, { sequelize, modelName: 'service' });
-
-ServiceProvider.hasMany(Service, { foreignKey: 'providerId' });
-Service.belongsTo(ServiceProvider, { foreignKey: 'providerId' });
-
-module.exports = Service;
+  
+  Service.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
+    serviceCategoryId: {
+      type: DataTypes.UUID,
+      allowNull: false
+    },
+    providerId: {
+      type: DataTypes.UUID,
+      allowNull: false
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    price: {
+      type: DataTypes.DECIMAL,
+      allowNull: false
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    }
+  }, {
+    sequelize,
+    modelName: 'Service',
+    tableName: 'Services',
+    underscored: false,
+    freezeTableName: true
+  });
+  
+  return Service;
+};

@@ -2,6 +2,7 @@ const { User } = require('../models');
 const { generateToken } = require('../utils/jwtUtils');
 const { sendVerificationEmail, sendPasswordResetEmail } = require('../utils/emailService');
 const crypto = require('crypto');
+const { Op } = require('sequelize');
 
 /**
  * @swagger
@@ -48,63 +49,10 @@ const crypto = require('crypto');
  *     responses:
  *       201:
  *         description: User registered successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "User registered successfully. Please verify your email."
- *                 token:
- *                   type: string
- *                   description: JWT token
- *                 data:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       format: uuid
- *                     firstName:
- *                       type: string
- *                     lastName:
- *                       type: string
- *                     email:
- *                       type: string
- *                       format: email
- *                     role:
- *                       type: string
  *       400:
  *         description: Email already in use
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Email already in use"
  *       500:
  *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Error registering user"
- *                 error:
- *                   type: string
  */
 // Register a new user
 exports.register = async (req, res) => {
@@ -128,10 +76,11 @@ exports.register = async (req, res) => {
       firstName,
       lastName,
       email,
-      password,
+      password, // Note: Assuming password hashing is handled in a model hook
       phoneNumber,
       role: role || 'customer',
-      verificationToken
+      verificationToken,
+      isVerified: false
     });
     
     // Send verification email
@@ -178,45 +127,10 @@ exports.register = async (req, res) => {
  *     responses:
  *       200:
  *         description: Email verified successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Email verified successfully"
  *       400:
  *         description: Invalid verification token
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Invalid verification token"
  *       500:
  *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Error verifying email"
- *                 error:
- *                   type: string
  */
 // Verify email
 exports.verifyEmail = async (req, res) => {
@@ -278,76 +192,12 @@ exports.verifyEmail = async (req, res) => {
  *     responses:
  *       200:
  *         description: Login successful
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Logged in successfully"
- *                 token:
- *                   type: string
- *                   description: JWT token
- *                 data:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       format: uuid
- *                     firstName:
- *                       type: string
- *                     lastName:
- *                       type: string
- *                     email:
- *                       type: string
- *                       format: email
- *                     role:
- *                       type: string
  *       400:
  *         description: Missing credentials
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Please provide email and password"
  *       401:
  *         description: Invalid credentials or account issues
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Invalid credentials"
  *       500:
  *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Error logging in"
- *                 error:
- *                   type: string
  */
 // Login user
 exports.login = async (req, res) => {
@@ -447,45 +297,10 @@ exports.login = async (req, res) => {
  *     responses:
  *       200:
  *         description: Password reset email sent
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Password reset email sent"
  *       404:
  *         description: User not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "User not found"
  *       500:
  *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Error processing forgot password request"
- *                 error:
- *                   type: string
  */
 // Forgot password
 exports.forgotPassword = async (req, res) => {
@@ -557,45 +372,10 @@ exports.forgotPassword = async (req, res) => {
  *     responses:
  *       200:
  *         description: Password reset successful
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Password reset successful"
  *       400:
  *         description: Invalid or expired token
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Invalid or expired reset token"
  *       500:
  *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Error resetting password"
- *                 error:
- *                   type: string
  */
 // Reset password
 exports.resetPassword = async (req, res) => {
@@ -649,54 +429,10 @@ exports.resetPassword = async (req, res) => {
  *     responses:
  *       200:
  *         description: User profile retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 data:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       format: uuid
- *                     firstName:
- *                       type: string
- *                     lastName:
- *                       type: string
- *                     email:
- *                       type: string
- *                       format: email
- *                     phoneNumber:
- *                       type: string
- *                     role:
- *                       type: string
- *                     createdAt:
- *                       type: string
- *                       format: date-time
- *                     updatedAt:
- *                       type: string
- *                       format: date-time
  *       401:
  *         description: Not authenticated
  *       500:
  *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Error fetching user data"
- *                 error:
- *                   type: string
  */
 // Get current user
 exports.getCurrentUser = async (req, res) => {
@@ -747,51 +483,10 @@ exports.getCurrentUser = async (req, res) => {
  *     responses:
  *       200:
  *         description: Profile updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Profile updated successfully"
- *                 data:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       format: uuid
- *                     firstName:
- *                       type: string
- *                     lastName:
- *                       type: string
- *                     email:
- *                       type: string
- *                       format: email
- *                     phoneNumber:
- *                       type: string
- *                     role:
- *                       type: string
  *       401:
  *         description: Not authenticated
  *       500:
  *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Error updating profile"
- *                 error:
- *                   type: string
  */
 // Update user profile
 exports.updateProfile = async (req, res) => {
@@ -858,45 +553,10 @@ exports.updateProfile = async (req, res) => {
  *     responses:
  *       200:
  *         description: Password changed successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Password changed successfully"
  *       401:
  *         description: Current password is incorrect
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Current password is incorrect"
  *       500:
  *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Error changing password"
- *                 error:
- *                   type: string
  */
 // Change password
 exports.changePassword = async (req, res) => {
@@ -945,17 +605,6 @@ exports.changePassword = async (req, res) => {
  *     responses:
  *       200:
  *         description: Logout successful
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Logged out successfully"
  */
 // Logout (if you need to add this functionality)
 exports.logout = async (req, res) => {

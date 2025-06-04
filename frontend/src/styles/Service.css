@@ -1,0 +1,457 @@
+/* Service.css - Modern styling for the Services page */
+
+/* General page layout */
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Inter', 'Segoe UI', Roboto, -apple-system, sans-serif;
+  color: #333;
+}
+
+.services-main-page-wrapper {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.services-main-container {
+  padding: 2rem;
+}
+
+/* Header styling */
+.services-header {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+}
+
+.services-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.services-header h1:after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #3182ce, #63b3ed);
+  border-radius: 2px;
+}
+
+/* Search and filter section */
+.services-search-filter {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 250px;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+}
+
+.search-input::placeholder {
+  color: #a0aec0;
+}
+
+.category-select {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  min-width: 180px;
+  background-color: #fff;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.category-select:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+}
+
+/* Categories quick filter */
+.categories-quick-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.category-quick-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 50px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: #f7fafc;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-quick-btn:hover {
+  background-color: #edf2f7;
+  border-color: #cbd5e0;
+}
+
+.category-quick-btn.active {
+  background-color: #3182ce;
+  color: white;
+  border-color: #3182ce;
+}
+
+/* Services list */
+.services-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .services-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.service-list-item {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease;
+  background-color: #fff;
+  cursor: pointer;
+  border: 1px solid #edf2f7;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.service-list-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-color: #e2e8f0;
+}
+
+.service-list-image {
+  height: 200px;
+  width: 100%;
+  overflow: hidden;
+  position: relative; /* Required for price tag positioning */
+}
+
+.service-list-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.service-list-item:hover .service-list-image img {
+  transform: scale(1.05);
+}
+
+/* Price tag on image */
+.service-price-tag {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #3182ce, #4299e1);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+  transition: transform 0.2s ease;
+}
+
+.service-list-item:hover .service-price-tag {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+.service-list-content {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.service-list-header {
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.service-list-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.service-category {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  background-color: #ebf4ff;
+  color: #3182ce;
+}
+
+.service-list-details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.service-list-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.service-rating {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.service-rating span {
+  color: #f6ad55;
+  margin-right: 0.25rem;
+}
+
+.review-count {
+  color: #718096;
+  font-weight: normal;
+  margin-left: 0.25rem;
+}
+
+/* Enhanced price display */
+.service-price-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(49, 130, 206, 0.08);
+  padding: 4px 10px;
+  border-radius: 16px;
+  margin-left: auto;
+}
+
+.price-label {
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+.price-value {
+  font-weight: 700;
+  color: #3182ce;
+}
+
+.service-brief-description {
+  margin-bottom: 1.25rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #4a5568;
+  flex-grow: 1;
+}
+
+.service-list-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 12px;
+}
+
+.view-service-btn {
+  flex: 1;
+  padding: 0.625rem 1.25rem;
+  background-color: white;
+  color: #3182ce;
+  border: 1px solid #3182ce;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-align: center;
+}
+
+.view-service-btn:hover {
+  background-color: #ebf8ff;
+}
+
+/* Book now button */
+.book-service-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 2;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, #5865F2, #404EED);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(88, 101, 242, 0.2);
+  text-decoration: none;
+  margin-top: 20px;
+}
+
+.book-service-btn i {
+  margin-right: 8px;
+}
+
+.book-service-btn:hover {
+  background: linear-gradient(135deg, #404EED, #5865F2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(88, 101, 242, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .book-service-btn {
+    width: 100%;
+    margin-top: 15px;
+    flex: 1;
+  }
+}
+
+/* No services message */
+.no-services {
+  text-align: center;
+  padding: 3rem 0;
+  color: #718096;
+  font-size: 1.125rem;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2.5rem;
+  gap: 0.5rem;
+}
+
+.pagination-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: #f7fafc;
+  color: #4a5568;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background-color: #edf2f7;
+}
+
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.page-number {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background-color: #f7fafc;
+  color: #4a5568;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.page-number:hover:not(.active) {
+  background-color: #edf2f7;
+}
+
+.page-number.active {
+  background-color: #3182ce;
+  color: white;
+  border-color: #3182ce;
+}
+
+.page-info {
+  margin-left: 1rem;
+  font-size: 0.875rem;
+  color: #718096;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .page-container {
+    padding: 1rem;
+  }
+  
+  .services-main-container {
+    padding: 1.5rem;
+  }
+  
+  .services-header h1 {
+    font-size: 2rem;
+  }
+  
+  .service-list-actions {
+    flex-direction: column;
+  }
+  
+  .pagination {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .page-info {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+}

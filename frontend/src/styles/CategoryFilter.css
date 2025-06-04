@@ -1,0 +1,47 @@
+/* Styling the category filter container */
+.category-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+  }
+  
+  /* General button styling */
+  .category-button {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    outline: none;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  /* Hover effect for buttons */
+  .category-button:hover {
+    background-color: #f39c12;
+    color: white;
+    border-color: #f39c12;
+  }
+  
+  /* Active state styling for selected category */
+  .category-button.active {
+    background-color: #f39c12;
+    color: white;
+    border-color: #f39c12;
+  }
+  
+  /* Responsive styling */
+  @media (max-width: 768px) {
+    .category-button {
+      font-size: 14px;
+      padding: 8px 16px;
+    }
+  }
+  

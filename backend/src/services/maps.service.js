@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { ServiceProvider } = require('../models');
+const ServiceCategory = require('../models/ServiceCategory');
 
 // Geocode an address to get coordinates
 const geocodeAddress = async (address) => {
@@ -72,7 +73,7 @@ const calculateDistance = async (origin, destination) => {
 };
 
 // Find providers within a certain radius
-const findProvidersNearby = async (latitude, longitude, radiusInKm = 10, categoryId = null) => {
+const findProvidersNearby = async (latitude, longitude, radiusInKm = 10, ServiceCategoryId = null) => {
   try {
     // Convert radius to meters
     const radiusInMeters = radiusInKm * 1000;
@@ -107,11 +108,11 @@ const findProvidersNearby = async (latitude, longitude, radiusInKm = 10, categor
       include: [
         {
           model: Service,
-          required: categoryId ? true : false,
+          required: ServiceCategoryId ? true : false,
           include: [
             {
-              model: Category,
-              where: categoryId ? { id: categoryId } : {}
+              model: ServiceCategory,
+              where: ServiceCategoryId ? { id: ServiceCategoryId } : {}
             }
           ]
         }

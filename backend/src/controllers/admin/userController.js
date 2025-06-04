@@ -1,7 +1,7 @@
 // File: src/controllers/admin/userController.js
 
-const User = require('../../models/User');
-const Provider = require('../../models/ServiceProvider');
+const { User, ServiceProviderProfile } = require('../../models');
+const { Op } = require('sequelize');
 const { sendEmail } = require('../../services/email.service');
 const { createAuditLog } = require('../../services/auditService');
 
@@ -10,50 +10,54 @@ exports.getUsers = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+    const offset = (page - 1) * limit;
     
     // Build filter object
-    const filter = {};
+    const whereClause = {};
     
     if (req.query.name) {
-      filter.name = { $regex: req.query.name, $options: 'i' };
+      whereClause[Op.or] = [
+        { firstName: { [Op.iLike]: `%${req.query.name}%` } },
+        { lastName: { [Op.iLike]: `%${req.query.name}%` } }
+      ];
     }
     
     if (req.query.email) {
-      filter.email = { $regex: req.query.email, $options: 'i' };
+      whereClause.email = { [Op.iLike]: `%${req.query.email}%` };
     }
     
     if (req.query.status) {
-      filter.status = req.query.status;
+      whereClause.status = req.query.status;
     }
     
     if (req.query.role) {
-      filter.role = req.query.role;
+      whereClause.role = req.query.role;
     }
     
     if (req.query.registeredAfter) {
-      filter.createdAt = { $gte: new Date(req.query.registeredAfter) };
+      whereClause.createdAt = { [Op.gte]: new Date(req.query.registeredAfter) };
     }
     
     if (req.query.registeredBefore) {
-      filter.createdAt = { 
-        ...filter.createdAt, 
-        $lte: new Date(req.query.registeredBefore) 
+      whereClause.createdAt = { 
+        ...whereClause.createdAt, 
+        [Op.lte]: new Date(req.query.registeredBefore) 
       };
     }
     
     // Determine sort order
     const sortField = req.query.sortBy || 'createdAt';
-    const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
-    const sort = { [sortField]: sortOrder };
+    const sortOrder = req.query.sortOrder === 'asc' ? 'ASC' : 'DESC';
+    const order = [[sortField, sortOrder]];
     
     // Execute query with pagination
-    const users = await User.find(filter)
-      .sort(sort)
-      .skip(skip)
-      .limit(limit);
-    
-    const total = await User.countDocuments(filter);
+    const { rows: users, count: total } = await User.findAndCountAll({
+      where: whereClause,
+      order,
+      offset,
+      limit,
+      attributes: { exclude: ['password'] }
+    });
     
     return res.status(200).json({
       users,
@@ -66,14 +70,16 @@ exports.getUsers = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching users:', error);
-    return res.status(500).json({ message: 'Failed to fetch users' });
+    return res.status(500).json({ message: 'Failed to fetch users', error: error.message });
   }
 };
 
 // Get user by ID
 exports.getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findByPk(req.params.id, {
+      attributes: { exclude: ['password'] }
+    });
     
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -82,7 +88,7 @@ exports.getUserById = async (req, res) => {
     return res.status(200).json({ user });
   } catch (error) {
     console.error('Error fetching user:', error);
-    return res.status(500).json({ message: 'Failed to fetch user details' });
+    return res.status(500).json({ message: 'Failed to fetch user details', error: error.message });
   }
 };
 
@@ -92,7 +98,7 @@ exports.updateUserStatus = async (req, res) => {
     const { status, reason } = req.body;
     const userId = req.params.id;
     
-    const user = await User.findById(userId);
+    const user = await User.findByPk(userId);
     
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -124,7 +130,7 @@ exports.updateUserStatus = async (req, res) => {
       subject: `Your account status has been updated to ${status}`,
       template: 'statusChange',
       data: {
-        name: user.name,
+        name: `${user.firstName} ${user.lastName}`,
         status,
         reason
       }
@@ -136,7 +142,7 @@ exports.updateUserStatus = async (req, res) => {
     });
   } catch (error) {
     console.error('Error updating user status:', error);
-    return res.status(500).json({ message: 'Failed to update user status' });
+    return res.status(500).json({ message: 'Failed to update user status', error: error.message });
   }
 };
 
@@ -146,7 +152,13 @@ exports.verifyProvider = async (req, res) => {
     const { verificationStatus, notes } = req.body;
     const providerId = req.params.id;
     
-    const provider = await Provider.findById(providerId).populate('userId');
+    const provider = await ServiceProviderProfile.findByPk(providerId, {
+      include: [{
+        model: User,
+        as: 'user',
+        attributes: ['id', 'firstName', 'lastName', 'email']
+      }]
+    });
     
     if (!provider) {
       return res.status(404).json({ message: 'Provider not found' });
@@ -164,7 +176,7 @@ exports.verifyProvider = async (req, res) => {
     await createAuditLog({
       action: 'PROVIDER_VERIFICATION',
       performedBy: req.user.id,
-      targetUser: provider.userId._id,
+      targetUser: provider.user.id,
       details: {
         previousStatus,
         newStatus: verificationStatus,
@@ -174,11 +186,11 @@ exports.verifyProvider = async (req, res) => {
     
     // Send notification email to provider
     await sendEmail({
-      to: provider.userId.email,
+      to: provider.user.email,
       subject: `Your service provider verification status: ${verificationStatus}`,
       template: 'providerVerification',
       data: {
-        name: provider.userId.name,
+        name: `${provider.user.firstName} ${provider.user.lastName}`,
         businessName: provider.businessName,
         status: verificationStatus,
         notes
@@ -191,6 +203,6 @@ exports.verifyProvider = async (req, res) => {
     });
   } catch (error) {
     console.error('Error verifying provider:', error);
-    return res.status(500).json({ message: 'Failed to update provider verification status' });
+    return res.status(500).json({ message: 'Failed to update provider verification status', error: error.message });
   }
 };

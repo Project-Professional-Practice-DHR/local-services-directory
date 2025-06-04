@@ -1,36 +1,14 @@
 const express = require('express');
-const serviceController = require('../controllers/serviceController');
-const { verifyToken } = require('../middleware/auth');
 const router = express.Router();
+const serviceController = require('../controllers/serviceController');
+const { verifyToken, authorize } = require('../middleware/auth');
 
-// Extract controller methods with error handling
-const getServices = serviceController.getServices || ((req, res) => {
-  res.status(501).json({ message: 'getServices function not implemented' });
-});
-
-const createService = serviceController.createService || ((req, res) => {
-  res.status(501).json({ message: 'createService function not implemented' });
-});
-
-const updateService = serviceController.updateService || ((req, res) => {
-  res.status(501).json({ message: 'updateService function not implemented' });
-});
-
-const deleteService = serviceController.deleteService || ((req, res) => {
-  res.status(501).json({ message: 'deleteService function not implemented' });
-});
-
-const getProviderServices = serviceController.getProviderServices || ((req, res) => {
-  res.status(501).json({ message: 'getProviderServices function not implemented' });
-});
-
-const getService = serviceController.getService || ((req, res) => {
-  res.status(501).json({ message: 'getService function not implemented' });
-});
-
-const getMyServices = serviceController.getMyServices || ((req, res) => {
-  res.status(501).json({ message: 'getMyServices function not implemented' });
-});
+/**
+ * @swagger
+ * tags:
+ *   name: Services
+ *   description: Service management endpoints
+ */
 
 /**
  * @swagger
@@ -42,8 +20,8 @@ const getMyServices = serviceController.getMyServices || ((req, res) => {
  *         - name
  *         - description
  *         - price
- *         - provider_id
- *         - category_id
+ *         - providerId
+ *         - ServiceCategoryId
  *       properties:
  *         id:
  *           type: string
@@ -66,15 +44,15 @@ const getMyServices = serviceController.getMyServices || ((req, res) => {
  *           type: integer
  *           description: Service duration in minutes
  *           example: 60
- *         provider_id:
+ *         providerId:
  *           type: string
  *           format: uuid
  *           description: ID of the service provider
- *         category_id:
+ *         ServiceCategoryId:
  *           type: string
  *           format: uuid
  *           description: ID of the service category
- *         is_active:
+ *         isActive:
  *           type: boolean
  *           description: Whether the service is currently active and available
  *           default: true
@@ -84,54 +62,117 @@ const getMyServices = serviceController.getMyServices || ((req, res) => {
  *             type: string
  *             format: uri
  *           description: URLs to service images
- *         createdAt:
- *           type: string
- *           format: date-time
- *           description: Creation timestamp
- *         updatedAt:
- *           type: string
- *           format: date-time
- *           description: Last update timestamp
- *       example:
- *         id: "123e4567-e89b-12d3-a456-426614174000"
- *         name: "Plumbing Repair"
- *         description: "Professional repair of leaky faucets, pipes, and fixtures to prevent water damage."
- *         price: 75.00
- *         duration: 60
- *         provider_id: "123e4567-e89b-12d3-a456-426614174001"
- *         category_id: "123e4567-e89b-12d3-a456-426614174002"
- *         is_active: true
- *         images: ["/uploads/services/plumbing1.jpg", "/uploads/services/plumbing2.jpg"]
- *         createdAt: "2023-01-01T00:00:00.000Z"
- *         updatedAt: "2023-01-01T00:00:00.000Z"
- * 
- *     ServiceCategory:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *           format: uuid
- *           description: Category ID
- *         name:
- *           type: string
- *           description: Category name
- *         parent_id:
- *           type: string
- *           format: uuid
- *           description: Parent category ID (for subcategories)
- *           nullable: true
- *       example:
- *         id: "123e4567-e89b-12d3-a456-426614174002"
- *         name: "Plumbing"
- *         parent_id: "123e4567-e89b-12d3-a456-426614174003"
  */
+
+// Extract controller methods with fallbacks for missing methods
+const getServices = serviceController?.getServices || ((req, res) => {
+  res.status(501).json({ message: 'getServices function not implemented' });
+});
+
+const createService = serviceController?.createService || ((req, res) => {
+  res.status(501).json({ message: 'createService function not implemented' });
+});
+
+const updateService = serviceController?.updateService || ((req, res) => {
+  res.status(501).json({ message: 'updateService function not implemented' });
+});
+
+const deleteService = serviceController?.deleteService || ((req, res) => {
+  res.status(501).json({ message: 'deleteService function not implemented' });
+});
+
+const getProviderServices = serviceController?.getProviderServices || ((req, res) => {
+  res.status(501).json({ message: 'getProviderServices function not implemented' });
+});
+
+const getService = serviceController?.getService || ((req, res) => {
+  res.status(501).json({ message: 'getService function not implemented' });
+});
+
+const getMyServices = serviceController?.getMyServices || ((req, res) => {
+  res.status(501).json({ message: 'getMyServices function not implemented' });
+});
+
+const searchServices = serviceController?.searchServices || ((req, res) => {
+  res.status(501).json({ message: 'searchServices function not implemented' });
+});
+
+// In serviceRoutes.js
+router.get('/featured', serviceController.getFeaturedServices);
+
+// Make sure these come BEFORE the dynamic ID route
+router.get('/:id', serviceController.getService);
+
+
+/**
+ * @swagger
+ * /api/services/search:
+ *   get:
+ *     summary: Search services
+ *     description: Search for services with various filters
+ *     tags: [Services]
+ *     parameters:
+ *       - in: query
+ *         name: keyword
+ *         schema:
+ *           type: string
+ *         description: Search keyword
+ *       - in: query
+ *         name: ServiceCategoryId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Filter by category
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *         description: Minimum price
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
+ *         description: Maximum price
+ *       - in: query
+ *         name: location
+ *         schema:
+ *           type: string
+ *         description: Location for proximity search
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *           enum: [price_asc, price_desc, rating, newest]
+ *         description: Sort order
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *         description: Items per page
+ *     responses:
+ *       200:
+ *         description: Services search results
+ *       500:
+ *         description: Server error
+ */
+// Add this endpoint if the controller has the method
+if (serviceController.searchServices) {
+  router.get('/search', searchServices);
+}
 
 /**
  * @swagger
  * /api/services/create:
  *   post:
  *     summary: Create a new service
- *     description: Creates a new service listing for the authenticated service provider.
+ *     description: Create a new service listing (provider only)
  *     tags: [Services]
  *     security:
  *       - bearerAuth: []
@@ -145,33 +186,27 @@ const getMyServices = serviceController.getMyServices || ((req, res) => {
  *               - name
  *               - description
  *               - price
- *               - category_id
+ *               - ServiceCategoryId
  *             properties:
  *               name:
  *                 type: string
  *                 description: Service name
- *                 example: "Plumbing Repair"
  *               description:
  *                 type: string
- *                 description: Detailed description of the service
- *                 example: "Professional repair of leaky faucets, pipes, and fixtures to prevent water damage."
+ *                 description: Detailed description
  *               price:
  *                 type: number
- *                 description: Service price (in USD)
- *                 example: 75.00
+ *                 description: Service price
  *               duration:
  *                 type: integer
  *                 description: Service duration in minutes
- *                 example: 60
- *               category_id:
+ *               ServiceCategoryId:
  *                 type: string
  *                 format: uuid
- *                 description: Category ID for the service
- *                 example: "123e4567-e89b-12d3-a456-426614174002"
- *               is_active:
+ *                 description: Category ID
+ *               isActive:
  *                 type: boolean
  *                 description: Whether the service is active
- *                 default: true
  *         multipart/form-data:
  *           schema:
  *             type: object
@@ -179,25 +214,25 @@ const getMyServices = serviceController.getMyServices || ((req, res) => {
  *               - name
  *               - description
  *               - price
- *               - category_id
+ *               - ServiceCategoryId
  *             properties:
  *               name:
  *                 type: string
  *                 description: Service name
  *               description:
  *                 type: string
- *                 description: Detailed description of the service
+ *                 description: Detailed description
  *               price:
  *                 type: number
- *                 description: Service price (in USD)
+ *                 description: Service price
  *               duration:
  *                 type: integer
  *                 description: Service duration in minutes
- *               category_id:
+ *               ServiceCategoryId:
  *                 type: string
  *                 format: uuid
- *                 description: Category ID for the service
- *               is_active:
+ *                 description: Category ID
+ *               isActive:
  *                 type: boolean
  *                 description: Whether the service is active
  *               images:
@@ -205,39 +240,27 @@ const getMyServices = serviceController.getMyServices || ((req, res) => {
  *                 items:
  *                   type: string
  *                   format: binary
- *                 description: Service images (up to 5)
+ *                 description: Service images
  *     responses:
  *       201:
  *         description: Service created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Service created successfully"
- *                 service:
- *                   $ref: '#/components/schemas/Service'
  *       400:
- *         $ref: '#/components/responses/ValidationError'
+ *         description: Validation error
  *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       500:
  *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/create', verifyToken, createService);
+router.post('/create', verifyToken, authorize(['provider']), createService);
 
 /**
  * @swagger
  * /api/services/update/{id}:
  *   put:
- *     summary: Update an existing service
- *     description: Update details of an existing service. Only the service owner can update their services.
+ *     summary: Update a service
+ *     description: Update an existing service (service owner only)
  *     tags: [Services]
  *     security:
  *       - bearerAuth: []
@@ -249,7 +272,6 @@ router.post('/create', verifyToken, createService);
  *           format: uuid
  *         required: true
  *         description: Service ID
- *         example: "123e4567-e89b-12d3-a456-426614174000"
  *     requestBody:
  *       required: true
  *       content:
@@ -262,18 +284,18 @@ router.post('/create', verifyToken, createService);
  *                 description: Service name
  *               description:
  *                 type: string
- *                 description: Detailed description of the service
+ *                 description: Detailed description
  *               price:
  *                 type: number
  *                 description: Service price
  *               duration:
  *                 type: integer
  *                 description: Service duration in minutes
- *               category_id:
+ *               ServiceCategoryId:
  *                 type: string
  *                 format: uuid
- *                 description: Category ID for the service
- *               is_active:
+ *                 description: Category ID
+ *               isActive:
  *                 type: boolean
  *                 description: Whether the service is active
  *         multipart/form-data:
@@ -285,18 +307,18 @@ router.post('/create', verifyToken, createService);
  *                 description: Service name
  *               description:
  *                 type: string
- *                 description: Detailed description of the service
+ *                 description: Detailed description
  *               price:
  *                 type: number
  *                 description: Service price
  *               duration:
  *                 type: integer
  *                 description: Service duration in minutes
- *               category_id:
+ *               ServiceCategoryId:
  *                 type: string
  *                 format: uuid
- *                 description: Category ID for the service
- *               is_active:
+ *                 description: Category ID
+ *               isActive:
  *                 type: boolean
  *                 description: Whether the service is active
  *               images:
@@ -304,8 +326,8 @@ router.post('/create', verifyToken, createService);
  *                 items:
  *                   type: string
  *                   format: binary
- *                 description: New service images (up to 5)
- *               delete_images:
+ *                 description: New service images
+ *               deleteImages:
  *                 type: array
  *                 items:
  *                   type: string
@@ -313,45 +335,25 @@ router.post('/create', verifyToken, createService);
  *     responses:
  *       200:
  *         description: Service updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Service updated successfully"
- *                 service:
- *                   $ref: '#/components/schemas/Service'
  *       400:
- *         $ref: '#/components/responses/ValidationError'
+ *         description: Validation error
  *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
+ *         description: Unauthorized
  *       403:
  *         description: Forbidden - not the service owner
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *             example:
- *               message: "You can only update your own services"
  *       404:
- *         $ref: '#/components/responses/NotFoundError'
+ *         description: Service not found
  *       500:
  *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/update/:id', verifyToken, updateService);
+router.put('/update/:id', verifyToken, authorize(['provider']), updateService);
 
 /**
  * @swagger
  * /api/services/delete/{id}:
  *   delete:
  *     summary: Delete a service
- *     description: Delete a service listing. Only the service owner can delete their services.
+ *     description: Delete a service (service owner only)
  *     tags: [Services]
  *     security:
  *       - bearerAuth: []
@@ -363,60 +365,41 @@ router.put('/update/:id', verifyToken, updateService);
  *           format: uuid
  *         required: true
  *         description: Service ID
- *         example: "123e4567-e89b-12d3-a456-426614174000"
  *     responses:
  *       200:
  *         description: Service deleted successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Service deleted successfully"
  *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
+ *         description: Unauthorized
  *       403:
  *         description: Forbidden - not the service owner
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *             example:
- *               message: "You can only delete your own services"
  *       404:
- *         $ref: '#/components/responses/NotFoundError'
+ *         description: Service not found
  *       500:
  *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/delete/:id', verifyToken, deleteService);
+router.delete('/delete/:id', verifyToken, authorize(['provider']), deleteService);
 
 /**
  * @swagger
  * /api/services/get:
  *   get:
  *     summary: Get all services
- *     description: Retrieve a list of services with various filtering options.
+ *     description: Get a list of all active services
  *     tags: [Services]
  *     parameters:
  *       - in: query
- *         name: category_id
+ *         name: ServiceCategoryId
  *         schema:
  *           type: string
  *           format: uuid
  *         description: Filter by category
  *       - in: query
- *         name: min_price
+ *         name: minPrice
  *         schema:
  *           type: number
  *         description: Minimum price filter
  *       - in: query
- *         name: max_price
+ *         name: maxPrice
  *         schema:
  *           type: number
  *         description: Maximum price filter
@@ -424,7 +407,7 @@ router.delete('/delete/:id', verifyToken, deleteService);
  *         name: search
  *         schema:
  *           type: string
- *         description: Search term for service name or description
+ *         description: Search term
  *       - in: query
  *         name: location
  *         schema:
@@ -434,7 +417,7 @@ router.delete('/delete/:id', verifyToken, deleteService);
  *         name: distance
  *         schema:
  *           type: number
- *         description: Maximum distance in kilometers from location
+ *         description: Maximum distance from location
  *       - in: query
  *         name: sort
  *         schema:
@@ -456,37 +439,8 @@ router.delete('/delete/:id', verifyToken, deleteService);
  *     responses:
  *       200:
  *         description: List of services
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 services:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Service'
- *                 total:
- *                   type: integer
- *                   description: Total number of services matching the query
- *                   example: 100
- *                 page:
- *                   type: integer
- *                   description: Current page number
- *                   example: 1
- *                 pages:
- *                   type: integer
- *                   description: Total number of pages
- *                   example: 10
- *                 limit:
- *                   type: integer
- *                   description: Number of services per page
- *                   example: 10
  *       500:
  *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/get', getServices);
 
@@ -494,8 +448,8 @@ router.get('/get', getServices);
  * @swagger
  * /api/services/provider/{providerId}:
  *   get:
- *     summary: Get services by provider ID
- *     description: Retrieve all services offered by a specific provider.
+ *     summary: Get provider services
+ *     description: Get services offered by a specific provider
  *     tags: [Services]
  *     security:
  *       - bearerAuth: []
@@ -508,50 +462,20 @@ router.get('/get', getServices);
  *         required: true
  *         description: Provider ID
  *       - in: query
- *         name: include_inactive
+ *         name: includeInactive
  *         schema:
  *           type: boolean
  *           default: false
- *         description: Whether to include inactive services (admin only)
+ *         description: Include inactive services (admin only)
  *     responses:
  *       200:
- *         description: List of services for the specified provider
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 services:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Service'
- *                 provider:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       format: uuid
- *                     name:
- *                       type: string
- *                     rating:
- *                       type: number
- *                       format: float
+ *         description: List of provider services
  *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
+ *         description: Unauthorized
  *       404:
  *         description: Provider not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *             example:
- *               message: "Provider not found"
  *       500:
  *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/provider/:providerId', verifyToken, getProviderServices);
 
@@ -559,18 +483,18 @@ router.get('/provider/:providerId', verifyToken, getProviderServices);
  * @swagger
  * /api/services/my-services:
  *   get:
- *     summary: Get services created by the authenticated user
- *     description: Retrieve all services created by the currently authenticated service provider.
+ *     summary: Get my services
+ *     description: Get services created by the authenticated provider
  *     tags: [Services]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
- *         name: include_inactive
+ *         name: includeInactive
  *         schema:
  *           type: boolean
  *           default: true
- *         description: Whether to include inactive services
+ *         description: Include inactive services
  *       - in: query
  *         name: sort
  *         schema:
@@ -580,36 +504,20 @@ router.get('/provider/:providerId', verifyToken, getProviderServices);
  *         description: Sort order
  *     responses:
  *       200:
- *         description: List of services created by the authenticated user
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 services:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Service'
- *                 total:
- *                   type: integer
- *                   description: Total number of services
+ *         description: List of your services
  *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
+ *         description: Unauthorized
  *       500:
  *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/my-services', verifyToken, getMyServices);
+router.get('/my-services', verifyToken, authorize(['provider']), getMyServices);
 
 /**
  * @swagger
  * /api/services/{id}:
  *   get:
- *     summary: Get a service by ID
- *     description: Retrieve detailed information about a specific service.
+ *     summary: Get a service
+ *     description: Get detailed information about a specific service
  *     tags: [Services]
  *     parameters:
  *       - in: path
@@ -622,53 +530,11 @@ router.get('/my-services', verifyToken, getMyServices);
  *     responses:
  *       200:
  *         description: Service details
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 service:
- *                   $ref: '#/components/schemas/Service'
- *                 provider:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       format: uuid
- *                     name:
- *                       type: string
- *                     rating:
- *                       type: number
- *                       format: float
- *                     contact_info:
- *                       type: object
- *                     location:
- *                       type: object
- *                 category:
- *                   $ref: '#/components/schemas/ServiceCategory'
- *                 reviews:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: string
- *                         format: uuid
- *                       rating:
- *                         type: number
- *                       comment:
- *                         type: string
- *                   description: Recent reviews (limited to 5)
  *       404:
- *         $ref: '#/components/responses/NotFoundError'
+ *         description: Service not found
  *       500:
  *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/:id', getService);
 
-// Export the router object
 module.exports = router;

@@ -1,101 +1,90 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/app.config').database.sequelize;
-const User = require('./User');
+'use strict';
+const { Model } = require('sequelize');
 
-class FlaggedContent extends Model {}
-
-FlaggedContent.init(
-  {
-    // Content information
-    content_type: {
-      type: DataTypes.ENUM('review', 'service', 'user', 'message'),
-      allowNull: false
-    },
-    content_id: {
-      type: DataTypes.UUID,
-      allowNull: false
-    },
-    content_author_id: {
-      type: DataTypes.UUID,
-      references: {
-        model: User,
-        key: 'id'
-      }
-    },
-    content_summary: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-
-    // Flag information
-    flag_reason: {
+module.exports = (sequelize, DataTypes) => {
+  class FlaggedContent extends Model {
+    static associate(models) {
+      FlaggedContent.belongsTo(models.User, {
+        as: 'contentAuthor',
+        foreignKey: 'contentauthorId'
+      });
+      
+      FlaggedContent.belongsTo(models.User, {
+        as: 'reportedBy',
+        foreignKey: 'reportedbyId'
+      });
+      
+      FlaggedContent.belongsTo(models.User, {
+        as: 'moderatedBy',
+        foreignKey: 'moderatedbyId'
+      });
+    }
+  }
+  
+  FlaggedContent.init({
+    contentType: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    reported_by_id: {
+    contentId: {
       type: DataTypes.UUID,
-      references: {
-        model: User,
-        key: 'id'
-      }
+      allowNull: false
+    },
+    contentauthorId: {
+      type: DataTypes.UUID
+    },
+    contentSummary: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    flagReason: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    reportedbyId: {
+      type: DataTypes.UUID
     },
     automated: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
     severity: {
-      type: DataTypes.ENUM('low', 'medium', 'high', 'critical'),
+      type: DataTypes.STRING,
       defaultValue: 'medium'
     },
-    report_count: {
+    reportCount: {
       type: DataTypes.INTEGER,
       defaultValue: 1
     },
     reports: {
-      type: DataTypes.JSONB, // Stores an array of reports [{ reportedBy, reason, timestamp }]
+      type: DataTypes.JSONB,
       defaultValue: []
     },
-    detected_issues: {
-      type: DataTypes.ARRAY(DataTypes.STRING), // Stores detected issues as an array
+    detectedIssues: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
       defaultValue: []
     },
-
-    // Status tracking
     status: {
-      type: DataTypes.ENUM('pending', 'approved', 'removed'),
+      type: DataTypes.STRING,
       defaultValue: 'pending'
     },
-    moderated_by_id: {
-      type: DataTypes.UUID,
-      references: {
-        model: User,
-        key: 'id'
-      }
+    moderatedbyId: {
+      type: DataTypes.UUID
     },
-    moderated_at: {
+    moderatedAt: {
       type: DataTypes.DATE
     },
-    moderation_notes: {
+    moderationNotes: {
       type: DataTypes.TEXT
     }
-  },
-  {
+  }, {
     sequelize,
     modelName: 'FlaggedContent',
-    timestamps: true,
-    indexes: [
-      { fields: ['content_type', 'content_id'] },
-      { fields: ['status'] },
-      { fields: ['severity'] },
-      { fields: ['content_author_id'] },
-      { fields: ['created_at'] }
-    ]
-  }
-);
-
-// Define associations
-FlaggedContent.belongsTo(User, { as: 'contentAuthor', foreignKey: 'content_author_id' });
-FlaggedContent.belongsTo(User, { as: 'reportedBy', foreignKey: 'reported_by_id' });
-FlaggedContent.belongsTo(User, { as: 'moderatedBy', foreignKey: 'moderated_by_id' });
-
-module.exports = FlaggedContent;
+    tableName: 'FlaggedContents',
+    underscored: false,
+    freezeTableName: true,
+    timestamps: true
+  });
+  
+  return FlaggedContent;
+};

@@ -233,3 +233,92 @@ Security updates are applied regularly:
 ## Setup Instructions
 
 [To be added]
+
+local-services-directory/
+├── backend/                  # Backend code (Node.js/Express)
+│   ├── config/               # Configuration files
+│   │   ├── app.config.js     # Application configuration
+│   │   ├── database.js       # Database configuration (Sequelize)
+│   ├── src/
+│   │   ├── controllers/      # Controller functions
+│   │   ├── middleware/       # Middleware (auth, validation, etc.)
+│   │   │   └── security.middleware.js
+│   │   ├── models/           # Database models
+│   │   │   └── User.js
+│   │   ├── routes/           # API routes
+│   │   │   ├── admin/        # Admin routes
+│   │   │   └── api/          # Public API routes
+│   │   └── utils/            # Utility functions
+│   │       └── logger.js
+│   ├── .env                  # Environment variables
+│   ├── .gitignore
+│   ├── package.json
+│   └── server.js             # Main server file
+│
+└── frontend/                 # Frontend code (React)
+    ├── public/               # Static files
+    ├── src/
+    │   ├── api/              # API modules for backend communication
+    │   │   ├── auth.js
+    │   │   ├── axios.js
+    │   │   ├── bookings.js
+    │   │   ├── providers.js
+    │   │   ├── reviews.js
+    │   │   ├── services.js
+    │   │   └── users.js
+    │   ├── components/       # Reusable UI components
+    │   │   ├── auth/         # Authentication components
+    │   │   │   ├── ProtectedRoute.jsx
+    │   │   │   └── ProviderRoute.jsx
+    │   │   ├── bookings/     # Booking-related components
+    │   │   │   ├── BookingCard.jsx
+    │   │   │   ├── BookingForm.jsx
+    │   │   │   └── BookingList.jsx
+    │   │   ├── reviews/      # Review-related components
+    │   │   │   ├── ReviewCard.jsx
+    │   │   │   ├── ReviewForm.jsx
+    │   │   │   └── ReviewList.jsx
+    │   │   ├── services/     # Service-related components
+    │   │   │   ├── ServiceCard.jsx
+    │   │   │   ├── ServiceFilters.jsx
+    │   │   │   └── ServiceGrid.jsx
+    │   │   └── ui/           # UI elements
+    │   │       ├── Alert.jsx
+    │   │       ├── Button.jsx
+    │   │       ├── Card.jsx
+    │   │       ├── Input.jsx
+    │   │       └── Select.jsx
+    │   ├── contexts/         # React context providers
+    │   │   └── AuthContext.jsx
+    │   ├── layouts/          # Page layout components
+    │   │   ├── AdminLayout.jsx
+    │   │   └── MainLayout.jsx
+    │   ├── pages/            # Page components
+    │   │   ├── admin/        # Admin pages
+    │   │   │   ├── AdminDashboardPage.jsx
+    │   │   │   ├── AdminServicesPage.jsx
+    │   │   │   ├── AdminUsersPage.jsx
+    │   │   │   └── AdminReviewsPage.jsx
+    │   │   ├── BookingConfirmationPage.jsx
+    │   │   ├── BookingPage.jsx
+    │   │   ├── ChangePasswordPage.jsx
+    │   │   ├── EditProfilePage.jsx
+    │   │   ├── HomePage.jsx
+    │   │   ├── LoginPage.jsx
+    │   │   ├── ProfilePage.jsx
+    │   │   ├── ProviderBookingsPage.jsx
+    │   │   ├── ProviderDashboardPage.jsx
+    │   │   ├── ProviderServiceFormPage.jsx
+    │   │   ├── ProviderServicesPage.jsx
+    │   │   ├── RegisterPage.jsx
+    │   │   ├── SearchPage.jsx
+    │   │   ├── ServiceDetailPage.jsx
+    │   │   └── UserBookingsPage.jsx
+    │   ├── utils/            # Utility functions
+    │   │   └── formatters.js # Date, currency formatters, etc.
+    │   ├── App.jsx           # Main App component with routing
+    │   ├── index.css         # Global styles
+    │   └── index.js          # Entry point
+    ├── .env                  # Environment variables
+    ├── .gitignore
+    └── package.json

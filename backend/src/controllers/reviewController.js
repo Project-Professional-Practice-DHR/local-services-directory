@@ -1,6 +1,6 @@
 // src/controllers/reviewController.js
 
-const { Review, User, Service } = require('../models');
+const { Review, User, Service, sequelize } = require('../models');
 const { Op } = require('sequelize');
 
 /**
@@ -10,11 +10,11 @@ const { Op } = require('sequelize');
  */
 exports.createReview = async (req, res) => {
   try {
-    const { provider_id, service_id, rating, review_text } = req.body;
-    const user_id = req.user.id; // From verifyToken middleware
+    const { providerId, serviceId, rating, reviewText } = req.body;
+    const userId = req.user.id; // From verifyToken middleware
 
     // Validate input
-    if (!provider_id || !rating) {
+    if (!providerId || !rating) {
       return res.status(400).json({ message: 'Provider ID and rating are required' });
     }
 
@@ -23,14 +23,14 @@ exports.createReview = async (req, res) => {
     }
 
     // Check if provider exists
-    const provider = await User.findByPk(provider_id);
-    if (!provider || provider.userType !== 'provider') {
+    const provider = await User.findByPk(providerId);
+    if (!provider || provider.role !== 'provider') {
       return res.status(404).json({ message: 'Provider not found' });
     }
 
-    // Check if service exists if service_id is provided
-    if (service_id) {
-      const service = await Service.findByPk(service_id);
+    // Check if service exists if serviceId is provided
+    if (serviceId) {
+      const service = await Service.findByPk(serviceId);
       if (!service) {
         return res.status(404).json({ message: 'Service not found' });
       }
@@ -41,13 +41,13 @@ exports.createReview = async (req, res) => {
 
     // Create the review
     const newReview = await Review.create({
-      user_id,
-      provider_id,
-      service_id,
+      userId,
+      providerId,
+      serviceId,
       rating,
-      review_text,
-      review_date: new Date(),
-      is_verified: false // Set to true if you've verified the user has used this service
+      reviewText,
+      reviewDate: new Date(),
+      isVerified: false // Set to true if you've verified the user has used this service
     });
 
     res.status(201).json({
@@ -78,7 +78,7 @@ exports.getServiceReviews = async (req, res) => {
 
     // Build query conditions
     const whereConditions = {
-      service_id: serviceId,
+      serviceId,
       rating: { [Op.gte]: minRating }
     };
 
@@ -95,14 +95,14 @@ exports.getServiceReviews = async (req, res) => {
           attributes: ['id', 'username', 'firstName', 'lastName', 'profilePicture']
         }
       ],
-      order: [['review_date', 'DESC']],
+      order: [['reviewDate', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset)
     });
 
     // Calculate average rating
     const averageRating = await Review.findOne({
-      where: { service_id: serviceId },
+      where: { serviceId },
       attributes: [
         [sequelize.fn('AVG', sequelize.col('rating')), 'averageRating']
       ],
@@ -132,13 +132,13 @@ exports.getProviderReviews = async (req, res) => {
 
     // Validate provider exists
     const provider = await User.findByPk(providerId);
-    if (!provider || provider.userType !== 'provider') {
+    if (!provider || provider.role !== 'provider') {
       return res.status(404).json({ message: 'Provider not found' });
     }
 
     // Build query conditions
     const whereConditions = {
-      provider_id: providerId,
+      providerId,
       rating: { [Op.gte]: minRating }
     };
 
@@ -160,14 +160,14 @@ exports.getProviderReviews = async (req, res) => {
           attributes: ['id', 'name', 'description', 'price']
         }
       ],
-      order: [['review_date', 'DESC']],
+      order: [['reviewDate', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset)
     });
 
     // Calculate average rating
     const averageRating = await Review.findOne({
-      where: { provider_id: providerId },
+      where: { providerId },
       attributes: [
         [sequelize.fn('AVG', sequelize.col('rating')), 'averageRating']
       ],
@@ -193,11 +193,11 @@ exports.getProviderReviews = async (req, res) => {
 exports.addProviderResponse = async (req, res) => {
   try {
     const { reviewId } = req.params;
-    const { provider_response } = req.body;
-    const provider_id = req.user.id; // From verifyToken middleware
+    const { providerResponse } = req.body;
+    const providerId = req.user.id; // From verifyToken middleware
 
     // Validate input
-    if (!provider_response) {
+    if (!providerResponse) {
       return res.status(400).json({ message: 'Provider response is required' });
     }
 
@@ -208,15 +208,15 @@ exports.addProviderResponse = async (req, res) => {
     }
 
     // Verify that the authenticated user is the provider who received the review
-    if (review.provider_id !== provider_id) {
+    if (review.providerId !== providerId) {
       return res.status(403).json({ 
         message: 'You can only respond to reviews about your own services' 
       });
     }
 
     // Update the review with the provider's response
-    review.provider_response = provider_response;
-    review.response_date = new Date();
+    review.providerResponse = providerResponse;
+    review.responseDate = new Date();
     await review.save();
 
     res.status(200).json({
@@ -237,11 +237,11 @@ exports.addProviderResponse = async (req, res) => {
 exports.flagReview = async (req, res) => {
   try {
     const { reviewId } = req.params;
-    const { flag_reason } = req.body;
-    const provider_id = req.user.id; // From verifyToken middleware
+    const { flagReason } = req.body;
+    const providerId = req.user.id; // From verifyToken middleware
 
     // Validate input
-    if (!flag_reason) {
+    if (!flagReason) {
       return res.status(400).json({ message: 'Reason for flagging is required' });
     }
 
@@ -252,15 +252,15 @@ exports.flagReview = async (req, res) => {
     }
 
     // Verify that the authenticated user is the provider who received the review
-    if (review.provider_id !== provider_id) {
+    if (review.providerId !== providerId) {
       return res.status(403).json({ 
         message: 'You can only flag reviews about your own services' 
       });
     }
 
     // Update the review to mark it as flagged
-    review.is_flagged = true;
-    review.flag_reason = flag_reason;
+    review.isFlagged = true;
+    review.flagReason = flagReason;
     await review.save();
 
     // In a real application, you might want to notify an admin or create a moderation task
@@ -285,13 +285,13 @@ exports.getUserReviews = async (req, res) => {
     const { userId } = req.params;
     
     // Security check - users can only see their own reviews unless they're admins
-    if (req.user.id !== userId && req.user.userType !== 'admin') {
+    if (req.user.id !== userId && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Unauthorized' });
     }
 
     // Get reviews with provider and service information
     const reviews = await Review.findAll({
-      where: { user_id: userId },
+      where: { userId },
       include: [
         {
           model: User,
@@ -304,7 +304,7 @@ exports.getUserReviews = async (req, res) => {
           attributes: ['id', 'name', 'description', 'price']
         }
       ],
-      order: [['review_date', 'DESC']]
+      order: [['reviewDate', 'DESC']]
     });
 
     res.status(200).json({ reviews });

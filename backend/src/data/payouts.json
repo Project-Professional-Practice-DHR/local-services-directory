@@ -1,0 +1,78 @@
+[
+    {
+      "id": "c7d8e9f0-a1b2-9c3d-4e5f-6a7b8c9d0e1f",
+      "providerId": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+      "amount": 120.00,
+      "fees": 18.00,
+      "netAmount": 102.00,
+      "currency": "USD",
+      "status": "completed",
+      "payoutMethod": "bank_transfer",
+      "payoutDetails": {
+        "bankName": "Chase Bank",
+        "accountType": "checking",
+        "last4": "6789"
+      },
+      "scheduledDate": "2025-03-22T00:00:00Z",
+      "processedDate": "2025-03-22T10:30:00Z",
+      "reference": "PO-20250322-001",
+      "createdAt": "2025-03-15T15:45:00Z",
+      "updatedAt": "2025-03-22T10:30:00Z"
+    },
+    {
+      "id": "d8e9f0a1-b2c3-0d4e-5f6a-7b8c9d0e1f2a",
+      "providerId": "f47ac10b-58cc-4372-a567-0e02b2c3d482",
+      "amount": 85.00,
+      "fees": 12.75,
+      "netAmount": 72.25,
+      "currency": "USD",
+      "status": "completed",
+      "payoutMethod": "paypal",
+      "payoutDetails": {
+        "email": "sarah.provider@example.com"
+      },
+      "scheduledDate": "2025-03-24T00:00:00Z",
+      "processedDate": "2025-03-24T09:15:00Z",
+      "reference": "PO-20250324-002",
+      "createdAt": "2025-03-17T10:20:00Z",
+      "updatedAt": "2025-03-24T09:15:00Z"
+    },
+    {
+      "id": "e9f0a1b2-c3d4-1e5f-6a7b-8c9d0e1f2a3b",
+      "providerId": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+      "amount": 149.00,
+      "fees": 22.35,
+      "netAmount": 126.65,
+      "currency": "USD",
+      "status": "completed",
+      "payoutMethod": "bank_transfer",
+      "payoutDetails": {
+        "bankName": "Bank of America",
+        "accountType": "savings",
+        "last4": "3456"
+      },
+      "scheduledDate": "2025-03-25T00:00:00Z",
+      "processedDate": "2025-03-25T11:20:00Z",
+      "reference": "PO-20250325-003",
+      "createdAt": "2025-03-18T08:50:00Z",
+      "updatedAt": "2025-03-25T11:20:00Z"
+    },
+    {
+      "id": "f0a1b2c3-d4e5-2f6a-7b8c-9d0e1f2a3b4c",
+      "providerId": "f47ac10b-58cc-4372-a567-0e02b2c3d482",
+      "amount": 70.00,
+      "fees": 10.50,
+      "netAmount": 59.50,
+      "currency": "USD",
+      "status": "completed",
+      "payoutMethod": "paypal",
+      "payoutDetails": {
+        "email": "sarah.provider@example.com"
+      },
+      "scheduledDate": "2025-03-26T00:00:00Z",
+      "processedDate": "2025-03-26T10:05:00Z",
+      "reference": "PO-20250326-004",
+      "createdAt": "2025-03-19T11:15:00Z",
+      "updatedAt": "2025-03-26T10:05:00Z"
+    }
+  ]

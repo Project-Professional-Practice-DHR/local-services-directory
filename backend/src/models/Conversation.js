@@ -1,46 +1,44 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../../config/app.config').database.sequelize;
-const User = require('./User');
-const Booking = require('./Booking');
+'use strict';
+const { Model } = require('sequelize');
 
-const Conversation = sequelize.define('Conversation', {
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
-  },
-  participants: {
-    type: DataTypes.ARRAY(DataTypes.UUID),
-    allowNull: false,
-    references: {
-      model: User,
-      key: 'id'
-    }
-  },
-  lastMessage: {
-    type: DataTypes.JSON, // Stores content, sender_id, and timestamp
-    defaultValue: {}
-  },
-  unreadCount: {
-    type: DataTypes.JSON, // Stores unread message count per user
-    defaultValue: {}
-  },
-  bookingId: {
-    type: DataTypes.UUID,
-    references: {
-      model: Booking,
-      key: 'id'
+module.exports = (sequelize, DataTypes) => {
+  class Conversation extends Model {
+    static associate(models) {
+      Conversation.belongsTo(models.Booking, { 
+        foreignKey: 'bookingId', 
+        as: 'booking' 
+      });
     }
   }
-}, {
-  timestamps: true,
-  indexes: [
-    { fields: ['participants'] }, // Compound index for fast queries
-    { fields: ['bookingId'] }
-  ]
-});
-
-// Define associations
-Conversation.belongsTo(Booking, { foreignKey: 'bookingId', as: 'booking' });
-
-module.exports = Conversation;
+  
+  Conversation.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
+    participants: {
+      type: DataTypes.ARRAY(DataTypes.UUID),
+      allowNull: false
+    },
+    lastMessage: {
+      type: DataTypes.JSON,
+      defaultValue: {}
+    },
+    unreadCount: {
+      type: DataTypes.JSON,
+      defaultValue: {}
+    },
+    bookingId: {
+      type: DataTypes.UUID
+    }
+  }, {
+    sequelize,
+    modelName: 'Conversation',
+    tableName: 'Conversations',
+    underscored: false,
+    freezeTableName: true
+  });
+  
+  return Conversation;
+};

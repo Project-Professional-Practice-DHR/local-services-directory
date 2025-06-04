@@ -1,9 +1,7 @@
 // File: src/controllers/admin/moderationController.js
 
-const FlaggedContent = require('../../models/FlaggedContent');
-const Review = require('../../models/Review');
-const Service = require('../../models/Service');
-const User = require('../../models/User');
+const { FlaggedContent, Review, Service, User, sequelize } = require('../../models');
+const { Op, fn, col } = require('sequelize');
 const { createAuditLog } = require('../../services/auditService');
 const { sendEmail } = require('../../services/email.service');
 const { moderateText } = require('../../services/moderationService');
@@ -15,42 +13,51 @@ exports.getFlaggedContent = async (req, res) => {
       page = 1,
       limit = 10,
       status,
-      content_type,
+      contentType,
       severity,
       sortBy = 'createdAt',
       sortOrder = 'desc'
     } = req.query;
     
-    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const offset = (parseInt(page) - 1) * parseInt(limit);
     
     // Build filter object
-    const filter = {};
+    const whereClause = {};
     
     if (status) {
-      filter.status = status;
+      whereClause.status = status;
     }
     
-    if (content_type) {
-      filter.content_type = content_type;
+    if (contentType) {
+      whereClause.contentType = contentType;
     }
     
     if (severity) {
-      filter.severity = severity;
+      whereClause.severity = severity;
     }
     
     // Sort options
-    const sort = {};
-    sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
+    const order = [[sortBy, sortOrder === 'asc' ? 'ASC' : 'DESC']];
     
     // Execute query with pagination
-    const flaggedContent = await FlaggedContent.find(filter)
-      .sort(sort)
-      .skip(skip)
-      .limit(parseInt(limit))
-      .populate('reportedBy', 'name email')
-      .populate('contentAuthor', 'name email');
-    
-    const total = await FlaggedContent.countDocuments(filter);
+    const { rows: flaggedContent, count: total } = await FlaggedContent.findAndCountAll({
+      where: whereClause,
+      order,
+      offset,
+      limit: parseInt(limit),
+      include: [
+        {
+          model: User,
+          as: 'reportedBy',
+          attributes: ['id', 'firstName', 'lastName', 'email']
+        },
+        {
+          model: User,
+          as: 'contentAuthor',
+          attributes: ['id', 'firstName', 'lastName', 'email']
+        }
+      ]
+    });
     
     return res.status(200).json({
       flaggedContent,
@@ -63,7 +70,7 @@ exports.getFlaggedContent = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching flagged content:', error);
-    return res.status(500).json({ message: 'Failed to fetch flagged content' });
+    return res.status(500).json({ message: 'Failed to fetch flagged content', error: error.message });
   }
 };
 
@@ -73,8 +80,15 @@ exports.moderateContent = async (req, res) => {
     const { id } = req.params;
     const { action, reason, notifyUser } = req.body;
     
-    const flaggedContent = await FlaggedContent.findById(id)
-      .populate('contentAuthor', 'name email');
+    const flaggedContent = await FlaggedContent.findByPk(id, {
+      include: [
+        {
+          model: User,
+          as: 'contentAuthor',
+          attributes: ['id', 'firstName', 'lastName', 'email']
+        }
+      ]
+    });
     
     if (!flaggedContent) {
       return res.status(404).json({ message: 'Flagged content not found' });
@@ -84,31 +98,31 @@ exports.moderateContent = async (req, res) => {
     flaggedContent.status = action === 'approve' ? 'approved' : 'removed';
     flaggedContent.moderationNotes = reason;
     flaggedContent.moderatedAt = new Date();
-    flaggedContent.moderatedBy = req.user.id;
+    flaggedContent.moderatedbyId = req.user.id;
     
     await flaggedContent.save();
     
     // Take action on the actual content
     let contentActionResult;
     
-    switch (flaggedContent.content_type) {
+    switch (flaggedContent.contentType) {
       case 'review':
         contentActionResult = await handleReviewModeration(
-          flaggedContent.content_id,
+          flaggedContent.contentId,
           action,
           reason
         );
         break;
       case 'service':
         contentActionResult = await handleServiceModeration(
-          flaggedContent.content_id,
+          flaggedContent.contentId,
           action,
           reason
         );
         break;
       case 'user':
         contentActionResult = await handleUserModeration(
-          flaggedContent.content_id,
+          flaggedContent.contentId,
           action,
           reason
         );
@@ -120,12 +134,12 @@ exports.moderateContent = async (req, res) => {
     await createAuditLog({
       action: `CONTENT_${action.toUpperCase()}`,
       performedBy: req.user.id,
-      targetUser: flaggedContent.contentAuthor?._id,
+      targetUser: flaggedContent.contentAuthor?.id,
       details: {
-        content_type: flaggedContent.content_type,
-        content_id: flaggedContent.content_id,
+        contentType: flaggedContent.contentType,
+        contentId: flaggedContent.contentId,
         reason,
-        flagId: flaggedContent._id
+        flagId: flaggedContent.id
       }
     });
     
@@ -136,8 +150,8 @@ exports.moderateContent = async (req, res) => {
         subject: `Your content has been ${action === 'approve' ? 'approved' : 'removed'}`,
         template: 'contentModeration',
         data: {
-          name: flaggedContent.contentAuthor.name,
-          content_type: flaggedContent.content_type,
+          name: `${flaggedContent.contentAuthor.firstName} ${flaggedContent.contentAuthor.lastName}`,
+          contentType: flaggedContent.contentType,
           action: action === 'approve' ? 'approved' : 'removed',
           reason,
           contentSummary: flaggedContent.contentSummary
@@ -152,13 +166,13 @@ exports.moderateContent = async (req, res) => {
     });
   } catch (error) {
     console.error('Error moderating content:', error);
-    return res.status(500).json({ message: 'Failed to moderate content' });
+    return res.status(500).json({ message: 'Failed to moderate content', error: error.message });
   }
 };
 
 // Handle review moderation
 async function handleReviewModeration(reviewId, action, reason) {
-  const review = await Review.findById(reviewId);
+  const review = await Review.findByPk(reviewId);
   
   if (!review) {
     return { success: false, message: 'Review not found' };
@@ -179,7 +193,7 @@ async function handleReviewModeration(reviewId, action, reason) {
 
 // Handle service moderation
 async function handleServiceModeration(serviceId, action, reason) {
-  const service = await Service.findById(serviceId);
+  const service = await Service.findByPk(serviceId);
   
   if (!service) {
     return { success: false, message: 'Service not found' };
@@ -200,7 +214,7 @@ async function handleServiceModeration(serviceId, action, reason) {
 
 // Handle user moderation
 async function handleUserModeration(userId, action, reason) {
-  const user = await User.findById(userId);
+  const user = await User.findByPk(userId);
   
   if (!user) {
     return { success: false, message: 'User not found' };
@@ -225,79 +239,65 @@ async function handleUserModeration(userId, action, reason) {
 exports.getModerationStats = async (req, res) => {
   try {
     // Get counts by status
-    const statusCounts = await FlaggedContent.aggregate([
-      {
-        $group: {
-          _id: '$status',
-          count: { $sum: 1 }
-        }
-      }
-    ]);
+    const statusCounts = await FlaggedContent.findAll({
+      attributes: [
+        ['status', 'status'],
+        [fn('COUNT', col('id')), 'count']
+      ],
+      group: ['status']
+    });
     
     // Get counts by content type
-    const content_type = await FlaggedContent.aggregate([
-      {
-        $group: {
-          _id: '$content_type',
-          count: { $sum: 1 }
-        }
-      }
-    ]);
+    const contentTypeCounts = await FlaggedContent.findAll({
+      attributes: [
+        ['contentType', 'contentType'],
+        [fn('COUNT', col('id')), 'count']
+      ],
+      group: ['contentType']
+    });
     
     // Get counts by severity
-    const severityCounts = await FlaggedContent.aggregate([
-      {
-        $group: {
-          _id: '$severity',
-          count: { $sum: 1 }
-        }
-      }
-    ]);
+    const severityCounts = await FlaggedContent.findAll({
+      attributes: [
+        ['severity', 'severity'],
+        [fn('COUNT', col('id')), 'count']
+      ],
+      group: ['severity']
+    });
     
     // Get average resolution time
-    const resolutionTime = await FlaggedContent.aggregate([
-      {
-        $match: {
-          status: { $in: ['approved', 'removed'] },
-          moderatedAt: { $exists: true }
-        }
-      },
-      {
-        $project: {
-          resolutionTimeMs: { $subtract: ['$moderatedAt', '$createdAt'] }
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          averageTimeMs: { $avg: '$resolutionTimeMs' },
-          minTimeMs: { $min: '$resolutionTimeMs' },
-          maxTimeMs: { $max: '$resolutionTimeMs' }
-        }
-      },
-      {
-        $project: {
-          averageTimeHours: { $divide: ['$averageTimeMs', 3600000] },
-          minTimeHours: { $divide: ['$minTimeMs', 3600000] },
-          maxTimeHours: { $divide: ['$maxTimeMs', 3600000] },
-          _id: 0
-        }
+    const resolutionTimeData = await FlaggedContent.findAll({
+      attributes: [
+        [fn('AVG', sequelize.literal(`EXTRACT(EPOCH FROM ("moderatedAt" - "createdAt")) / 3600`)), 'averageTimeHours'],
+        [fn('MIN', sequelize.literal(`EXTRACT(EPOCH FROM ("moderatedAt" - "createdAt")) / 3600`)), 'minTimeHours'],
+        [fn('MAX', sequelize.literal(`EXTRACT(EPOCH FROM ("moderatedAt" - "createdAt")) / 3600`)), 'maxTimeHours']
+      ],
+      where: {
+        status: { [Op.in]: ['approved', 'removed'] },
+        moderatedAt: { [Op.not]: null }
       }
-    ]);
+    });
+    
+    const resolutionTime = resolutionTimeData[0] || {
+      averageTimeHours: 0,
+      minTimeHours: 0,
+      maxTimeHours: 0
+    };
+    
+    // Get pending count
+    const pendingCount = await FlaggedContent.count({
+      where: { status: 'pending' }
+    });
     
     return res.status(200).json({
       statusCounts,
-      content_typeCounts,
+      contentTypeCounts,
       severityCounts,
-      resolutionTime: resolutionTime[0] || {
-        averageTimeHours: 0,
-        minTimeHours: 0,
-        maxTimeHours: 0
-      },
-      pendingCount: statusCounts.find(item => item._id === 'pending')?.count || 0
+      resolutionTime,
+      pendingCount
     });
   } catch (error) {
     console.error('Error fetching moderation stats:', error);
-    return res.status(500).json({ message: 'Failed to fetch moderation statistics' });
+    return res.status(500).json({ message: 'Failed to fetch moderation statistics', error: error.message });
   }
 };

@@ -1,5 +1,5 @@
 const { User, ServiceProviderProfile, Service, Review } = require('../models');
-const { Op } = require('sequelize');
+const { Op, Sequelize } = require('sequelize');
 const { Client } = require('@googlemaps/google-maps-services-js');
 
 const googleMapsClient = new Client({});
@@ -9,7 +9,7 @@ exports.createProfile = async (req, res) => {
   try {
     // Check if user already has a profile
     const existingProfile = await ServiceProviderProfile.findOne({
-      where: { UserId: req.user.id }
+      where: { userId: req.user.id }
     });
     
     if (existingProfile) {
@@ -64,7 +64,7 @@ exports.createProfile = async (req, res) => {
       longitude,
       website,
       businessHours: businessHours || {},
-      UserId: req.user.id
+      userId: req.user.id
     });
     
     // Update user role if it's currently 'customer'
@@ -94,7 +94,7 @@ exports.createProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const profile = await ServiceProviderProfile.findOne({
-      where: { UserId: req.user.id }
+      where: { userId: req.user.id }
     });
     
     if (!profile) {
@@ -180,10 +180,12 @@ exports.getProfile = async (req, res) => {
       include: [
         {
           model: User,
+          as: 'user',
           attributes: ['firstName', 'lastName', 'email', 'phoneNumber', 'profilePicture']
         },
         {
           model: Service,
+          as: 'services',
           attributes: ['id', 'name', 'description', 'price', 'pricingType', 'duration', 'isActive']
         }
       ]
@@ -198,11 +200,11 @@ exports.getProfile = async (req, res) => {
     
     // Get reviews
     const reviews = await Review.findAll({
-      where: { ServiceProviderProfileId: profile.id },
+      where: { providerId: profile.id },
       include: [
         {
           model: User,
-          as: 'Customer',
+          as: 'customer',
           attributes: ['firstName', 'lastName', 'profilePicture']
         }
       ],
@@ -231,10 +233,11 @@ exports.getProfile = async (req, res) => {
 exports.getMyProfile = async (req, res) => {
   try {
     const profile = await ServiceProviderProfile.findOne({
-      where: { UserId: req.user.id },
+      where: { userId: req.user.id },
       include: [
         {
           model: Service,
+          as: 'services',
           attributes: ['id', 'name', 'description', 'price', 'pricingType', 'duration', 'isActive']
         }
       ]
@@ -283,10 +286,12 @@ exports.searchProviders = async (req, res) => {
     if (category) {
       includeService.push({
         model: Service,
+        as: 'services',
         required: true,
         include: [
           {
             model: ServiceCategory,
+            as: 'category',
             where: { id: category }
           }
         ]
@@ -294,6 +299,7 @@ exports.searchProviders = async (req, res) => {
     } else {
       includeService.push({
         model: Service,
+        as: 'services',
         required: false
       });
     }
@@ -350,6 +356,7 @@ exports.searchProviders = async (req, res) => {
       include: [
         {
           model: User,
+          as: 'user',
           attributes: ['firstName', 'lastName', 'profilePicture']
         },
         ...includeService
@@ -388,7 +395,7 @@ exports.uploadBusinessDocuments = async (req, res) => {
     }
     
     const profile = await ServiceProviderProfile.findOne({
-      where: { UserId: req.user.id }
+      where: { userId: req.user.id }
     });
     
     if (!profile) {

@@ -1044,31 +1044,33 @@ async function startServer() {
     await testConnection();
     log.success('Database connection test successful');
 
-    // Sync models (only in development mode)
-    if (process.env.NODE_ENV === 'development') {
-      log.info('Development mode detected, syncing database...');
-      if (typeof syncDatabase !== 'function') {
-        throw new Error('syncDatabase is not a function');
-      }
-      
-      await syncDatabase();
-      log.success('Database sync completed');
-    } else {
-      log.warning('Not in development mode, skipping database sync');
-    }
-
-    // Sync Sequelize models
+    // Sync Sequelize models - WITH IMPROVED ERROR HANDLING
     log.info('Syncing Sequelize models...');
     if (!sequelize) {
       throw new Error('Sequelize not initialized');
     }
     
-    await sequelize.sync()
-      .then(() => log.success('Database connected and synced'))
-      .catch((err) => {
-        log.error('Error syncing database', err);
-        throw err; // Re-throw to be caught by the outer catch
-      });
+    // Option 1: Try running without alter mode first
+    try {
+      log.info('Attempting to sync without altering tables...');
+      await sequelize.sync({ alter: false });
+      log.success('Database connected and synced successfully');
+    } catch (syncError) {
+      log.warning('Basic sync failed, attempting with logging to pinpoint the issue:', syncError.message);
+      
+      // Option 2: If that fails, try sync with logging to diagnose the problem
+      try {
+        await sequelize.sync({ 
+          alter: false,
+          logging: (sql) => log.info(`SQL: ${sql}`) 
+        });
+      } catch (loggedSyncError) {
+        log.error('Sync with logging failed:', loggedSyncError.message);
+        
+        // Option 3: As a last resort, skip model sync entirely and start the server anyway
+        log.warning('Unable to sync database models. Server will start, but some functionality may be limited.');
+      }
+    }
 
     // Create directories for backups if they don't exist
     const backupsDir = path.join(__dirname, 'backups');
@@ -1077,7 +1079,7 @@ async function startServer() {
       log.success(`Created backups directory at ${backupsDir}`);
     }
 
-    // Start server
+    // Start server even if sync failed
     log.info('Starting Express server...');
     const server = app.listen(PORT, () => {
       log.highlight(`Server running on port ${PORT}`);

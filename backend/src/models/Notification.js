@@ -1,52 +1,55 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../../config/app.config').database.sequelize;
-const User = require('./User'); // Import User model
+'use strict';
+const { Model } = require('sequelize');
 
-const Notification = sequelize.define('Notification', {
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
-  },
-  user_id: {
-    type: DataTypes.UUID,
-    allowNull: false,
-    references: {
-      model: User,
-      key: 'id'
-    },
-    onDelete: 'CASCADE'
-  },
-  type: {
-    type: DataTypes.ENUM('message', 'booking', 'payment', 'review', 'system'),
-    allowNull: false
-  },
-  title: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  content: {
-    type: DataTypes.TEXT,
-    allowNull: false
-  },
-  is_read: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
-  },
-  data: {
-    type: DataTypes.JSON,
-    defaultValue: {}
-  }
-}, {
-  timestamps: true,
-  indexes: [
-    {
-      fields: ['user_id', 'is_read']
+module.exports = (sequelize, DataTypes) => {
+  class Notification extends Model {
+    static associate(models) {
+      Notification.belongsTo(models.User, { 
+        foreignKey: 'userId',
+        as: 'user',
+        onDelete: 'CASCADE' 
+      });
     }
-  ]
-});
-
-// Associations
-Notification.belongsTo(User, { foreignKey: 'user_id', onDelete: 'CASCADE' });
-
-module.exports = Notification;
+  }
+  
+  Notification.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: false
+    },
+    type: {
+      type: DataTypes.ENUM('message', 'booking', 'payment', 'review', 'system'),
+      allowNull: false
+    },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    isRead: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    data: {
+      type: DataTypes.JSON,
+      defaultValue: {}
+    }
+  }, {
+    sequelize,
+    modelName: 'Notification',
+    tableName: 'Notifications',
+    underscored: false,
+    freezeTableName: true,
+    timestamps: true
+  });
+  
+  return Notification;
+};

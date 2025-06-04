@@ -1,0 +1,82 @@
+[
+    {
+      "id": "a4b5c6d7-e8f9-4a1b-2c3d-4e5f6a7b8c9d",
+      "participants": [
+        "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+        "f47ac10b-58cc-4372-a567-0e02b2c3d480"
+      ],
+      "lastMessage": {
+        "id": "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c",
+        "content": "Hello John! Absolutely, I always bring eco-friendly cleaning supplies. They're safe for pets and just as effective. Looking forward to seeing you on March 25th at 10 AM!",
+        "senderId": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+        "createdAt": "2025-03-15T14:50:00Z"
+      },
+      "unreadCount": {
+        "f47ac10b-58cc-4372-a567-0e02b2c3d479": 0,
+        "f47ac10b-58cc-4372-a567-0e02b2c3d480": 0
+      },
+      "bookingId": "b0c1d2e3-f4a5-3b6c-7d8e-9f0a1b2c3d4e",
+      "createdAt": "2025-03-15T14:35:00Z",
+      "updatedAt": "2025-03-15T14:50:00Z"
+    },
+    {
+      "id": "b5c6d7e8-f9a0-5b2c-3d4e-5f6a7b8c9d0e",
+      "participants": [
+        "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+        "f47ac10b-58cc-4372-a567-0e02b2c3d482"
+      ],
+      "lastMessage": {
+        "id": "b8c9d0e1-f2a3-6b4c-5d6e-7f8a9b0c1d2e",
+        "content": "Hello! I'd be happy to show you some examples. Here are a few modern bob styles I've created recently. Let me know if any of these are close to what you're looking for!",
+        "senderId": "f47ac10b-58cc-4372-a567-0e02b2c3d482",
+        "createdAt": "2025-03-17T09:25:00Z"
+      },
+      "unreadCount": {
+        "f47ac10b-58cc-4372-a567-0e02b2c3d479": 0,
+        "f47ac10b-58cc-4372-a567-0e02b2c3d482": 0
+      },
+      "bookingId": "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f",
+      "createdAt": "2025-03-17T09:05:00Z",
+      "updatedAt": "2025-03-17T09:25:00Z"
+    },
+    {
+      "id": "c6d7e8f9-a0b1-6c3d-4e5f-6a7b8c9d0e1f",
+      "participants": [
+        "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+        "f47ac10b-58cc-4372-a567-0e02b2c3d481"
+      ],
+      "lastMessage": {
+        "id": "e1f2a3b4-c5d6-9e7f-8a9b-0c1d2e3f4a5b",
+        "content": "That's perfect! I'll see you tomorrow at 11am. Thank you for the quick response and the complimentary screen protector - that's very thoughtful.",
+        "senderId": "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+        "createdAt": "2025-03-18T09:15:00Z"
+      },
+      "unreadCount": {
+        "f47ac10b-58cc-4372-a567-0e02b2c3d483": 0,
+        "f47ac10b-58cc-4372-a567-0e02b2c3d481": 0
+      },
+      "bookingId": "d2e3f4a5-b6c7-5d8e-9f0a-1b2c3d4e5f6a",
+      "createdAt": "2025-03-18T08:40:00Z",
+      "updatedAt": "2025-03-18T09:15:00Z"
+    },
+    {
+      "id": "d7e8f9a0-b1c2-7d4e-5f6a-7b8c9d0e1f2a",
+      "participants": [
+        "f47ac10b-58cc-4372-a567-0e02b2c3d483",
+        "f47ac10b-58cc-4372-a567-0e02b2c3d480"
+      ],
+      "lastMessage": {
+        "id": "a3b4c5d6-e7f8-1a9b-0c1d-2e3f4a5b6c7d",
+        "content": "Hello Mike! Yes, our move-out cleaning service is comprehensive and includes deep cleaning of all appliances, including the oven and refrigerator. We'll also clean inside cabinets, wipe down all surfaces, clean light fixtures, and ensure the bathroom and kitchen are spotless. Is there anything specific you're concerned about that I should know?",
+        "senderId": "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+        "createdAt": "2025-03-20T17:35:00Z"
+      },
+      "unreadCount": {
+        "f47ac10b-58cc-4372-a567-0e02b2c3d483": 0,
+        "f47ac10b-58cc-4372-a567-0e02b2c3d480": 0
+      },
+      "bookingId": "e3f4a5b6-c7d8-6e9f-0a1b-2c3d4e5f6a7b",
+      "createdAt": "2025-03-20T17:15:00Z",
+      "updatedAt": "2025-03-20T17:35:00Z"
+    }
+  ]
