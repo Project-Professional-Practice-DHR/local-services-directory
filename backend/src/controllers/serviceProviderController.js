@@ -1,8 +1,7 @@
 const { User, ServiceProviderProfile, Service, Review } = require('../models');
 const { Op, Sequelize } = require('sequelize');
-const { Client } = require('@googlemaps/google-maps-services-js');
-
-const googleMapsClient = new Client({});
+// Replace the Google Maps Client with your custom maps utility
+const mapsUtils = require('../utils/maps');
 
 // Create service provider profile
 exports.createProfile = async (req, res) => {
@@ -35,17 +34,12 @@ exports.createProfile = async (req, res) => {
     let longitude = null;
     
     try {
-      const response = await googleMapsClient.geocode({
-        params: {
-          address: `${address}, ${city}, ${state} ${zipCode}`,
-          key: process.env.GOOGLE_MAPS_API_KEY
-        }
-      });
+      const fullAddress = `${address}, ${city}, ${state} ${zipCode}`;
+      const geocodeResult = await mapsUtils.geocodeAddress(fullAddress);
       
-      if (response.data.results.length > 0) {
-        const location = response.data.results[0].geometry.location;
-        latitude = location.lat;
-        longitude = location.lng;
+      if (geocodeResult) {
+        latitude = geocodeResult.lat;
+        longitude = geocodeResult.lng;
       }
     } catch (error) {
       console.error('Geocoding error:', error);
@@ -123,17 +117,11 @@ exports.updateProfile = async (req, res) => {
       try {
         const fullAddress = `${address || profile.address}, ${city || profile.city}, ${state || profile.state} ${zipCode || profile.zipCode}`;
         
-        const response = await googleMapsClient.geocode({
-          params: {
-            address: fullAddress,
-            key: process.env.GOOGLE_MAPS_API_KEY
-          }
-        });
+        const geocodeResult = await mapsUtils.geocodeAddress(fullAddress);
         
-        if (response.data.results.length > 0) {
-          const location = response.data.results[0].geometry.location;
-          latitude = location.lat;
-          longitude = location.lng;
+        if (geocodeResult) {
+          latitude = geocodeResult.lat;
+          longitude = geocodeResult.lng;
         }
       } catch (error) {
         console.error('Geocoding error:', error);
@@ -321,17 +309,11 @@ exports.searchProviders = async (req, res) => {
     let locationFilter = {};
     if (location && radius) {
       try {
-        const response = await googleMapsClient.geocode({
-          params: {
-            address: location,
-            key: process.env.GOOGLE_MAPS_API_KEY
-          }
-        });
+        const geocodeResult = await mapsUtils.geocodeAddress(location);
         
-        if (response.data.results.length > 0) {
-          const targetLocation = response.data.results[0].geometry.location;
-          const lat = targetLocation.lat;
-          const lng = targetLocation.lng;
+        if (geocodeResult) {
+          const lat = geocodeResult.lat;
+          const lng = geocodeResult.lng;
           
           // Haversine formula in SQL for distance calculation
           locationFilter = Sequelize.literal(

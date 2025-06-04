@@ -18,11 +18,15 @@ const { Op } = require('sequelize');
  *           schema:
  *             type: object
  *             required:
+ *               - username
  *               - firstName
  *               - lastName
  *               - email
  *               - password
  *             properties:
+ *               username:
+ *                 type: string
+ *                 example: "johndoe"
  *               firstName:
  *                 type: string
  *                 example: "John"
@@ -54,10 +58,11 @@ const { Op } = require('sequelize');
  *       500:
  *         description: Server error
  */
+
 // Register a new user
 exports.register = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, phoneNumber, role } = req.body;
+    const { username, firstName, lastName, email, password, phoneNumber, role } = req.body;
     
     // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
@@ -73,6 +78,7 @@ exports.register = async (req, res) => {
     
     // Create user
     const user = await User.create({
+      username,
       firstName,
       lastName,
       email,
@@ -94,6 +100,7 @@ exports.register = async (req, res) => {
       token,
       data: {
         id: user.id,
+        username: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
@@ -229,13 +236,14 @@ exports.login = async (req, res) => {
       });
     }
     
-    // Check if user is verified
+    /* Check if user is verified
     if (!user.isVerified) {
       return res.status(401).json({
         success: false,
         message: 'Please verify your email before logging in'
       });
     }
+    */
     
     // Check if user is active
     if (user.status !== 'active') {

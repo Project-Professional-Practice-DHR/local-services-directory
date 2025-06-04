@@ -65,14 +65,27 @@ module.exports = (sequelize, DataTypes) => {
       });
       
       // Optional Service association
-      // Review.belongsTo(models.Service, {
-      //   foreignKey: 'serviceId',
-      //   as: 'service'
-      // });
+      Review.belongsTo(models.Service, {
+        foreignKey: 'serviceId',
+        as: 'service'
+      });
+      
+      // Optional Booking association
+      Review.belongsTo(models.Booking, {
+        foreignKey: 'bookingId',
+        as: 'booking'
+      });
     }
   }
   
   Review.init({
+    // Add explicit ID field with UUID type and default value
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+      allowNull: false
+    },
     userId: {
       type: DataTypes.UUID,
       allowNull: false,
@@ -94,6 +107,15 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       references: {
         model: 'Services',
+        key: 'id'
+      }
+    },
+    // Add bookingId field 
+    bookingId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'Bookings',
         key: 'id'
       }
     },
@@ -141,7 +163,9 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Review',
     tableName: 'Reviews',
     underscored: false,
-    freezeTableName: true
+    freezeTableName: true,
+    paranoid: true, // Adds deletedAt for soft deletes
+    timestamps: true // Ensures createdAt and updatedAt are used
   });
   
   return Review;

@@ -119,13 +119,13 @@ exports.getServiceUsageMetrics = async (req, res) => {
     // Average bookings per user
     const avgBookingsPerUser = await Booking.findAll({
       attributes: [
-        ['customerId', 'customerId'],
+        ['userId', 'userId'],
         [fn('COUNT', col('id')), 'bookingCount']
       ],
       where: {
         createdAt: { [Op.between]: [start, end] }
       },
-      group: ['customerId']
+      group: ['userId']
     });
     
     const userCount = avgBookingsPerUser.length;
@@ -290,7 +290,7 @@ exports.getPopularServices = async (req, res) => {
     // Service categories distribution
     const categoryDistribution = await Service.findAll({
       attributes: [
-        ['ServiceCategoryId', 'categoryId'],
+        ['serviceCategoryId', 'categoryId'],
         [fn('COUNT', col('id')), 'serviceCount']
       ],
       include: [
@@ -300,7 +300,7 @@ exports.getPopularServices = async (req, res) => {
           attributes: ['name']
         }
       ],
-      group: ['ServiceCategoryId', 'category.id'],
+      group: ['serviceCategoryId', 'category.id'],
       order: [[col('serviceCount'), 'DESC']]
     });
     
@@ -372,7 +372,7 @@ exports.getSystemHealth = async (req, res) => {
     const recentErrors = [
       {
         timestamp: new Date(Date.now() - 3600000),
-        endpoint: '/api/bookings',
+        endpoint: '/api/booking',
         errorCode: 500,
         message: 'Database connection timeout',
         count: 3

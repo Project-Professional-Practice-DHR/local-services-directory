@@ -7,7 +7,7 @@ describe('Booking Service', () => {
   let userId;
   let serviceId;
   let providerId;
-  let ServiceCategoryId;
+  let serviceCategoryId;
 
   beforeEach(async () => {
     try {
@@ -33,7 +33,7 @@ describe('Booking Service', () => {
         name: 'Test Category',
       });
   
-      ServiceCategoryId = category.id;  // Get the correct categoryId
+      serviceCategoryId = category.id;  // Get the correct categoryId
   
       // Create a service provider profile
       const providerProfile = await ServiceProviderProfile.create({
@@ -55,7 +55,7 @@ describe('Booking Service', () => {
         duration: 60,
         isActive: true,
         providerId: providerId, // Ensure providerId is linked correctly
-        ServiceCategoryId: ServiceCategoryId,  // Ensure the categoryId is valid
+        serviceCategoryId: serviceCategoryId,  // Ensure the categoryId is valid
         ServiceProviderProfileId: providerProfile.id, // Link to the provider profile
       });
   

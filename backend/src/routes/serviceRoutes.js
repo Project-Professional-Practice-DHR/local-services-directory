@@ -21,7 +21,7 @@ const { verifyToken, authorize } = require('../middleware/auth');
  *         - description
  *         - price
  *         - providerId
- *         - ServiceCategoryId
+ *         - serviceCategoryId
  *       properties:
  *         id:
  *           type: string
@@ -48,7 +48,7 @@ const { verifyToken, authorize } = require('../middleware/auth');
  *           type: string
  *           format: uuid
  *           description: ID of the service provider
- *         ServiceCategoryId:
+ *         serviceCategoryId:
  *           type: string
  *           format: uuid
  *           description: ID of the service category
@@ -65,6 +65,11 @@ const { verifyToken, authorize } = require('../middleware/auth');
  */
 
 // Extract controller methods with fallbacks for missing methods
+// Also make sure to include this in your controller imports at the top
+const importServicesFromJSON = serviceController?.importServicesFromJSON || ((req, res) => {
+  res.status(501).json({ message: 'importServicesFromJSON function not implemented' });
+});
+
 const getServices = serviceController?.getServices || ((req, res) => {
   res.status(501).json({ message: 'getServices function not implemented' });
 });
@@ -97,12 +102,9 @@ const searchServices = serviceController?.searchServices || ((req, res) => {
   res.status(501).json({ message: 'searchServices function not implemented' });
 });
 
-// In serviceRoutes.js
-router.get('/featured', serviceController.getFeaturedServices);
-
-// Make sure these come BEFORE the dynamic ID route
-router.get('/:id', serviceController.getService);
-
+const getFeaturedServices = serviceController?.getFeaturedServices || ((req, res) => {
+  res.status(501).json({ message: 'getFeaturedServices function not implemented' });
+});
 
 /**
  * @swagger
@@ -162,10 +164,8 @@ router.get('/:id', serviceController.getService);
  *       500:
  *         description: Server error
  */
-// Add this endpoint if the controller has the method
-if (serviceController.searchServices) {
-  router.get('/search', searchServices);
-}
+// Define routes in order from most specific to least specific
+router.get('/search', searchServices);
 
 /**
  * @swagger
@@ -186,7 +186,7 @@ if (serviceController.searchServices) {
  *               - name
  *               - description
  *               - price
- *               - ServiceCategoryId
+ *               - serviceCategoryId
  *             properties:
  *               name:
  *                 type: string
@@ -200,7 +200,7 @@ if (serviceController.searchServices) {
  *               duration:
  *                 type: integer
  *                 description: Service duration in minutes
- *               ServiceCategoryId:
+ *               serviceCategoryId:
  *                 type: string
  *                 format: uuid
  *                 description: Category ID
@@ -214,7 +214,7 @@ if (serviceController.searchServices) {
  *               - name
  *               - description
  *               - price
- *               - ServiceCategoryId
+ *               - serviceCategoryId
  *             properties:
  *               name:
  *                 type: string
@@ -228,7 +228,7 @@ if (serviceController.searchServices) {
  *               duration:
  *                 type: integer
  *                 description: Service duration in minutes
- *               ServiceCategoryId:
+ *               serviceCategoryId:
  *                 type: string
  *                 format: uuid
  *                 description: Category ID
@@ -291,7 +291,7 @@ router.post('/create', verifyToken, authorize(['provider']), createService);
  *               duration:
  *                 type: integer
  *                 description: Service duration in minutes
- *               ServiceCategoryId:
+ *               serviceCategoryId:
  *                 type: string
  *                 format: uuid
  *                 description: Category ID
@@ -314,7 +314,7 @@ router.post('/create', verifyToken, authorize(['provider']), createService);
  *               duration:
  *                 type: integer
  *                 description: Service duration in minutes
- *               ServiceCategoryId:
+ *               serviceCategoryId:
  *                 type: string
  *                 format: uuid
  *                 description: Category ID
@@ -388,7 +388,7 @@ router.delete('/delete/:id', verifyToken, authorize(['provider']), deleteService
  *     tags: [Services]
  *     parameters:
  *       - in: query
- *         name: ServiceCategoryId
+ *         name: serviceCategoryId
  *         schema:
  *           type: string
  *           format: uuid
@@ -443,6 +443,21 @@ router.delete('/delete/:id', verifyToken, authorize(['provider']), deleteService
  *         description: Server error
  */
 router.get('/get', getServices);
+
+/**
+ * @swagger
+ * /api/services/featured:
+ *   get:
+ *     summary: Get featured services
+ *     description: Get a list of featured services
+ *     tags: [Services]
+ *     responses:
+ *       200:
+ *         description: List of featured services
+ *       500:
+ *         description: Server error
+ */
+router.get('/featured', getFeaturedServices);
 
 /**
  * @swagger
@@ -512,6 +527,9 @@ router.get('/provider/:providerId', verifyToken, getProviderServices);
  */
 router.get('/my-services', verifyToken, authorize(['provider']), getMyServices);
 
+// Default route for all services
+router.get('/', getServices);
+
 /**
  * @swagger
  * /api/services/{id}:
@@ -535,6 +553,38 @@ router.get('/my-services', verifyToken, authorize(['provider']), getMyServices);
  *       500:
  *         description: Server error
  */
+// Dynamic ID route should be last to avoid conflicts with other routes
 router.get('/:id', getService);
+
+// Updated route that accepts source parameter
+
+/**
+ * @swagger
+ * /api/services/admin/import:
+ *   post:
+ *     summary: Import services from JSON file
+ *     description: Import services data from a JSON file into the database (admin only)
+ *     tags: [Services]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: source
+ *         schema:
+ *           type: string
+ *           enum: [frontend, backend]
+ *           default: backend
+ *         description: Source of the JSON file (frontend = mock data, backend = production data)
+ *     responses:
+ *       200:
+ *         description: Services imported successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - admin access required
+ *       500:
+ *         description: Server error
+ */
+router.post('/admin/import', verifyToken, authorize(['admin']), serviceController.importServicesFromJSON);
 
 module.exports = router;

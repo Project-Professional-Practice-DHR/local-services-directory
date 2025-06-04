@@ -14,7 +14,7 @@ module.exports = {
       },
       description: {
         type: Sequelize.TEXT,
-        allowNull: false
+        allowNull: true
       },
       price: {
         type: Sequelize.DECIMAL(10, 2),
@@ -25,18 +25,34 @@ module.exports = {
         defaultValue: 'fixed'
       },
       duration: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        defaultValue: 60  // Added default value from model
       },
       isActive: {
         type: Sequelize.BOOLEAN,
         defaultValue: true
       },
-      ServiceCategoryId: {
+      isFeatured: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
+      rating: {
+        type: Sequelize.DECIMAL(3, 2),  // Changed to DECIMAL(3, 2) to match model
+        defaultValue: 0,  // Changed to match model's default
+        allowNull: true   // Removed the validation to match model
+      },
+      bookingCount: {  // Added missing column
+        type: Sequelize.INTEGER,
+        defaultValue: 0
+      },
+      serviceCategoryId: {
         type: Sequelize.UUID,
         references: {
           model: 'ServiceCategories',
           key: 'id'
-        }
+        },
+        allowNull: false  // Added to match model
       },
       providerId: {
         type: Sequelize.UUID,
@@ -44,6 +60,7 @@ module.exports = {
           model: 'ServiceProviderProfiles',
           key: 'id'
         },
+        allowNull: false,  // Added to match model
         onDelete: 'CASCADE'
       },
       createdAt: {
@@ -53,6 +70,10 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      },
+      deletedAt: {  // Using camelCase for DB
+        type: Sequelize.DATE,
+        defaultValue: null
       }
     });
   },

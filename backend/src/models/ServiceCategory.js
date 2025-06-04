@@ -4,6 +4,7 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class ServiceCategory extends Model {
     static associate(models) {
+      // Define the association clearly with the right foreign key
       ServiceCategory.hasMany(models.Service, {
         foreignKey: 'serviceCategoryId',
         as: 'services'
@@ -23,17 +24,20 @@ module.exports = (sequelize, DataTypes) => {
       unique: true
     },
     description: {
-      type: DataTypes.TEXT
+      type: DataTypes.TEXT,
+      allowNull: true
     },
     icon: {
-      type: DataTypes.STRING
-    }
+      type: DataTypes.STRING,
+      allowNull: true
+    },
   }, {
     sequelize,
     modelName: 'ServiceCategory',
     tableName: 'ServiceCategories',
-    underscored: false,
-    freezeTableName: true
+    underscored: false,  // Important: Set to false to use camelCase
+    freezeTableName: true,
+    paranoid: false      // IMPORTANT: Disable paranoid mode (soft deletes)
   });
   
   return ServiceCategory;

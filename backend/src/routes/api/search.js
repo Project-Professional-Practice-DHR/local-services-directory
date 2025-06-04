@@ -142,7 +142,7 @@ router.get('/', async (req, res) => {
 
     // Category and subcategory filtering
     if (category) {
-      serviceWhere.ServiceCategoryId = category;
+      serviceWhere.serviceCategoryId = category;
     }
 
     if (subcategory) {
@@ -327,7 +327,7 @@ router.get('/trending', async (req, res) => {
         {
           model: Service,
           as: 'services',
-          attributes: ['id', 'name', 'price', 'ServiceCategoryId'],
+          attributes: ['id', 'name', 'price', 'serviceCategoryId'],
           limit: 3 // Limit to 3 services per provider
         }
       ]
@@ -378,7 +378,7 @@ router.get('/suggestion', verifyToken, async (req, res) => {
         {
           model: Service,
           as: 'services',
-          attributes: ['id', 'name', 'price', 'ServiceCategoryId'],
+          attributes: ['id', 'name', 'price', 'serviceCategoryId'],
           limit: 2
         }
       ]

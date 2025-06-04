@@ -13,7 +13,7 @@ const registerSchema = Joi.object({
       'string.max': 'Username cannot be longer than {#limit} characters',
       'any.required': 'Username is required'
     }),
-  
+    
   email: Joi.string()
     .email()
     .required()
@@ -23,7 +23,7 @@ const registerSchema = Joi.object({
       'string.email': 'Email must be a valid email address',
       'any.required': 'Email is required'
     }),
-  
+    
   password: Joi.string()
     .min(8)
     .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])'))
@@ -35,40 +35,55 @@ const registerSchema = Joi.object({
       'string.pattern.base': 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
       'any.required': 'Password is required'
     }),
-  
+    
   firstName: Joi.string()
-    .allow('')
-    .optional(),
-  
-  lastName: Joi.string()
-    .allow('')
-    .optional(),
-  
-  phone: Joi.string()
-    .allow('')
-    .optional(),
-  
-  userType: Joi.string()
-    .valid('customer', 'provider')
     .required()
     .messages({
-      'string.base': 'User type must be a string',
-      'string.empty': 'User type is required',
-      'any.only': 'User type must be either customer or provider',
-      'any.required': 'User type is required'
+      'string.base': 'First name must be a string',
+      'string.empty': 'First name is required',
+      'any.required': 'First name is required'
+    }),
+    
+  lastName: Joi.string()
+    .required()
+    .messages({
+      'string.base': 'Last name must be a string',
+      'string.empty': 'Last name is required',
+      'any.required': 'Last name is required'
+    }),
+    
+    phoneNumber: Joi.string()
+    .pattern(new RegExp('^\\+?[0-9\\s()\\-]{10,20}$'))
+    .allow('')
+    .optional()
+    .messages({
+      'string.pattern.base': 'Phone number must be a valid format (10-20 characters, can include +, spaces, (), and -)',
+      'string.base': 'Phone number must be a string'
+    }),
+    
+  role: Joi.string()
+    .valid('customer', 'provider', 'admin')
+    .required()
+    .messages({
+      'string.base': 'Role must be a string',
+      'string.empty': 'Role is required',
+      'any.only': 'Role must be either customer, provider, or admin',
+      'any.required': 'Role is required'
     })
 });
 
 // Login validation schema
 const loginSchema = Joi.object({
-  username: Joi.string()
+  email: Joi.string()
+    .email()
     .required()
     .messages({
-      'string.base': 'Username/email must be a string',
-      'string.empty': 'Username/email is required',
-      'any.required': 'Username/email is required'
+      'string.base': 'Email must be a string',
+      'string.empty': 'Email is required',
+      'string.email': 'Email must be a valid email address',
+      'any.required': 'Email is required'
     }),
-  
+
   password: Joi.string()
     .required()
     .messages({

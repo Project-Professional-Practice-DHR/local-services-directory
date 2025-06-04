@@ -1,368 +1,599 @@
 const express = require('express');
 const router = express.Router();
-const { Booking, User, Service } = require('../models'); // Import Sequelize models
+const { 
+  Booking, 
+  Service, 
+  ServiceProviderProfile, 
+  User 
+} = require('../models');
 const { verifyToken, authorize } = require('../middleware/auth');
 const bookingController = require('../controllers/bookingController');
 
-// Define controller methods with fallbacks for missing implementations
-let controllerMethods = {
-  getBookings: async (req, res) => {
-    try {
-      // Admin only
-      if (req.user.role !== 'admin') {
-        return res.status(403).json({ message: 'Unauthorized, admin access required' });
-      }
-      
-      // Use proper Sequelize association names - adjust these based on your model definitions
-      const bookings = await Booking.findAll({
-        include: [
-          { model: User, as: 'customer' },
-          { model: User, as: 'provider' },
-          { model: Service, as: 'service' }
-        ]
-      });
-      
-      res.json({
-        success: true,
-        bookings
-      });
-    } catch (error) {
-      console.error('Error fetching bookings:', error);
-      res.status(500).json({ 
-        success: false,
-        message: 'Error fetching bookings', 
-        error: error.message 
-      });
-    }
-  },
+/**
+ * @swagger
+ * tags:
+ *   name: Bookings
+ *   description: Comprehensive booking management operations
+ */
 
-  createBooking: async (req, res) => {
-    const { serviceId, date, time, notes } = req.body;
-    const userId = req.user.id;
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Booking:
+ *       type: object
+ *       required:
+ *         - serviceId
+ *         - userId
+ *         - providerId
+ *         - bookingDate
+ *         - startTime
+ *         - endTime
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *           description: Unique identifier for the booking
+ *         serviceId:
+ *           type: string
+ *           format: uuid
+ *           description: ID of the booked service
+ *         userId:
+ *           type: string
+ *           format: uuid
+ *           description: ID of the customer
+ *         providerId:
+ *           type: string
+ *           format: uuid
+ *           description: ID of the service provider
+ *         bookingDate:
+ *           type: string
+ *           format: date
+ *           description: Date of the booking
+ *         startTime:
+ *           type: string
+ *           format: time
+ *           description: Start time of the booking
+ *         endTime:
+ *           type: string
+ *           format: time
+ *           description: End time of the booking
+ *         status:
+ *           type: string
+ *           enum: [pending, confirmed, in_progress, completed, cancelled, rejected]
+ *           default: pending
+ *           description: Current status of the booking
+ *         notes:
+ *           type: string
+ *           description: Additional notes for the booking
+ *         price:
+ *           type: number
+ *           format: float
+ *           description: Price of the booking
+ *         bookingReference:
+ *           type: string
+ *           description: Unique reference number for the booking
+ *         cancellationReason:
+ *           type: string
+ *           description: Reason for cancellation (if applicable)
+ */
 
-    try {
-      // First, check if the service exists
-      const service = await Service.findByPk(serviceId);
-      if (!service) {
-        return res.status(404).json({
-          success: false,
-          message: 'Service not found'
-        });
-      }
+/**
+ * @swagger
+ * /api/booking:
+ *   get:
+ *     summary: Retrieve all bookings (Admin only)
+ *     description: Fetch a paginated list of all bookings with optional filtering
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of bookings per page
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [pending, confirmed, in_progress, completed, cancelled, rejected]
+ *         description: Filter bookings by status
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Start date for booking date range filter
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: End date for booking date range filter
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved bookings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 count:
+ *                   type: integer
+ *                 page:
+ *                   type: integer
+ *                 totalPages:
+ *                   type: integer
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Booking'
+ *       401:
+ *         description: Unauthorized access
+ *       403:
+ *         description: Forbidden - Admin access required
+ *       500:
+ *         description: Server error
+ */
+router.get('/', verifyToken, authorize(['admin']), bookingController.getBookings);
 
-      const newBooking = await Booking.create({ 
-        userId, 
-        serviceId, 
-        providerId: service.providerId, // Get provider ID from the service
-        date, 
-        time, 
-        notes,
-        status: 'pending' 
-      });
-      
-      res.status(201).json({
-        success: true,
-        message: 'Booking created successfully',
-        booking: newBooking
-      });
-    } catch (error) {
-      console.error('Error creating booking:', error);
-      res.status(500).json({ 
-        success: false,
-        message: 'Error creating booking', 
-        error: error.message 
-      });
-    }
-  },
+/**
+ * @swagger
+ * /api/booking/my-bookings:
+ *   get:
+ *     summary: Retrieve user's bookings
+ *     description: Fetch a paginated list of bookings for the authenticated user
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of bookings per page
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [pending, confirmed, in_progress, completed, cancelled, rejected]
+ *         description: Filter bookings by status
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved user bookings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 count:
+ *                   type: integer
+ *                 page:
+ *                   type: integer
+ *                 totalPages:
+ *                   type: integer
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Booking'
+ *       401:
+ *         description: Unauthorized access
+ *       500:
+ *         description: Server error
+ */
+router.get('/my-bookings', verifyToken, bookingController.getUserBookings);
 
-  getBooking: async (req, res) => {
-    try {
-      // Use proper Sequelize association names
-      const booking = await Booking.findByPk(req.params.id, {
-        include: [
-          { model: User, as: 'customer' },
-          { model: User, as: 'provider' },
-          { model: Service, as: 'service' }
-        ]
-      });
-      
-      if (!booking) {
-        return res.status(404).json({ 
-          success: false,
-          message: 'Booking not found' 
-        });
-      }
-      
-      // Check if user has permission to view this booking
-      if (req.user.role !== 'admin' && 
-          booking.userId !== req.user.id && 
-          booking.providerId !== req.user.id) {
-        return res.status(403).json({ 
-          success: false,
-          message: 'You do not have permission to view this booking' 
-        });
-      }
-      
-      res.json({
-        success: true,
-        booking
-      });
-    } catch (error) {
-      console.error('Error fetching booking:', error);
-      res.status(500).json({ 
-        success: false,
-        message: 'Error fetching booking', 
-        error: error.message 
-      });
-    }
-  },
+/**
+ * @swagger
+ * /api/booking/provider-bookings:
+ *   get:
+ *     summary: Retrieve provider's bookings
+ *     description: Fetch a paginated list of bookings for the authenticated service provider
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of bookings per page
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [pending, confirmed, in_progress, completed, cancelled, rejected]
+ *         description: Filter bookings by status
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved provider bookings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 count:
+ *                   type: integer
+ *                 page:
+ *                   type: integer
+ *                 totalPages:
+ *                   type: integer
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Booking'
+ *       401:
+ *         description: Unauthorized access
+ *       403:
+ *         description: Forbidden - Provider access required
+ *       500:
+ *         description: Server error
+ */
+router.get('/provider-bookings', verifyToken, authorize(['provider']), bookingController.getProviderBookings);
 
-  updateBooking: async (req, res) => {
-    try {
-      const booking = await Booking.findByPk(req.params.id);
-      
-      if (!booking) {
-        return res.status(404).json({ 
-          success: false,
-          message: 'Booking not found' 
-        });
-      }
-      
-      // Check if user has permission to update this booking
-      if (req.user.role !== 'admin' && 
-          booking.userId !== req.user.id && 
-          booking.providerId !== req.user.id) {
-        return res.status(403).json({ 
-          success: false,
-          message: 'You do not have permission to update this booking' 
-        });
-      }
-      
-      // Validate status transitions
-      if (req.body.status) {
-        // Validate status based on user role and current booking status
-        const isValidTransition = validateStatusTransition(
-          booking.status,
-          req.body.status,
-          booking.userId === req.user.id,
-          booking.providerId === req.user.id,
-          req.user.role === 'admin'
-        );
-        
-        if (!isValidTransition) {
-          return res.status(400).json({
-            success: false,
-            message: `Cannot change booking status from '${booking.status}' to '${req.body.status}'`
-          });
-        }
-      }
-      
-      // Customer can only update certain fields
-      if (booking.userId === req.user.id && req.user.role === 'customer') {
-        const allowedFields = ['notes', 'cancelReason'];
-        const filteredBody = {};
-        
-        Object.keys(req.body).forEach(key => {
-          if (allowedFields.includes(key)) {
-            filteredBody[key] = req.body[key];
-          }
-        });
-        
-        // Allow cancellation
-        if (req.body.status === 'cancelled' && booking.status !== 'completed') {
-          filteredBody.status = 'cancelled';
-        }
-        
-        await booking.update(filteredBody);
-      } 
-      // Provider or admin can update status and other fields
-      else {
-        await booking.update(req.body);
-      }
-      
-      // Refresh booking with associations
-      const updatedBooking = await Booking.findByPk(req.params.id, {
-        include: [
-          { model: User, as: 'customer' },
-          { model: User, as: 'provider' },
-          { model: Service, as: 'service' }
-        ]
-      });
-      
-      res.json({ 
-        success: true,
-        message: 'Booking updated successfully', 
-        booking: updatedBooking 
-      });
-    } catch (error) {
-      console.error('Error updating booking:', error);
-      res.status(500).json({ 
-        success: false,
-        message: 'Error updating booking', 
-        error: error.message 
-      });
-    }
-  },
+/**
+ * @swagger
+ * /api/booking:
+ *   post:
+ *     summary: Create a new booking
+ *     description: Create a booking for a specific service
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - serviceId
+ *               - bookingDate
+ *               - startTime
+ *               - endTime
+ *             properties:
+ *               serviceId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: ID of the service to book
+ *               bookingDate:
+ *                 type: string
+ *                 format: date
+ *                 description: Date of the booking
+ *               startTime:
+ *                 type: string
+ *                 format: time
+ *                 description: Start time of the booking
+ *               endTime:
+ *                 type: string
+ *                 format: time
+ *                 description: End time of the booking
+ *               notes:
+ *                 type: string
+ *                 description: Additional notes for the booking
+ *               price:
+ *                 type: number
+ *                 description: Optional price for the booking
+ *               status:
+ *                 type: string
+ *                 default: pending
+ *                 enum: [pending, confirmed, in_progress, completed, cancelled, rejected]
+ *     responses:
+ *       201:
+ *         description: Booking created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Booking'
+ *       400:
+ *         description: Invalid input or missing required fields
+ *       401:
+ *         description: Unauthorized access
+ *       404:
+ *         description: Service not found
+ *       500:
+ *         description: Server error
+ */
+router.post('/', verifyToken, bookingController.createBooking);
 
-  deleteBooking: async (req, res) => {
-    try {
-      const booking = await Booking.findByPk(req.params.id);
-      
-      if (!booking) {
-        return res.status(404).json({ 
-          success: false,
-          message: 'Booking not found' 
-        });
-      }
-      
-      // Only admin or the customer can delete bookings
-      if (req.user.role !== 'admin' && booking.userId !== req.user.id) {
-        return res.status(403).json({ 
-          success: false,
-          message: 'You do not have permission to delete this booking' 
-        });
-      }
-      
-      await booking.destroy();
-      
-      res.json({ 
-        success: true,
-        message: 'Booking deleted successfully' 
-      });
-    } catch (error) {
-      console.error('Error deleting booking:', error);
-      res.status(500).json({ 
-        success: false,
-        message: 'Error deleting booking', 
-        error: error.message 
-      });
-    }
-  },
+/**
+ * @swagger
+ * /api/booking/{id}:
+ *   get:
+ *     summary: Retrieve a specific booking
+ *     description: Get detailed information about a specific booking
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Unique identifier of the booking
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved booking details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Booking'
+ *       401:
+ *         description: Unauthorized access
+ *       404:
+ *         description: Booking not found
+ *       500:
+ *         description: Server error
+ */
+router.get('/:id', verifyToken, bookingController.getBooking);
 
-  getUserBookings: async (req, res) => {
-    try {
-      const userId = req.user.id;
-      
-      const bookings = await Booking.findAll({
-        where: { userId },
-        include: [
-          { model: User, as: 'provider' },
-          { model: Service, as: 'service' }
-        ],
-        order: [['date', 'DESC']]
-      });
-      
-      res.json({
-        success: true,
-        bookings
-      });
-    } catch (error) {
-      console.error('Error fetching user bookings:', error);
-      res.status(500).json({ 
-        success: false,
-        message: 'Error fetching user bookings', 
-        error: error.message 
-      });
-    }
-  },
+/**
+ * @swagger
+ * /api/booking/{id}:
+ *   put:
+ *     summary: Update a booking
+ *     description: Modify details of an existing booking
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Unique identifier of the booking
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [pending, confirmed, in_progress, completed, cancelled, rejected]
+ *                 description: Updated booking status
+ *               notes:
+ *                 type: string
+ *                 description: Updated booking notes
+ *               cancellationReason:
+ *                 type: string
+ *                 description: Reason for cancellation
+ *               startTime:
+ *                 type: string
+ *                 format: time
+ *                 description: Updated start time
+ *               endTime:
+ *                 type: string
+ *                 format: time
+ *                 description: Updated end time
+ *               bookingDate:
+ *                 type: string
+ *                 format: date
+ *                 description: Updated booking date
+ *               price:
+ *                 type: number
+ *                 description: Updated booking price
+ *     responses:
+ *       200:
+ *         description: Booking updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Booking'
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Unauthorized access
+ *       404:
+ *         description: Booking not found
+ *       500:
+ *         description: Server error
+ */
+router.put('/:id', verifyToken, bookingController.updateBooking);
 
-  getProviderBookings: async (req, res) => {
-    try {
-      const providerId = req.user.id;
-      
-      const bookings = await Booking.findAll({
-        where: { providerId },
-        include: [
-          { model: User, as: 'customer' },
-          { model: Service, as: 'service' }
-        ],
-        order: [['date', 'DESC']]
-      });
-      
-      res.json({
-        success: true,
-        bookings
-      });
-    } catch (error) {
-      console.error('Error fetching provider bookings:', error);
-      res.status(500).json({ 
-        success: false,
-        message: 'Error fetching provider bookings', 
-        error: error.message 
-      });
-    }
-  }
-};
+/**
+ * @swagger
+ * /api/booking/{id}:
+ *   delete:
+ *     summary: Delete a booking
+ *     description: Remove a specific booking
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Unique identifier of the booking
+ *     responses:
+ *       200:
+ *         description: Booking deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       401:
+ *         description: Unauthorized access
+ *       404:
+ *         description: Booking not found
+ *       500:
+ *         description: Server error
+ */
+router.delete('/:id', verifyToken, bookingController.deleteBooking);
 
-// Override with bookingController methods if available
-if (bookingController) {
-  if (bookingController.getBookings) controllerMethods.getBookings = bookingController.getBookings;
-  if (bookingController.createBooking) controllerMethods.createBooking = bookingController.createBooking;
-  if (bookingController.getBooking) controllerMethods.getBooking = bookingController.getBooking;
-  if (bookingController.updateBooking) controllerMethods.updateBooking = bookingController.updateBooking;
-  if (bookingController.deleteBooking) controllerMethods.deleteBooking = bookingController.deleteBooking;
-  if (bookingController.getUserBookings) controllerMethods.getUserBookings = bookingController.getUserBookings;
-  if (bookingController.getProviderBookings) controllerMethods.getProviderBookings = bookingController.getProviderBookings;
-}
+/**
+ * @swagger
+ * /api/booking/{id}/cancel:
+ *   post:
+ *     summary: Cancel a booking
+ *     description: Cancel a booking with an optional cancellation reason
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Unique identifier of the booking
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               reason:
+ *                 type: string
+ *                 description: Reason for cancellation
+ *     responses:
+ *       200:
+ *         description: Booking cancelled successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Booking'
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Unauthorized access
+ *       404:
+ *         description: Booking not found
+ *       500:
+ *         description: Server error
+ */
+router.post('/:id/cancel', verifyToken, bookingController.cancelBooking);
 
-// Helper function to validate booking status transitions
-const validateStatusTransition = (currentStatus, newStatus, isCustomer, isProvider, isAdmin) => {
-  // Admin can make any transition
-  if (isAdmin) return true;
-  
-  // Define allowed transitions based on role and current status
-  const allowedTransitions = {
-    customer: {
-      pending: ['canceled'],
-      confirmed: ['canceled'],
-      in_progress: [], // Customer can't change from in_progress
-      completed: [], // Customer can't change from completed
-      cancelled: [], // Can't un-cancel
-      rejected: []  // Can't change from rejected
-    },
-    provider: {
-      pending: ['confirmed', 'rejected', 'canceled'],
-      confirmed: ['in_progress', 'canceled'],
-      in_progress: ['completed', 'canceled'],
-      completed: [], // Provider can't change from completed
-      cancelled: [], // Can't un-cancel
-      rejected: [] // Can't change from rejected
-    }
-  };
-  
-  // Check if transition is allowed
-  if (isCustomer) {
-    const allowedCustomerTransitions = allowedTransitions.customer[currentStatus];
-    return allowedCustomerTransitions && allowedCustomerTransitions.includes(newStatus);
-  }
-  
-  if (isProvider) {
-    const allowedProviderTransitions = allowedTransitions.provider[currentStatus];
-    return allowedProviderTransitions && allowedProviderTransitions.includes(newStatus);
-  }
-  
-  return false;
-};
+/**
+ * @swagger
+ * /api/booking/{id}/reschedule:
+ *   post:
+ *     summary: Reschedule a booking
+ *     description: Change the date and time of an existing booking
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Unique identifier of the booking
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - date
+ *               - time
+ *             properties:
+ *               date:
+ *                 type: string
+ *                 format: date
+ *                 description: New date for the booking
+ *               time:
+ *                 type: string
+ *                 format: time
+ *                 description: New start time for the booking
+ *     responses:
+ *       200:
+ *         description: Booking rescheduled successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Booking'
+ *       400:
+ *         description: Invalid input or missing required fields
+ *       401:
+ *         description: Unauthorized access
+ *       404:
+ *         description: Booking not found
+ *       500:
+ *         description: Server error
+ */
+router.post('/:id/reschedule', verifyToken, bookingController.rescheduleBooking);
 
-// Get all bookings (Admin only)
-router.get('/', verifyToken, authorize(['admin']), controllerMethods.getBookings);
 
-// Get user's bookings
-router.get('/my-bookings', verifyToken, controllerMethods.getUserBookings);
-
-// Get provider's bookings
-router.get('/provider-bookings', verifyToken, authorize(['provider']), controllerMethods.getProviderBookings);
-
-// Create a new booking
-router.post('/', verifyToken, controllerMethods.createBooking);
-
-// Get a specific booking by ID
-router.get('/:id', verifyToken, controllerMethods.getBooking);
-
-// Update a booking
-router.put('/:id', verifyToken, controllerMethods.updateBooking);
-
-// Delete a booking
-router.delete('/:id', verifyToken, controllerMethods.deleteBooking);
+// Additional route for backward compatibility
+router.get('/booking/my-bookings', verifyToken, bookingController.getUserBookings);
 
 module.exports = router;

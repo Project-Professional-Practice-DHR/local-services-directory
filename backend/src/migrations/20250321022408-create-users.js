@@ -80,6 +80,10 @@ module.exports = {
       updatedAt: {  // Using camelCase for DB
         allowNull: false,
         type: Sequelize.DATE
+      },
+      deletedAt: {  // Using camelCase for DB
+        type: Sequelize.DATE,
+        defaultValue: null
       }
     });
   },

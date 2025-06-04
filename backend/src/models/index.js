@@ -47,13 +47,13 @@ User.hasOne(ServiceProviderProfile, {
 
 // User can have many bookings as a customer
 User.hasMany(Booking, {
-  foreignKey: 'customerId',
+  foreignKey: 'userId',
   as: 'bookingsAsCustomer'
 });
 
 // User can have many reviews that they wrote
 User.hasMany(Review, {
-  foreignKey: 'customerId',
+  foreignKey: 'userId',
   as: 'reviewsWritten'
 });
 
@@ -115,14 +115,14 @@ ServiceProviderProfile.hasMany(PortfolioItem, {
 // SERVICE CATEGORY ASSOCIATIONS
 // ServiceCategory can have many services
 ServiceCategory.hasMany(Service, {
-  foreignKey: 'ServiceCategoryId',
+  foreignKey: 'serviceCategoryId',
   as: 'services'
 });
 
 // SERVICE ASSOCIATIONS
 // Service belongs to a ServiceCategory
 Service.belongsTo(ServiceCategory, {
-  foreignKey: 'ServiceCategoryId',
+  foreignKey: 'serviceCategoryId',
   as: 'category'
 });
 
@@ -141,7 +141,7 @@ Service.hasMany(Booking, {
 // BOOKING ASSOCIATIONS
 // Booking belongs to a Customer (User)
 Booking.belongsTo(User, {
-  foreignKey: 'customerId',
+  foreignKey: 'userId',
   as: 'customer'
 });
 
@@ -184,7 +184,7 @@ Review.belongsTo(Booking, {
 
 // Review belongs to a Customer (User)
 Review.belongsTo(User, {
-  foreignKey: 'customerId',
+  foreignKey: 'userId',
   as: 'customer'
 });
 

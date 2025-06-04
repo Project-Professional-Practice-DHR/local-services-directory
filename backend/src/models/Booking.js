@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
   class Booking extends Model {
     static associate(models) {
       Booking.belongsTo(models.User, {
-        foreignKey: 'customerId',
+        foreignKey: 'userId',
         as: 'customer'
       });
       
@@ -76,7 +76,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       unique: true
     },
-    customerId: {
+    userId: {
       type: DataTypes.UUID,
       allowNull: true
     },

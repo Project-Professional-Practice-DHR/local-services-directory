@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { verifyToken, authorize } = require('../../middleware/auth');
-const userController = require('../../controllers/admin/userController');
-const { validateRequest } = require('../../middleware/validation');
-const { updateProfileSchema, changePasswordSchema } = require('../../validation/adminValidation');
+const { verifyToken, authorize } = require('../middleware/auth');
+const userController = require('../controllers/admin/userController');
+const { validateRequest } = require('../middleware/validation');
+const { updateProfileSchema, changePasswordSchema } = require('../validation/adminValidation');
 
 /**
  * @swagger

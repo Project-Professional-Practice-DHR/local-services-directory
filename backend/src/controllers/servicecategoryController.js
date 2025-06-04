@@ -154,7 +154,7 @@ exports.deleteCategory = async (req, res) => {
     
     // Check if category has services
     const servicesCount = await Service.count({
-      where: { ServiceCategoryId: id }
+      where: { serviceCategoryId: id }
     });
     
     if (servicesCount > 0) {
@@ -195,7 +195,7 @@ exports.getCategoryServices = async (req, res) => {
     
     const services = await Service.findAll({
       where: { 
-        ServiceCategoryId: id,
+        serviceCategoryId: id,
         isActive: true
       },
       include: [{

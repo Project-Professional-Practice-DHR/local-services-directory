@@ -46,7 +46,7 @@ exports.createPaymentIntent = async (req, res) => {
       currency: 'usd', 
       metadata: { 
         bookingId: booking.id, 
-        customerId: req.user.id
+        userId: req.user.id
       } 
     });
     

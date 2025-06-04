@@ -370,4 +370,121 @@ router.post('/:reviewId/flag', verifyToken, authorize('provider'), reviewControl
  */
 router.get('/user/:userId', verifyToken, reviewController.getUserReviews);
 
+// FIX 1: Add a direct route for my-reviews that matches the frontend URL path
+router.get('/my-reviews', verifyToken, async (req, res) => {
+  try {
+    // Forward the request to your existing getUserReviews controller
+    req.params = { ...req.params, userId: req.user.id };
+    
+    // Call the actual review controller function
+    await reviewController.getUserReviews(req, res);
+  } catch (error) {
+    console.error('Error in my-reviews route:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching reviews',
+      error: error.message
+    });
+  }
+});
+
+// Keep the review/my-reviews route for backward compatibility
+router.get('/review/my-reviews', verifyToken, async (req, res) => {
+  try {
+    // Forward the request to your existing getUserReviews controller
+    req.params = { ...req.params, userId: req.user.id };
+    
+    // Call the actual review controller function
+    await reviewController.getUserReviews(req, res);
+  } catch (error) {
+    console.error('Error in reviews redirect:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching reviews',
+      error: error.message
+    });
+  }
+});
+
+// Add this route to your existing routes file
+
+/**
+ * @swagger
+ * /api/reviews/{id}:
+ *   put:
+ *     summary: Update a review
+ *     description: Update an existing review
+ *     tags: [Reviews]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: Review ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               rating:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *                 description: Rating from 1-5
+ *               comment:
+ *                 type: string
+ *                 description: Review comment
+ *     responses:
+ *       200:
+ *         description: Review updated successfully
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - not the review owner
+ *       404:
+ *         description: Review not found
+ *       500:
+ *         description: Server error
+ */
+router.put('/:id', verifyToken, reviewController.updateReview);
+
+/**
+ * @swagger
+ * /api/reviews/{id}:
+ *   delete:
+ *     summary: Delete a review
+ *     description: Delete an existing review
+ *     tags: [Reviews]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: Review ID
+ *     responses:
+ *       200:
+ *         description: Review deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - not the review owner or admin
+ *       404:
+ *         description: Review not found
+ *       500:
+ *         description: Server error
+ */
+router.delete('/:id', verifyToken, reviewController.deleteReview);
+
 module.exports = router;

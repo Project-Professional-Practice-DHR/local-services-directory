@@ -156,7 +156,7 @@ async function fixAllDataIssues() {
         // Find a valid receiver based on the booking context
         const booking = data['bookings.json'].find(b => b.id === message.bookingId);
         if (booking) {
-          message.receiverId = booking.customerId;
+          message.receiverId = booking.userId;
         } else {
           message.receiverId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479'; // Default to John Doe
         }
@@ -273,7 +273,7 @@ async function fixAllDataIssues() {
     if (payment.bookingId && !validBookingIds.includes(payment.bookingId)) {
       // Find a valid booking for this user if possible
       const userBooking = data['bookings.json'].find(b => 
-        b.customerId === 'f47ac10b-58cc-4372-a567-0e02b2c3d479'
+        b.userId === 'f47ac10b-58cc-4372-a567-0e02b2c3d479'
       );
       if (userBooking) {
         payment.bookingId = userBooking.id;
@@ -298,14 +298,14 @@ async function fixAllDataIssues() {
   // 16. FINAL VERIFICATION
   // Do a quick check to make sure we haven't missed anything crucial
   const finalBookingErrors = data['bookings.json'].filter(booking => 
-    !userIds.includes(booking.customerId) || 
+    !userIds.includes(booking.userId) || 
     !userIds.includes(booking.providerId)
   );
   if (finalBookingErrors.length > 0) {
     console.log("WARNING: There are still some booking errors: ", finalBookingErrors.length);
     // Force fix these last issues
     finalBookingErrors.forEach(booking => {
-      booking.customerId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479'; // Default to John Doe
+      booking.userId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479'; // Default to John Doe
       booking.providerId = 'f47ac10b-58cc-4372-a567-0e02b2c3d480'; // Default to Jane Smith
     });
   }

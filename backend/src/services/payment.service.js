@@ -22,8 +22,8 @@ const createPaymentIntent = async (bookingId) => {
     let customer;
     const user = await User.findByPk(booking.userId);
     
-    if (user.stripeCustomerId) {
-      customer = user.stripeCustomerId;
+    if (user.stripeuserId) {
+      customer = user.stripeuserId;
     } else {
       const newCustomer = await stripe.customers.create({
         email: user.email,
@@ -32,7 +32,7 @@ const createPaymentIntent = async (bookingId) => {
       
       // Save Stripe customer ID to user
       await User.update(
-        { stripeCustomerId: newCustomer.id },
+        { stripeuserId: newCustomer.id },
         { where: { id: user.id } }
       );
       

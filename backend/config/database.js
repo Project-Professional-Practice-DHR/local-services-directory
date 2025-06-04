@@ -16,7 +16,7 @@ const sequelize = new Sequelize(dbUrl, {
   dialect: 'postgres',
   logging: process.env.DATABASE_LOGGING === 'true' ? console.log : false,
   define: {
-    underscored: true,
+    underscored: false,
     timestamps: true,
     paranoid: true,
   },

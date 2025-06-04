@@ -37,7 +37,7 @@ module.exports = {
         type: Sequelize.STRING,
         unique: true
       },
-      customerId: {
+      userId: {
         type: Sequelize.UUID,
         references: {
           model: 'Users',
@@ -65,6 +65,10 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      },
+      deletedAt: {  // Using camelCase for DB
+        type: Sequelize.DATE,
+        defaultValue: null
       }
     });
   },

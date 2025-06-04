@@ -77,9 +77,9 @@ exports.subscribeToPlan = async (req, res) => {
     }
     
     // Get or create Stripe customer
-    let customerId = req.user.stripeCustomerId;
+    let userId = req.user.stripeuserrId;
     
-    if (!customerId) {
+    if (!userId) {
       const customer = await stripe.customers.create({
         email: req.user.email,
         name: `${req.user.firstName} ${req.user.lastName}`,
@@ -88,11 +88,11 @@ exports.subscribeToPlan = async (req, res) => {
         }
       });
       
-      customerId = customer.id;
+      userId = customer.id;
       
       // Update user with Stripe customer ID
       await User.update(
-        { stripeCustomerId: customerId },
+        { stripeuserId: userId },
         { where: { id: req.user.id } }
       );
     }
@@ -100,11 +100,11 @@ exports.subscribeToPlan = async (req, res) => {
     // Attach payment method to customer if provided
     if (paymentMethodId) {
       await stripe.paymentMethods.attach(paymentMethodId, {
-        customer: customerId
+        customer: userId
       });
       
       // Set as default payment method
-      await stripe.customers.update(customerId, {
+      await stripe.customers.update(userId, {
         invoice_settings: {
           default_payment_method: paymentMethodId
         }
@@ -113,7 +113,7 @@ exports.subscribeToPlan = async (req, res) => {
     
     // Create subscription
     const subscription = await stripe.subscriptions.create({
-      customer: customerId,
+      customer: userId,
       items: [
         {
           price: plan.stripePriceId // Assuming you have Stripe price IDs stored in your plan model

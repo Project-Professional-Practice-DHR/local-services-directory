@@ -4,51 +4,46 @@ const bcrypt = require('bcrypt');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
       // User can have one ServiceProviderProfile
       User.hasOne(models.ServiceProviderProfile, {
-        foreignKey: 'userId',  // Keep camelCase
+        foreignKey: 'userId',
         as: 'providerProfile'
       });
 
-      // User can have many bookings as a customer
+      // Bookings as a customer
       User.hasMany(models.Booking, {
-        foreignKey: 'customerId',  // Keep camelCase
+        foreignKey: 'userId',
         as: 'bookingsAsCustomer'
       });
 
-      // User can have many reviews that they wrote
+      // Reviews written by the user
       User.hasMany(models.Review, {
-        foreignKey: 'customerId',  // Keep camelCase
+        foreignKey: 'userId',
         as: 'reviewsWritten'
       });
 
-      // User can send many messages
+      // Messages sent
       User.hasMany(models.Message, {
-        foreignKey: 'senderId',  // Keep camelCase
+        foreignKey: 'senderId',
         as: 'messagesSent'
       });
 
-      // User can receive many messages
+      // Messages received
       User.hasMany(models.Message, {
-        foreignKey: 'receiverId',  // Keep camelCase
+        foreignKey: 'receiverId',
         as: 'messagesReceived'
       });
 
-      // User can have many notifications
+      // Notifications
       User.hasMany(models.Notification, {
-        foreignKey: 'userId',  // Keep camelCase
+        foreignKey: 'userId',
         as: 'notifications'
       });
 
-      // User can have many device tokens
+      // Device tokens
       User.hasMany(models.DeviceToken, {
-        foreignKey: 'userId',  // Keep camelCase
+        foreignKey: 'userId',
         as: 'userdeviceTokens'
       });
     }
@@ -58,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
       return await bcrypt.compare(candidatePassword, this.password);
     }
   }
-  
+
   User.init({
     id: {
       type: DataTypes.UUID,
@@ -69,13 +64,13 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    firstName: {  // Keep camelCase
+    firstName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false
     },
-    lastName: {  // Keep camelCase
+    lastName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false
     },
     email: {
       type: DataTypes.STRING,
@@ -85,10 +80,10 @@ module.exports = (sequelize, DataTypes) => {
         isEmail: true
       }
     },
-    phoneNumber: {  // Keep camelCase
+    phoneNumber: {
       type: DataTypes.STRING,
       validate: {
-        is: /^\+?[1-9]\d{1,14}$/  // Validate phone number format (International)
+        is: /^(\+?[0-9]{1,4})?[-\s]?[0-9]{3,12}$/
       }
     },
     password: {
@@ -99,48 +94,46 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('customer', 'provider', 'admin'),
       defaultValue: 'customer'
     },
-    profilePicture: {  // Keep camelCase
-      type: DataTypes.STRING,
+    profilePicture: {
+      type: DataTypes.STRING
     },
-    isVerified: {  // Keep camelCase
+    isVerified: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false,
+      defaultValue: false
     },
-    verificationToken: {  // Keep camelCase
-      type: DataTypes.STRING,
+    verificationToken: {
+      type: DataTypes.STRING
     },
-    resetPasswordToken: {  // Keep camelCase
-      type: DataTypes.STRING,
+    resetPasswordToken: {
+      type: DataTypes.STRING
     },
-    resetPasswordExpires: {  // Keep camelCase
-      type: DataTypes.DATE,
+    resetPasswordExpires: {
+      type: DataTypes.DATE
     },
-    lastLogin: {  // Keep camelCase
-      type: DataTypes.DATE,
+    lastLogin: {
+      type: DataTypes.DATE
     },
     status: {
       type: DataTypes.ENUM('active', 'inactive', 'suspended'),
       defaultValue: 'active'
     },
-    // Add geospatial location field
     location: {
       type: DataTypes.GEOMETRY('POINT'),
       allowNull: true
     },
-    // Add deviceTokens and devices fields
-    deviceTokens: {  // Keep camelCase
+    deviceTokens: {
       type: DataTypes.ARRAY(DataTypes.STRING),
-      defaultValue: [],
+      defaultValue: []
     },
     devices: {
-      type: DataTypes.ARRAY(DataTypes.JSONB),  // Store device details as JSON
+      type: DataTypes.ARRAY(DataTypes.JSONB),
       defaultValue: []
     }
   }, {
     sequelize,
     modelName: 'User',
-    tableName: 'Users',  // Explicitly set table name
-    freezeTableName: true, // Don't pluralize table name
+    tableName: 'Users',
+    freezeTableName: true,
     hooks: {
       beforeCreate: async (user) => {
         if (user.password) {
@@ -154,9 +147,8 @@ module.exports = (sequelize, DataTypes) => {
           user.password = await bcrypt.hash(user.password, salt);
         }
       }
-    },
-    
+    }
   });
-  
+
   return User;
 };

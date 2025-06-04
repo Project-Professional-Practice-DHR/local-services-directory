@@ -38,6 +38,9 @@ const {
  *           type: string
  *           format: email
  *           description: Email address
+ *         username:
+ *           type: string
+ *           description: User name
  *         firstName:
  *           type: string
  *           description: User's first name
@@ -65,6 +68,7 @@ const {
  *       example:
  *         id: "123e4567-e89b-12d3-a456-426614174000"
  *         email: "john.doe@example.com"
+ *         username: "jhondoe"
  *         firstName: "John"
  *         lastName: "Doe"
  *         phoneNumber: "+1234567890"
@@ -118,11 +122,16 @@ const {
  *           schema:
  *             type: object
  *             required:
+ *               - username
  *               - firstName
  *               - lastName
  *               - email
  *               - password
  *             properties:
+ *               username:
+ *                 type: string
+ *                 minLength: 2
+ *                 example: "jhondoe"
  *               firstName:
  *                 type: string
  *                 minLength: 2

@@ -4,6 +4,7 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Service extends Model {
     static associate(models) {
+      // Define associations correctly
       Service.belongsTo(models.ServiceCategory, {
         foreignKey: 'serviceCategoryId',
         as: 'category'
@@ -29,11 +30,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     serviceCategoryId: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      field: 'serviceCategoryId'  // Explicitly define field name
     },
     providerId: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      field: 'providerId'  // Explicitly define field name
     },
     name: {
       type: DataTypes.STRING,
@@ -44,19 +47,37 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     price: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: false
+    },
+    duration: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 60  // Default duration in minutes
     },
     isActive: {
       type: DataTypes.BOOLEAN,
       defaultValue: true
+    },
+    isFeatured: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    rating: {
+      type: DataTypes.DECIMAL(3, 2),
+      defaultValue: 0
+    },
+    bookingCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
     }
   }, {
     sequelize,
     modelName: 'Service',
     tableName: 'Services',
-    underscored: false,
-    freezeTableName: true
+    underscored: false,  // Important: Set to false to use camelCase
+    freezeTableName: true,
+    paranoid: true      // IMPORTANT: Disable paranoid mode (soft deletes)
   });
   
   return Service;

@@ -73,7 +73,7 @@ const calculateDistance = async (origin, destination) => {
 };
 
 // Find providers within a certain radius
-const findProvidersNearby = async (latitude, longitude, radiusInKm = 10, ServiceCategoryId = null) => {
+const findProvidersNearby = async (latitude, longitude, radiusInKm = 10, serviceCategoryId = null) => {
   try {
     // Convert radius to meters
     const radiusInMeters = radiusInKm * 1000;
@@ -108,11 +108,11 @@ const findProvidersNearby = async (latitude, longitude, radiusInKm = 10, Service
       include: [
         {
           model: Service,
-          required: ServiceCategoryId ? true : false,
+          required: serviceCategoryId ? true : false,
           include: [
             {
               model: ServiceCategory,
-              where: ServiceCategoryId ? { id: ServiceCategoryId } : {}
+              where: serviceCategoryId ? { id: serviceCategoryId } : {}
             }
           ]
         }

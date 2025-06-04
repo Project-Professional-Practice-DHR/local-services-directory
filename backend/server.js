@@ -149,11 +149,29 @@ register.registerMetric(loginAttemptsTotal);
 // Add unhandled rejection and exception handlers
 process.on('unhandledRejection', (reason, promise) => {
   log.error('Unhandled Rejection', { reason, promise });
+  // Don't exit process here to allow graceful handling
 });
 
 process.on('uncaughtException', (error) => {
   log.error('Uncaught Exception', error);
-  process.exit(1);
+  // Don't exit process here immediately to allow logging
+  // Instead, try to close server gracefully
+  if (global.server) {
+    log.warning('Attempting to close server gracefully due to uncaught exception');
+    global.server.close(() => {
+      log.info('Server closed due to uncaught exception');
+      process.exit(1);
+    });
+    
+    // Force close after timeout
+    setTimeout(() => {
+      log.error('Could not close server gracefully, forcing exit');
+      process.exit(1);
+    }, 5000);
+  } else {
+    // If server isn't defined yet, exit after a brief delay to allow logging
+    setTimeout(() => process.exit(1), 1000);
+  }
 });
 
 // Set up logger
@@ -175,6 +193,18 @@ try {
 
 // Initialize Express app
 const app = express();
+
+// THIS LINE NEEDS TO BE ADDED HERE
+app.set('trust proxy', 1);
+
+// Configure CORS with more specific settings
+app.use(cors({
+  origin: 'http://localhost:3000', // Your frontend URL
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
 const PORT = process.env.PORT || 5001;
 
 // Environment variables check
@@ -473,21 +503,51 @@ const upload = multer({
 log.section('Database Connection');
 log.info('Connecting to Neon.tech PostgreSQL database...');
 
+// Add timeout and keepalive options to PG client
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false // Required for Neon.tech
-  }
+  },
+  query_timeout: 10000, // 10 second timeout for queries
+  connectionTimeoutMillis: 10000, // 10 second connection timeout
+  keepAlive: true, // Enable TCP keepalive
+  keepAliveInitialDelayMillis: 30000 // 30 seconds initial delay
 });
 
+let pgClient = null;
 client.connect()
   .then(() => {
+    pgClient = client;
     log.success('Neon.tech PostgreSQL connection successful!');
   })
   .catch((err) => {
     log.error('PostgreSQL connection error', err);
     // Don't exit process here, just log the error
   });
+
+// Add periodic ping to keep connection alive
+const pgPingInterval = setInterval(() => {
+  if (pgClient) {
+    pgClient.query('SELECT 1')
+      .then(() => {
+        log.info('PostgreSQL connection ping successful');
+      })
+      .catch(err => {
+        log.error('PostgreSQL ping failed, attempting reconnection', err);
+        // Try to reconnect
+        client.end();
+        client.connect()
+          .then(() => {
+            pgClient = client;
+            log.success('Neon.tech PostgreSQL reconnection successful!');
+          })
+          .catch((reconnectErr) => {
+            log.error('PostgreSQL reconnection error', reconnectErr);
+          });
+      });
+  }
+}, 60000); // Ping every minute
 
 // Database setup - with error handling
 let sequelize;
@@ -542,43 +602,61 @@ try {
   app.use(securityHeaders); // Apply security headers
   app.use(enableCORS); // CORS support
   
-  // Add metrics middleware
+  // Add metrics middleware with better error handling
   app.use((req, res, next) => {
     // Skip metrics endpoint to avoid circular references
     if (req.path === '/metrics') {
       return next();
     }
     
-    // Track request duration
-    const startTime = process.hrtime();
-    
-    // Capture original end method
-    const originalEnd = res.end;
-    
-    // Override end method to capture metrics before response is sent
-    res.end = function(...args) {
-      // Calculate request duration
-      const [seconds, nanoseconds] = process.hrtime(startTime);
-      const duration = seconds + nanoseconds / 1e9;
+    try {
+      // Track request duration
+      const startTime = process.hrtime();
       
-      // Record metrics
-      httpRequestDurationMicroseconds
-        .labels(req.method, req.path, res.statusCode)
-        .observe(duration);
+      // Capture original end method
+      const originalEnd = res.end;
       
-      httpRequestsTotal
-        .labels(req.method, req.path, res.statusCode)
-        .inc();
+      // Override end method to capture metrics before response is sent
+      res.end = function(...args) {
+        try {
+          // Calculate request duration
+          const [seconds, nanoseconds] = process.hrtime(startTime);
+          const duration = seconds + nanoseconds / 1e9;
+          
+          // Record metrics (wrapped in try/catch)
+          try {
+            httpRequestDurationMicroseconds
+              .labels(req.method, req.path, res.statusCode)
+              .observe(duration);
+            
+            httpRequestsTotal
+              .labels(req.method, req.path, res.statusCode)
+              .inc();
+          } catch (metricError) {
+            // Just log and continue if metrics fail
+            log.error('Metrics recording error', metricError);
+          }
+          
+          // Call the original end method
+          return originalEnd.apply(this, args);
+        } catch (endError) {
+          log.error('Error in metrics middleware end override', endError);
+          return originalEnd.apply(this, args);
+        }
+      };
       
-      // Call the original end method
-      return originalEnd.apply(this, args);
-    };
-    
-    next();
+      next();
+    } catch (error) {
+      log.error('Unexpected error in metrics middleware', error);
+      next();
+    }
   });
   
+  // Use a smaller body size limit to prevent potential attacks
+  app.use(express.json({ limit: '1mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+  
   app.use(morgan("dev")); // Request logging
-  app.use(express.json()); // JSON body parser
   app.use(sanitizeInputs); // Sanitize inputs
   app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve uploads directory
   log.success('Middleware applied successfully');
@@ -587,11 +665,40 @@ try {
   process.exit(1);
 }
 
-// Apply rate limiters
+// Add this to your server.js file, replacing the existing rate limiter setup
 try {
   log.info('Applying rate limiters...');
-  app.use('/api/auth', authLimiter); // Stricter rate limit for authentication
-  app.use(generalLimiter); // General rate limiter for all routes
+  // Create a more lenient rate limiter for development
+  const rateLimit = require('express-rate-limit');
+  
+  const developmentLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 200, // 200 requests per minute
+    standardHeaders: true,
+    legacyHeaders: false,
+    skipSuccessfulRequests: true, // Only count failed requests
+    message: { error: 'Too many requests, please try again later.' } // Ensure JSON response
+  });
+
+  // Create stricter rate limiter for authentication routes
+  const developmentAuthLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 50, // 50 auth requests per minute
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many authentication attempts, please try again later.' } // Ensure JSON response
+  });
+
+  // Apply the appropriate limiter based on environment
+  if (process.env.NODE_ENV === 'production') {
+    app.use('/api/auth', authLimiter); 
+    app.use(generalLimiter);
+  } else {
+    // Use more lenient limits in development
+    app.use('/api/auth', developmentAuthLimiter);
+    app.use(developmentLimiter);
+  }
+  
   log.success('Rate limiters applied successfully');
 } catch (error) {
   log.error('Error applying rate limiters', error);
@@ -611,32 +718,52 @@ try {
   // Continue without User model, handle failures in routes
 }
 
-// Authentication Middleware
+// Authentication Middleware with improved error handling
 const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  
-  if (token == null) return res.sendStatus(401);
-  
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-};
-
-// Role-based Authorization Middleware
-const authorize = (...roles) => {
-  return (req, res, next) => {
-    if (!req.user) {
+  try {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
       return res.status(401).json({ message: 'Authentication required' });
     }
     
-    if (!roles.includes(req.user.userType)) {
-      return res.status(403).json({ message: 'Unauthorized access' });
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: 'Bearer token is missing' });
     }
     
-    next();
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if (err) {
+        if (err.name === 'TokenExpiredError') {
+          return res.status(401).json({ message: 'Token has expired' });
+        }
+        return res.status(403).json({ message: 'Invalid token' });
+      }
+      req.user = user;
+      next();
+    });
+  } catch (error) {
+    log.error('Authentication error', error);
+    return res.status(500).json({ message: 'Authentication system error' });
+  }
+};
+
+// Role-based Authorization Middleware with improved error handling
+const authorize = (...roles) => {
+  return (req, res, next) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: 'Authentication required' });
+      }
+      
+      if (!roles.includes(req.user.userType)) {
+        return res.status(403).json({ message: 'Unauthorized access' });
+      }
+      
+      next();
+    } catch (error) {
+      log.error('Authorization error', error);
+      return res.status(500).json({ message: 'Authorization system error' });
+    }
   };
 };
 
@@ -653,6 +780,10 @@ app.post('/upload/profile-picture', authenticateToken, upload.single('profilePic
     const fileUrl = `/uploads/${req.file.filename}`;
     
     // Update user profile picture in database
+    if (!User) {
+      return res.status(500).json({ message: 'User model not available' });
+    }
+    
     const user = await User.findByPk(req.user.id);
     
     if (!user) {
@@ -704,11 +835,15 @@ app.post('/upload/service-images', authenticateToken, authorize('provider'), upl
   }
 });
 
-// Protected Route (requires JWT token)
+// Protected Route (requires JWT token) with improved error handling
 app.get("/profile", authenticateToken, async (req, res) => {
-  log.info(`Profile request received for user ${req.user.id}`);
-  
   try {
+    log.info(`Profile request received for user ${req.user.id}`);
+    
+    if (!User) {
+      return res.status(500).json({ message: 'User model not available' });
+    }
+    
     const user = await User.findByPk(req.user.id, {
       attributes: { exclude: ['password_hash', 'verificationToken', 'passwordResetToken'] }
     });
@@ -717,7 +852,7 @@ app.get("/profile", authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
     
-    log.success(`Profile data accessed for user: ${user.username}`);
+    log.success(`Profile data accessed for user: ${user.username || user.email || user.id}`);
     res.status(200).json({ 
       message: "Profile data retrieved successfully", 
       user 
@@ -738,6 +873,7 @@ const loadRoutes = () => {
     { name: 'analyticsRoutes', path: './src/routes/admin/analyticsRoutes' },
     { name: 'moderationRoutes', path: './src/routes/admin/moderationRoutes' },
     { name: 'userRoutes', path: './src/routes/admin/userRoutes' },
+    { name: 'userRoutes', path: './src/routes/userRoutes' },
     { name: 'authRoutes', path: './src/routes/authRoutes' },
     { name: 'bookingRoutes', path: './src/routes/bookingRoutes' },
     { name: 'deviceRoutes', path: './src/routes/deviceRoutes' },
@@ -748,7 +884,10 @@ const loadRoutes = () => {
     { name: 'paymentRoutes', path: './src/routes/paymentRoutes' },
     { name: 'payoutRoutes', path: './src/routes/payoutRoutes' },
     { name: 'reviewRoutes', path: './src/routes/reviewRoutes' },
-    { name: 'serviceRoutes', path: './src/routes/serviceRoutes' }
+    { name: 'serviceRoutes', path: './src/routes/serviceRoutes' },
+    { name: 'servicecategoryRoutes', path: './src/routes/servicecategoryRoutes' },
+    { name: 'serviceproviderRoutes', path: './src/routes/serviceproviderRoutes' },
+    { name: 'tableRoutes', path: './src/routes/tableRoutes' },
   ];
 
   for (const route of routesList) {
@@ -756,8 +895,10 @@ const loadRoutes = () => {
       routes[route.name] = require(route.path);
       log.success(`Loaded ${route.name}`);
     } catch (error) {
+      // Don't crash the server if a route fails to load
       log.error(`Failed to load ${route.name}`, error);
-      // Continue loading other routes
+      // Provide an empty router as fallback
+      routes[route.name] = express.Router();
     }
   }
 
@@ -771,20 +912,51 @@ log.section('Routes Application');
 const safelyApplyRoutes = () => {
   log.info('Applying routes to Express app...');
   
-  if (routes.analyticsRoutes) app.use('/api/admin/analytics', authenticateToken, authorize('admin'), routes.analyticsRoutes);
-  if (routes.moderationRoutes) app.use('/api/admin/moderation', authenticateToken, authorize('admin'), routes.moderationRoutes);
-  if (routes.userRoutes) app.use('/api/admin/users', authenticateToken, authorize('admin'), routes.userRoutes);
-  if (routes.authRoutes) app.use('/api/auth', routes.authRoutes);
-  if (routes.bookingRoutes) app.use('/api/booking', authenticateToken, routes.bookingRoutes);
-  if (routes.deviceRoutes) app.use('/api/devices', authenticateToken, routes.deviceRoutes);
-  if (routes.invoiceRoutes) app.use('/api/invoices', authenticateToken, routes.invoiceRoutes);
-  if (routes.locationRoutes) app.use('/api/location', routes.locationRoutes);
-  if (routes.messageRoutes) app.use('/api/messages', authenticateToken, routes.messageRoutes);
-  if (routes.notificationRoutes) app.use('/api/notifications', authenticateToken, routes.notificationRoutes);
-  if (routes.paymentRoutes) app.use('/api/payments', authenticateToken, routes.paymentRoutes);
-  if (routes.payoutRoutes) app.use('/api/payouts', authenticateToken, authorize('provider', 'admin'), routes.payoutRoutes);
-  if (routes.reviewRoutes) app.use('/api/reviews', routes.reviewRoutes);
-  if (routes.serviceRoutes) app.use('/api/services', routes.serviceRoutes);
+  // Wrap middleware in error handlers to prevent crashes
+  const safeAuthenticateToken = (req, res, next) => {
+    try {
+      authenticateToken(req, res, next);
+    } catch (error) {
+      log.error('Authentication middleware error', error);
+      res.status(500).json({ message: 'Authentication system error' });
+    }
+  };
+  
+  const safeAuthorize = (role) => (req, res, next) => {
+    try {
+      authorize(role)(req, res, next);
+    } catch (error) {
+      log.error('Authorization middleware error', error);
+      res.status(500).json({ message: 'Authorization system error' });
+    }
+  };
+  
+  // Apply routes with safe middleware
+  try {
+    if (routes.analyticsRoutes) app.use('/api/admin/analytics', safeAuthenticateToken, safeAuthorize('admin'), routes.analyticsRoutes);
+    if (routes.moderationRoutes) app.use('/api/admin/moderation', safeAuthenticateToken, safeAuthorize('admin'), routes.moderationRoutes);
+    if (routes.userRoutes) {
+      app.use('/api/admin/users', safeAuthenticateToken, safeAuthorize('admin'), routes.userRoutes);
+      app.use('/api/users', safeAuthenticateToken, safeAuthorize('user'), routes.userRoutes);
+    }
+    if (routes.authRoutes) app.use('/api/auth', routes.authRoutes);
+    if (routes.bookingRoutes) app.use('/api/booking', safeAuthenticateToken, routes.bookingRoutes);
+    if (routes.deviceRoutes) app.use('/api/devices', safeAuthenticateToken, routes.deviceRoutes);
+    if (routes.invoiceRoutes) app.use('/api/invoices', safeAuthenticateToken, routes.invoiceRoutes);
+    if (routes.locationRoutes) app.use('/api/location', routes.locationRoutes);
+    if (routes.messageRoutes) app.use('/api/messages', safeAuthenticateToken, routes.messageRoutes);
+    if (routes.notificationRoutes) app.use('/api/notifications', safeAuthenticateToken, routes.notificationRoutes);
+    if (routes.paymentRoutes) app.use('/api/payments', safeAuthenticateToken, routes.paymentRoutes);
+    if (routes.payoutRoutes) app.use('/api/payouts', safeAuthenticateToken, safeAuthorize(['provider', 'admin']), routes.payoutRoutes);
+    if (routes.reviewRoutes) app.use('/api/reviews', routes.reviewRoutes);
+    if (routes.serviceRoutes) app.use('/api/services', routes.serviceRoutes);
+    if (routes.servicecategoryRoutes) app.use('/api/categories', routes.servicecategoryRoutes);
+    if (routes.serviceproviderRoutes) app.use('/api', routes.serviceproviderRoutes);
+    if (routes.tableRoutes) app.use('/api/tables', routes.tableRoutes);
+  } catch (error) {
+    log.error('Error applying routes', error);
+    // Don't crash if route application fails
+  }
   
   // Search route with safe loading
   try {
@@ -793,6 +965,8 @@ const safelyApplyRoutes = () => {
     log.success('Search route loaded');
   } catch (error) {
     log.error('Failed to load search route', error);
+    // Create empty router as fallback
+    app.use('/api/search', express.Router());
   }
   
   log.success('Routes applied successfully');
@@ -800,14 +974,53 @@ const safelyApplyRoutes = () => {
 
 safelyApplyRoutes();
 
+// Add just after the route registration
+console.log('Available routes:');
+app._router.stack.forEach(function(r){
+  if (r.route && r.route.path){
+    console.log(r.route.stack[0].method.toUpperCase() + ' ' + r.route.path);
+  } else if (r.name === 'router') {
+    r.handle.stack.forEach(function(layer) {
+      if (layer.route) {
+        console.log('  ' + layer.route.stack[0].method.toUpperCase() + ' ' + layer.route.path);
+      }
+    });
+  }
+});
+
 // Health check endpoint for monitoring
 app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "UP",
-    timestamp: new Date().toISOString(),
-    version: process.env.npm_package_version || "1.0.0",
-    environment: process.env.NODE_ENV || "development"
-  });
+  try {
+    // Check database connection
+    const dbStatus = sequelize && sequelize.authenticate ? "checking" : "unknown";
+    
+    // Check if we have a connection to the database
+    if (dbStatus === "checking") {
+      sequelize.authenticate()
+        .then(() => {
+          log.info('Database connection verified via health check');
+        })
+        .catch(err => {
+          log.error('Database connection failed in health check', err);
+        });
+    }
+    
+    res.status(200).json({
+      status: "UP",
+      timestamp: new Date().toISOString(),
+      version: process.env.npm_package_version || "1.0.0",
+      environment: process.env.NODE_ENV || "development",
+      database: dbStatus,
+      uptime: Math.floor(process.uptime()) + " seconds"
+    });
+  } catch (error) {
+    log.error('Health check error', error);
+    res.status(500).json({ 
+      status: "ERROR",
+      message: "Health check failed",
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // Simple geocoding endpoint (for demonstration)
@@ -847,7 +1060,13 @@ app.get("/", async (req, res) => {
       throw new Error('Sequelize not initialized');
     }
     
-    const result = await sequelize.query("SELECT NOW()");
+    // Add a timeout to prevent hanging
+    const queryPromise = sequelize.query("SELECT NOW()");
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Database query timed out')), 5000)
+    );
+    
+    const result = await Promise.race([queryPromise, timeoutPromise]);
     log.success('Database test successful');
     res.json({ 
       message: "Local Services Directory API is running!", 
@@ -1021,8 +1240,17 @@ app.use((err, req, res, next) => {
     // Ignore metric registration errors (might happen if counter already exists)
   }
   
-  // Log to logger system
-  logger.error(`Error: ${err.message} | Stack: ${err.stack}`);
+  // Log to logger system - using try/catch for safety
+  try {
+    if (logger && typeof logger.error === 'function') {
+      logger.error(`Error: ${err.message} | Stack: ${err.stack}`);
+    } else {
+      console.error(`Error: ${err.message} | Stack: ${err.stack}`);
+    }
+  } catch (logError) {
+    console.error('Error while logging error:', logError);
+    console.error(`Original error: ${err.message} | Stack: ${err.stack}`);
+  }
 
   res.status(500).json({
     message: 'Something went wrong!',
@@ -1038,37 +1266,36 @@ async function startServer() {
     // Test database connection
     log.info('Testing database connection...');
     if (typeof testConnection !== 'function') {
-      throw new Error('testConnection is not a function');
+      log.warning('testConnection is not a function, skipping this step');
+    } else {
+      try {
+        await testConnection();
+        log.success('Database connection test successful');
+      } catch (testError) {
+        log.error('Database connection test failed', testError);
+        // Continue startup process despite connection failure
+        log.warning('Continuing server startup despite database connection failure');
+      }
     }
-    
-    await testConnection();
-    log.success('Database connection test successful');
 
     // Sync Sequelize models - WITH IMPROVED ERROR HANDLING
     log.info('Syncing Sequelize models...');
     if (!sequelize) {
-      throw new Error('Sequelize not initialized');
-    }
-    
-    // Option 1: Try running without alter mode first
-    try {
-      log.info('Attempting to sync without altering tables...');
-      await sequelize.sync({ alter: false });
-      log.success('Database connected and synced successfully');
-    } catch (syncError) {
-      log.warning('Basic sync failed, attempting with logging to pinpoint the issue:', syncError.message);
+      log.error('Sequelize not initialized, skipping model sync');
+    } else {
+      // Create a sync timeout to prevent hanging
+      const syncPromise = sequelize.sync({ alter: false });
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Sync operation timed out after 15 seconds')), 15000);
+      });
       
-      // Option 2: If that fails, try sync with logging to diagnose the problem
       try {
-        await sequelize.sync({ 
-          alter: false,
-          logging: (sql) => log.info(`SQL: ${sql}`) 
-        });
-      } catch (loggedSyncError) {
-        log.error('Sync with logging failed:', loggedSyncError.message);
-        
-        // Option 3: As a last resort, skip model sync entirely and start the server anyway
-        log.warning('Unable to sync database models. Server will start, but some functionality may be limited.');
+        // Race between sync and timeout
+        await Promise.race([syncPromise, timeoutPromise]);
+        log.success('Database connected and synced successfully');
+      } catch (syncError) {
+        log.warning('Database sync failed or timed out:', syncError.message);
+        log.warning('Server will start anyway, but some functionality may be limited');
       }
     }
 
@@ -1089,24 +1316,61 @@ async function startServer() {
       log.info(`Metrics: http://localhost:${PORT}/metrics`);
       log.success('Server startup complete!');
     });
+    
+    // Store server in global for graceful shutdown from uncaught exceptions
+    global.server = server;
+    
+    // Set a keep-alive interval for the database connections
+    const dbKeepAliveInterval = setInterval(async () => {
+      if (sequelize) {
+        try {
+          await sequelize.query('SELECT 1');
+          log.info('Database keep-alive ping successful');
+        } catch (err) {
+          log.error('Database keep-alive ping failed', err);
+        }
+      }
+    }, 60000); // Every minute
 
     // Graceful shutdown handling
     const gracefulShutdown = (signal) => {
       log.warning(`Received ${signal}. Starting graceful shutdown...`);
+      
+      // Clear intervals
+      clearInterval(pgPingInterval);
+      clearInterval(dbKeepAliveInterval);
       
       // Close the HTTP server
       server.close(() => {
         log.info('HTTP server closed.');
         
         // Close database connections
-        sequelize.close().then(() => {
-          log.info('Database connections closed.');
+        if (sequelize) {
+          sequelize.close().then(() => {
+            log.info('Sequelize connections closed.');
+            
+            // Close PG client if it exists
+            if (pgClient) {
+              pgClient.end().then(() => {
+                log.info('PostgreSQL client closed.');
+                log.success('Graceful shutdown completed.');
+                process.exit(0);
+              }).catch(err => {
+                log.error('Error closing PostgreSQL client:', err);
+                process.exit(1);
+              });
+            } else {
+              log.success('Graceful shutdown completed.');
+              process.exit(0);
+            }
+          }).catch(err => {
+            log.error('Error closing Sequelize connections:', err);
+            process.exit(1);
+          });
+        } else {
           log.success('Graceful shutdown completed.');
           process.exit(0);
-        }).catch(err => {
-          log.error('Error closing database connections:', err);
-          process.exit(1);
-        });
+        }
       });
       
       // Force shutdown after 30 seconds if graceful shutdown fails

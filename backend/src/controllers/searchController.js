@@ -39,7 +39,7 @@ exports.searchProviders = async (req, res) => {
       if (categoryObj) {
         // Find all services in this category
         const services = await Service.findAll({
-          where: { ServiceCategoryId: categoryObj.id },
+          where: { serviceCategoryId: categoryObj.id },
           attributes: ['providerId'],
           raw: true
         });
@@ -257,7 +257,7 @@ exports.searchProviders = async (req, res) => {
           providerId: provider.id,
           ...serviceConditions 
         },
-        attributes: ['id', 'name', 'description', 'price', 'duration', 'ServiceCategoryId', 'subcategoryId']
+        attributes: ['id', 'name', 'description', 'price', 'duration', 'serviceCategoryId', 'subcategoryId']
       });
       
       const providerData = provider.toJSON();
@@ -313,7 +313,7 @@ exports.getTrendingProviders = async (req, res) => {
         rating: { [Op.gte]: 4.0 }
       },
       order: [
-        ['bookingCount', 'DESC'],
+        ['DESC'],
         ['rating', 'DESC']
       ],
       limit: parseInt(limit),
@@ -322,7 +322,7 @@ exports.getTrendingProviders = async (req, res) => {
           model: Service,
           as: 'services',
           limit: 3,
-          attributes: ['id', 'name', 'price', 'ServiceCategoryId']
+          attributes: ['id', 'name', 'price', 'serviceCategoryId']
         }
       ]
     });
@@ -354,7 +354,7 @@ exports.getProvidersByCategory = async (req, res) => {
     
     // Find services in this category
     const services = await Service.findAll({
-      where: { ServiceCategoryId: category.id },
+      where: { serviceCategoryId: category.id },
       attributes: ['providerId'],
       raw: true
     });
@@ -418,7 +418,7 @@ exports.getSuggestedProviders = async (req, res) => {
           model: Service,
           as: 'services',
           limit: 2,
-          attributes: ['id', 'name', 'price', 'ServiceCategoryId']
+          attributes: ['id', 'name', 'price', 'serviceCategoryId']
         }
       ]
     });
@@ -440,7 +440,7 @@ exports.searchServices = async (req, res) => {
   try {
     const {
       keyword,
-      ServiceCategoryId,
+      serviceCategoryId,
       minPrice,
       maxPrice,
       page = 1,
@@ -460,8 +460,8 @@ exports.searchServices = async (req, res) => {
       };
     }
     
-    if (ServiceCategoryId) {
-      query.ServiceCategoryId = ServiceCategoryId;
+    if (serviceCategoryId) {
+      query.serviceCategoryId = serviceCategoryId;
     }
     
     if (minPrice) {

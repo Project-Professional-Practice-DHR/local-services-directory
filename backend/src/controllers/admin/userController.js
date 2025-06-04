@@ -1,208 +1,295 @@
-// File: src/controllers/admin/userController.js
-
-const { User, ServiceProviderProfile } = require('../../models');
+// src/controllers/admin/userController.js
+const User = require('../../models/User');
+const bcrypt = require('bcryptjs');
 const { Op } = require('sequelize');
-const { sendEmail } = require('../../services/email.service');
-const { createAuditLog } = require('../../services/auditService');
 
-// Get users with pagination, filtering and sorting
-exports.getUsers = async (req, res) => {
+/**
+ * Get the authenticated user's profile
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+const getProfile = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const offset = (page - 1) * limit;
-    
-    // Build filter object
-    const whereClause = {};
-    
-    if (req.query.name) {
-      whereClause[Op.or] = [
-        { firstName: { [Op.iLike]: `%${req.query.name}%` } },
-        { lastName: { [Op.iLike]: `%${req.query.name}%` } }
-      ];
-    }
-    
-    if (req.query.email) {
-      whereClause.email = { [Op.iLike]: `%${req.query.email}%` };
-    }
-    
-    if (req.query.status) {
-      whereClause.status = req.query.status;
-    }
-    
-    if (req.query.role) {
-      whereClause.role = req.query.role;
-    }
-    
-    if (req.query.registeredAfter) {
-      whereClause.createdAt = { [Op.gte]: new Date(req.query.registeredAfter) };
-    }
-    
-    if (req.query.registeredBefore) {
-      whereClause.createdAt = { 
-        ...whereClause.createdAt, 
-        [Op.lte]: new Date(req.query.registeredBefore) 
-      };
-    }
-    
-    // Determine sort order
-    const sortField = req.query.sortBy || 'createdAt';
-    const sortOrder = req.query.sortOrder === 'asc' ? 'ASC' : 'DESC';
-    const order = [[sortField, sortOrder]];
-    
-    // Execute query with pagination
-    const { rows: users, count: total } = await User.findAndCountAll({
-      where: whereClause,
-      order,
-      offset,
-      limit,
+    const user = await User.findByPk(req.user.id, {
       attributes: { exclude: ['password'] }
     });
-    
-    return res.status(200).json({
-      users,
-      pagination: {
-        total,
-        page,
-        limit,
-        pages: Math.ceil(total / limit)
-      }
-    });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    return res.status(500).json({ message: 'Failed to fetch users', error: error.message });
-  }
-};
 
-// Get user by ID
-exports.getUserById = async (req, res) => {
-  try {
-    const user = await User.findByPk(req.params.id, {
-      attributes: { exclude: ['password'] }
-    });
-    
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
     }
-    
-    return res.status(200).json({ user });
-  } catch (error) {
-    console.error('Error fetching user:', error);
-    return res.status(500).json({ message: 'Failed to fetch user details', error: error.message });
-  }
-};
 
-// Update user status (suspend/ban)
-exports.updateUserStatus = async (req, res) => {
-  try {
-    const { status, reason } = req.body;
-    const userId = req.params.id;
-    
-    const user = await User.findByPk(userId);
-    
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
-    const previousStatus = user.status;
-    user.status = status;
-    user.statusReason = reason;
-    user.statusUpdatedAt = new Date();
-    user.statusUpdatedBy = req.user.id;
-    
-    await user.save();
-    
-    // Create audit log
-    await createAuditLog({
-      action: 'USER_STATUS_CHANGE',
-      performedBy: req.user.id,
-      targetUser: userId,
-      details: {
-        previousStatus,
-        newStatus: status,
-        reason
-      }
-    });
-    
-    // Send notification email to user
-    await sendEmail({
-      to: user.email,
-      subject: `Your account status has been updated to ${status}`,
-      template: 'statusChange',
-      data: {
-        name: `${user.firstName} ${user.lastName}`,
-        status,
-        reason
-      }
-    });
-    
-    return res.status(200).json({ 
-      message: `User status successfully updated to ${status}`,
+    res.status(200).json({
+      success: true,
       user
     });
   } catch (error) {
-    console.error('Error updating user status:', error);
-    return res.status(500).json({ message: 'Failed to update user status', error: error.message });
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving user profile',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
-// Verify service provider
-exports.verifyProvider = async (req, res) => {
+/**
+ * Update the authenticated user's profile
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+const updateProfile = async (req, res) => {
   try {
-    const { verificationStatus, notes } = req.body;
-    const providerId = req.params.id;
+    const { firstName, lastName, phone, address, city, state, zipCode, country, bio } = req.body;
     
-    const provider = await ServiceProviderProfile.findByPk(providerId, {
-      include: [{
-        model: User,
-        as: 'user',
-        attributes: ['id', 'firstName', 'lastName', 'email']
-      }]
+    const user = await User.findByPk(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Update user fields
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+    user.phone = phone || user.phone;
+    user.address = address || user.address;
+    user.city = city || user.city;
+    user.state = state || user.state;
+    user.zipCode = zipCode || user.zipCode;
+    user.country = country || user.country;
+    user.bio = bio || user.bio;
+
+    await user.save();
+
+    // Create a sanitized user object without password
+    const userResponse = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phone: user.phone,
+      address: user.address,
+      city: user.city,
+      state: user.state,
+      zipCode: user.zipCode,
+      country: user.country,
+      bio: user.bio,
+      role: user.role,
+      profilePicture: user.profilePicture,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    };
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully',
+      user: userResponse
+    });
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating profile',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+/**
+ * Change the authenticated user's password
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    
+    const user = await User.findByPk(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password is incorrect'
+      });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Password changed successfully'
+    });
+  } catch (error) {
+    console.error('Error changing password:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error changing password',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+/**
+ * Get a list of service providers with optional filtering
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+const getProviders = async (req, res) => {
+  try {
+    const { search, category, verified, rating, page = 1, limit = 10 } = req.query;
+    
+    // Build query conditions
+    const whereConditions = {
+      role: 'provider'
+    };
+    
+    if (search) {
+      whereConditions[Op.or] = [
+        { firstName: { [Op.iLike]: `%${search}%` } },
+        { lastName: { [Op.iLike]: `%${search}%` } }
+      ];
+    }
+    
+    if (verified !== undefined) {
+      whereConditions.isProviderVerified = verified === 'true';
+    }
+    
+    // Define pagination
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    
+    // Execute query
+    const providers = await User.findAndCountAll({
+      where: whereConditions,
+      attributes: { exclude: ['password'] },
+      limit: parseInt(limit),
+      offset: offset
+    });
+    
+    // If category filtering is required, we'll need to join with services table
+    // This is simplified and would need adjustment based on your data model
+    
+    res.status(200).json({
+      success: true,
+      providers: providers.rows,
+      pagination: {
+        total: providers.count,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        pages: Math.ceil(providers.count / parseInt(limit))
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching providers:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving providers',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+/**
+ * Get detailed information about a specific provider
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+const getProviderById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const provider = await User.findOne({
+      where: {
+        id,
+        role: 'provider'
+      },
+      attributes: { exclude: ['password'] }
     });
     
     if (!provider) {
-      return res.status(404).json({ message: 'Provider not found' });
+      return res.status(404).json({
+        success: false,
+        message: 'Provider not found'
+      });
     }
     
-    const previousStatus = provider.verificationStatus;
-    provider.verificationStatus = verificationStatus;
-    provider.verificationNotes = notes;
-    provider.verifiedAt = verificationStatus === 'verified' ? new Date() : null;
-    provider.verifiedBy = verificationStatus === 'verified' ? req.user.id : null;
-    
-    await provider.save();
-    
-    // Create audit log
-    await createAuditLog({
-      action: 'PROVIDER_VERIFICATION',
-      performedBy: req.user.id,
-      targetUser: provider.user.id,
-      details: {
-        previousStatus,
-        newStatus: verificationStatus,
-        notes
-      }
-    });
-    
-    // Send notification email to provider
-    await sendEmail({
-      to: provider.user.email,
-      subject: `Your service provider verification status: ${verificationStatus}`,
-      template: 'providerVerification',
-      data: {
-        name: `${provider.user.firstName} ${provider.user.lastName}`,
-        businessName: provider.businessName,
-        status: verificationStatus,
-        notes
-      }
-    });
-    
-    return res.status(200).json({ 
-      message: `Provider verification status updated to ${verificationStatus}`,
+    res.status(200).json({
+      success: true,
       provider
     });
   } catch (error) {
-    console.error('Error verifying provider:', error);
-    return res.status(500).json({ message: 'Failed to update provider verification status', error: error.message });
+    console.error('Error fetching provider details:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving provider details',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
+};
+
+/**
+ * Get detailed information about a specific customer
+ * Only accessible by providers or admins
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+const getCustomerById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const customer = await User.findOne({
+      where: {
+        id,
+        role: 'customer'
+      },
+      attributes: { exclude: ['password'] }
+    });
+    
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        message: 'Customer not found'
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      customer
+    });
+  } catch (error) {
+    console.error('Error fetching customer details:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving customer details',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// Export the controller methods before defining or importing anything else
+// This is key to breaking circular dependencies
+module.exports = {
+  getProfile,
+  updateProfile,
+  changePassword,
+  getProviders,
+  getProviderById,
+  getCustomerById
 };
