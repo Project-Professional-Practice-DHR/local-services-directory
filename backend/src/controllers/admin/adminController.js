@@ -1,7 +1,116 @@
-// src/controllers/admin/adminController.js
-const User = require('../../models/User');
+const { User } = require('../../models');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
+
+// You'll need to import your other models for complete stats
+// Uncomment and adjust these imports based on your actual model structure
+// const { Booking, Category, Report, Transaction } = require('../../models');
+
+/**
+ * Admin login with JWT token generation
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+const login = async (req, res) => {
+  try {
+    console.log('🔐 Admin login attempt started');
+    console.log('📝 Request body:', { 
+      username: req.body.username, 
+      password: req.body.password ? '[PROVIDED]' : '[MISSING]' 
+    });
+
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      console.log('❌ Missing credentials');
+      return res.status(400).json({
+        success: false,
+        message: 'Username and password are required'
+      });
+    }
+
+    console.log('🔍 Looking for admin user with email:', username);
+    
+    const admin = await User.findOne({
+      where: {
+        email: username,
+        role: 'admin',
+        status: 'active'
+      }
+    });
+
+    console.log('👤 Admin found:', admin ? 'YES' : 'NO');
+    if (admin) {
+      console.log('📋 Admin details:', {
+        id: admin.id,
+        email: admin.email,
+        role: admin.role,
+        isActive: admin.isActive
+      });
+    }
+
+    if (!admin) {
+      console.log('❌ No admin user found with provided credentials');
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
+      });
+    }
+
+    console.log('🔑 Checking password...');
+    const isPasswordValid = await admin.comparePassword(password);
+    console.log('🔑 Password valid:', isPasswordValid ? 'YES' : 'NO');
+    
+    if (!isPasswordValid) {
+      console.log('❌ Password validation failed');
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
+      });
+    }
+
+    // Generate JWT token
+    const tokenPayload = {
+      id: admin.id,
+      email: admin.email,
+      role: admin.role
+    };
+
+    const token = jwt.sign(
+      tokenPayload,
+      process.env.JWT_SECRET || 'your-secret-key',
+      { expiresIn: '24h' }
+    );
+
+    const adminResponse = {
+      id: admin.id,
+      firstName: admin.firstName,
+      lastName: admin.lastName,
+      email: admin.email,
+      role: admin.role
+    };
+
+    console.log('✅ Login successful for admin:', admin.email);
+    console.log('🎫 Token generated successfully');
+
+    res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      token: token,
+      user: adminResponse,
+      admin: adminResponse
+    });
+
+  } catch (error) {
+    console.error('💥 Admin login error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
 
 /**
  * Get dashboard statistics for admin overview
@@ -10,7 +119,9 @@ const { Op } = require('sequelize');
  */
 const getDashboardStats = async (req, res) => {
   try {
-    // Get user counts by role
+    console.log('📊 Fetching dashboard statistics...');
+
+    // Basic user statistics
     const totalUsers = await User.count();
     const totalCustomers = await User.count({ where: { role: 'customer' } });
     const totalProviders = await User.count({ where: { role: 'provider' } });
@@ -20,7 +131,15 @@ const getDashboardStats = async (req, res) => {
     const verifiedProviders = await User.count({ 
       where: { 
         role: 'provider', 
-        isProviderVerified: true 
+        isVerified: true 
+      } 
+    });
+
+    // Get unverified providers (pending approvals)
+    const pendingApprovals = await User.count({ 
+      where: { 
+        role: 'provider', 
+        isVerified: false 
       } 
     });
     
@@ -36,20 +155,65 @@ const getDashboardStats = async (req, res) => {
       }
     });
 
-    res.status(200).json({
-      success: true,
-      stats: {
-        totalUsers,
-        totalCustomers,
-        totalProviders,
-        totalAdmins,
-        verifiedProviders,
-        recentRegistrations,
-        unverifiedProviders: totalProviders - verifiedProviders
+    // TODO: Replace these with actual model queries when you have the models
+    // For now, providing mock data that matches your frontend expectations
+    
+    let totalBookings = 0;
+    let flaggedContent = 0;
+    let revenue = 0;
+
+    // Uncomment and modify these when you have the actual models:
+    /*
+    // Get booking statistics
+    totalBookings = await Booking.count();
+    
+    // Get flagged content count
+    flaggedContent = await Report.count({
+      where: {
+        status: 'pending'
       }
     });
+    
+    // Calculate revenue
+    const revenueResult = await Transaction.sum('amount', {
+      where: {
+        status: 'completed',
+        type: 'payment'
+      }
+    });
+    revenue = revenueResult || 0;
+    */
+
+    // For demonstration, you can use some mock calculations based on existing data
+    // Remove these when you implement actual booking/transaction models
+    totalBookings = Math.floor(totalProviders * 2.5); // Mock: assume each provider has ~2.5 bookings on average
+    flaggedContent = Math.floor(totalUsers * 0.02); // Mock: assume 2% of users have flagged content
+
+    const stats = {
+      totalUsers,
+      totalProviders,
+      totalBookings,
+      pendingApprovals,
+      flaggedContent,
+      revenue: Math.round(revenue * 100) / 100, // Round to 2 decimal places
+      // Additional stats that might be useful
+      totalCustomers,
+      totalAdmins,
+      verifiedProviders,
+      recentRegistrations,
+      unverifiedProviders: totalProviders - verifiedProviders
+    };
+
+    console.log('✅ Dashboard stats calculated:', stats);
+
+    res.status(200).json({
+      success: true,
+      stats: stats,
+      message: 'Dashboard statistics retrieved successfully'
+    });
+
   } catch (error) {
-    console.error('Error fetching dashboard stats:', error);
+    console.error('💥 Error fetching dashboard stats:', error);
     res.status(500).json({
       success: false,
       message: 'Error retrieving dashboard statistics',
@@ -92,7 +256,7 @@ const getAllUsers = async (req, res) => {
     }
     
     if (verified !== undefined && verified !== 'all') {
-      whereConditions.isProviderVerified = verified === 'true';
+      whereConditions.isVerified = verified === 'true';
     }
     
     if (status && status !== 'all') {
@@ -272,7 +436,7 @@ const updateUser = async (req, res) => {
       country,
       bio,
       isActive,
-      isProviderVerified
+      isVerified
     } = req.body;
     
     const user = await User.findByPk(id);
@@ -308,7 +472,7 @@ const updateUser = async (req, res) => {
     user.country = country !== undefined ? country : user.country;
     user.bio = bio !== undefined ? bio : user.bio;
     user.isActive = isActive !== undefined ? isActive : user.isActive;
-    user.isProviderVerified = isProviderVerified !== undefined ? isProviderVerified : user.isProviderVerified;
+    user.isVerified = isVerified !== undefined ? isVerified : user.isVerified;
     
     await user.save();
     
@@ -327,7 +491,7 @@ const updateUser = async (req, res) => {
       country: user.country,
       bio: user.bio,
       isActive: user.isActive,
-      isProviderVerified: user.isProviderVerified,
+      isVerified: user.isVerified,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt
     };
@@ -459,12 +623,12 @@ const toggleProviderVerification = async (req, res) => {
       });
     }
     
-    provider.isProviderVerified = !provider.isProviderVerified;
+    provider.isVerified = !provider.isVerified;
     await provider.save();
     
     res.status(200).json({
       success: true,
-      message: `Provider ${provider.isProviderVerified ? 'verified' : 'unverified'} successfully`,
+      message: `Provider ${provider.isVerified ? 'verified' : 'unverified'} successfully`,
       provider
     });
   } catch (error) {
@@ -551,6 +715,7 @@ const getActivityLogs = async (req, res) => {
 
 // Export all controller methods
 module.exports = {
+  login,
   getDashboardStats,
   getAllUsers,
   getUserById,

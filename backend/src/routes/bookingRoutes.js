@@ -6,7 +6,7 @@ const {
   ServiceProviderProfile, 
   User 
 } = require('../models');
-const { verifyToken, authorize } = require('../middleware/auth');
+const { verifyToken, authorize, verifyAdmin } = require('../middleware/auth');
 const bookingController = require('../controllers/bookingController');
 
 /**
@@ -145,7 +145,7 @@ const bookingController = require('../controllers/bookingController');
  *       500:
  *         description: Server error
  */
-router.get('/', verifyToken, authorize(['admin']), bookingController.getBookings);
+router.get('/', verifyAdmin, bookingController.getBookings);
 
 /**
  * @swagger
@@ -595,5 +595,7 @@ router.post('/:id/reschedule', verifyToken, bookingController.rescheduleBooking)
 
 // Additional route for backward compatibility
 router.get('/booking/my-bookings', verifyToken, bookingController.getUserBookings);
+
+
 
 module.exports = router;

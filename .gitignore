@@ -1,14 +1,33 @@
-# Logs
+# Node.js dependencies
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Environment variables and secrets
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+*.env
+
+# Build outputs
+/dist
+/build
+/out
+/.next
+/frontend/build
+/backend/dist
+
+# Debug logs
 logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log*
-.pnpm-debug.log*
-
-# Diagnostic reports (https://nodejs.org/api/report.html)
-report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Runtime data
 pids
@@ -23,27 +42,12 @@ lib-cov
 coverage
 *.lcov
 
-# nyc test coverage
-.nyc_output
-
-# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
-.grunt
-
-# Bower dependency directory (https://bower.io/)
-bower_components
-
-# node-waf configuration
-.lock-wscript
-
-# Compiled binary addons (https://nodejs.org/api/addons.html)
-build/Release
+# Testing
+/coverage
+/.nyc_output
 
 # Dependency directories
-node_modules/
 jspm_packages/
-
-# Snowpack dependency directory (https://snowpack.dev/)
-web_modules/
 
 # TypeScript cache
 *.tsbuildinfo
@@ -54,15 +58,6 @@ web_modules/
 # Optional eslint cache
 .eslintcache
 
-# Optional stylelint cache
-.stylelintcache
-
-# Microbundle cache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
-
 # Optional REPL history
 .node_repl_history
 
@@ -72,26 +67,44 @@ web_modules/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variable files
-.env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
+# dotenv environment variables file
+.env.test
 
-# parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
+# MacOS specific files
+.DS_Store
 
-# Next.js build output
-.next
-out
+# Windows specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-# Nuxt.js build / generate output
-.nuxt
-dist
+# Linux specific files
+*~
 
-# Gatsby files
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.project
+.classpath
+.settings/
+
+# SQL database files
+*.sql
+*.sqlite
+*.db
+*.db-journal
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Log files
+*.log
+
+# Cache directories
 .cache/
 # Comment in the public line in if your project uses Gatsby and not Next.js
 # https://nextjs.org/blog/next-9-1#public-directory-support
@@ -128,12 +141,3 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-
-# Additional entries for backend
-.env
-.env.development
-.env.production
-.env.test
-.env.staging
-.env.local
-backend/node_modules/

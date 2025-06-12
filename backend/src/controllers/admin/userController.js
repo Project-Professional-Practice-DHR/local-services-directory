@@ -169,7 +169,7 @@ const getProviders = async (req, res) => {
     }
     
     if (verified !== undefined) {
-      whereConditions.isProviderVerified = verified === 'true';
+      whereConditions.isVerified = verified === 'true';
     }
     
     // Define pagination

@@ -1,0 +1,88 @@
+/* Admin Booking Overview */
+.admin-booking-overview {
+  padding: 2rem;
+  background-color: #f9fafb;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Stats Grid */
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.admin-stat-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-4px);
+}
+
+.admin-stat-icon {
+  font-size: 2rem;
+  color: #4f46e5;
+}
+
+.admin-stat-content h3 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #111827;
+}
+
+.admin-stat-content p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* Badges */
+.admin-badge {
+  padding: 0.35em 0.75em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  display: inline-block;
+  color: #fff;
+  text-transform: capitalize;
+}
+
+.admin-badge-warning { background-color: #facc15; color: #1f2937; }
+.admin-badge-info { background-color: #3b82f6; }
+.admin-badge-primary { background-color: #6366f1; }
+.admin-badge-success { background-color: #10b981; }
+.admin-badge-danger { background-color: #ef4444; }
+.admin-badge-secondary { background-color: #6b7280; }
+
+/* Loading State */
+.admin-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 3rem 0;
+  color: #6b7280;
+}
+
+.admin-spinner {
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #4f46e5;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

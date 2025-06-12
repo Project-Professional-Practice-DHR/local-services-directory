@@ -34,23 +34,6 @@
     "updatedAt": "2025-03-05T00:00:00Z"
   },
   {
-    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d481",
-    "username": "adminuser",
-    "firstName": "Admin",
-    "lastName": "User",
-    "email": "admin@example.com",
-    "phoneNumber": "+15551112222",
-    "password": "$2a$10$XgXB9NcKV.37AQZ1GBnZOOWZ3EkVfM7YLjrLZR.JgvVTz0tpEpR2a",
-    "role": "admin",
-    "profilePicture": "https://randomuser.me/api/portraits/men/10.jpg",
-    "isVerified": true,
-    "status": "active",
-    "deviceTokens": "['token-admin-1234']",
-    "devices": "[{\"deviceId\":\"desktop-admin-5678\",\"deviceType\":\"Desktop\",\"lastLogin\":\"2025-03-10T09:00:00Z\"}]",
-    "createdAt": "2024-10-01T00:00:00Z",
-    "updatedAt": "2025-03-15T00:00:00Z"
-  },
-  {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d482",
     "username": "sarahprovider",
     "firstName": "Sarah",
@@ -83,5 +66,22 @@
     "devices": "[{\"deviceId\":\"android-customer-9876\",\"deviceType\":\"Android\",\"lastLogin\":\"2025-03-15T16:20:00Z\"}]",
     "createdAt": "2025-01-10T00:00:00Z",
     "updatedAt": "2025-03-18T00:00:00Z"
+  },
+  {
+    "id": "3e5bada4-1665-4934-94c6-a7b701ff7291",
+    "username": "admin",
+    "firstName": "System",
+    "lastName": "Administrator",
+    "email": "admin@professionalpractice.com",
+    "phoneNumber": "+445551234567",
+    "password": "$2b$10$PxWmGTQUKwIRqV4YrOtC2uuq3g//XYGI.E3b2cRx0HHHx/cgrV.z6",
+    "role": "admin",
+    "profilePicture": "https://i.pinimg.com/736x/a4/c6/43/a4c643313ca80223bf1a38a3f8bed741.jpg",
+    "isVerified": true,
+    "status": "active",
+    "deviceTokens": "[]",
+    "devices": "[]",
+    "createdAt": "2025-06-06T23:29:39.726Z",
+    "updatedAt": "2025-06-06T23:29:39.730Z"
   }
 ]

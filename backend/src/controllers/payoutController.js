@@ -103,7 +103,7 @@ exports.schedulePayouts = async (req, res) => {
         amount: totalAmount,
         fees: totalFees,
         netAmount,
-        currency: 'USD',
+        currency: 'GBP',
         status: 'pending',
         payoutMethod: provider.payoutMethod,
         payoutDetails: provider.payoutDetails || {},
@@ -171,7 +171,7 @@ exports.processPayouts = async (req, res) => {
           // Create a transfer via Stripe
           const transfer = await stripe.transfers.create({
             amount: Math.round(payout.netAmount * 100), // Convert to cents
-            currency: 'usd',
+            currency: 'gbp',
             destination: payout.provider.stripeAccountId,
             description: `Payout for services - Ref: ${payout.id}`
           });
