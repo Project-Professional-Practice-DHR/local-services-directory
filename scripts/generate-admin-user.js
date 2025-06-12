@@ -28,7 +28,7 @@ async function generateAdminUser() {
       return;
     }
 
-    const password = 'Professionalpractice@123';
+    const password = '';
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newAdmin = {
