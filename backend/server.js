@@ -872,7 +872,8 @@ const loadRoutes = () => {
   const routesList = [
     { name: 'analyticsRoutes', path: './src/routes/admin/analyticsRoutes' },
     { name: 'moderationRoutes', path: './src/routes/admin/moderationRoutes' },
-    { name: 'userRoutes', path: './src/routes/admin/userRoutes' },
+    { name: 'adminRoutes', path: './src/routes/admin/adminRoutes' },
+    { name: 'adminUserRoutes', path: './src/routes/admin/userRoutes' },
     { name: 'userRoutes', path: './src/routes/userRoutes' },
     { name: 'authRoutes', path: './src/routes/authRoutes' },
     { name: 'bookingRoutes', path: './src/routes/bookingRoutes' },
@@ -908,6 +909,7 @@ const loadRoutes = () => {
 const routes = loadRoutes();
 
 // Apply Routes safely
+// Apply Routes safely
 log.section('Routes Application');
 const safelyApplyRoutes = () => {
   log.info('Applying routes to Express app...');
@@ -933,26 +935,98 @@ const safelyApplyRoutes = () => {
   
   // Apply routes with safe middleware
   try {
-    if (routes.analyticsRoutes) app.use('/api/admin/analytics', safeAuthenticateToken, safeAuthorize('admin'), routes.analyticsRoutes);
-    if (routes.moderationRoutes) app.use('/api/admin/moderation', safeAuthenticateToken, safeAuthorize('admin'), routes.moderationRoutes);
-    if (routes.userRoutes) {
-      app.use('/api/admin/users', safeAuthenticateToken, safeAuthorize('admin'), routes.userRoutes);
-      app.use('/api/users', safeAuthenticateToken, safeAuthorize('user'), routes.userRoutes);
+    // ============================================
+    // ADMIN ROUTES - MOUNT FIRST WITHOUT GLOBAL AUTH
+    // ============================================
+    if (routes.adminRoutes) {
+      console.log('🔧 Mounting admin routes at /api/admin');
+      app.use('/api/admin', routes.adminRoutes);
+      log.success('Admin routes mounted WITHOUT global auth');
     }
-    if (routes.authRoutes) app.use('/api/auth', routes.authRoutes);
-    if (routes.bookingRoutes) app.use('/api/booking', safeAuthenticateToken, routes.bookingRoutes);
-    if (routes.deviceRoutes) app.use('/api/devices', safeAuthenticateToken, routes.deviceRoutes);
-    if (routes.invoiceRoutes) app.use('/api/invoices', safeAuthenticateToken, routes.invoiceRoutes);
-    if (routes.locationRoutes) app.use('/api/location', routes.locationRoutes);
-    if (routes.messageRoutes) app.use('/api/messages', safeAuthenticateToken, routes.messageRoutes);
-    if (routes.notificationRoutes) app.use('/api/notifications', safeAuthenticateToken, routes.notificationRoutes);
-    if (routes.paymentRoutes) app.use('/api/payments', safeAuthenticateToken, routes.paymentRoutes);
-    if (routes.payoutRoutes) app.use('/api/payouts', safeAuthenticateToken, safeAuthorize(['provider', 'admin']), routes.payoutRoutes);
-    if (routes.reviewRoutes) app.use('/api/reviews', routes.reviewRoutes);
-    if (routes.serviceRoutes) app.use('/api/services', routes.serviceRoutes);
-    if (routes.servicecategoryRoutes) app.use('/api/categories', routes.servicecategoryRoutes);
-    if (routes.serviceproviderRoutes) app.use('/api', routes.serviceproviderRoutes);
-    if (routes.tableRoutes) app.use('/api/tables', routes.tableRoutes);
+
+    // Add moderation routes here WITHOUT global auth
+    if (routes.moderationRoutes) {
+      console.log('🔧 Mounting moderation routes at /api/admin/moderation');
+      app.use('/api/admin/moderation', routes.moderationRoutes);
+      log.success('Moderation routes mounted WITHOUT global auth');
+    }
+
+    // Add analytics routes here WITHOUT global auth
+    if (routes.analyticsRoutes) {
+      console.log('🔧 Mounting analytics routes at /api/admin/analytics');
+      app.use('/api/admin/analytics', routes.analyticsRoutes);
+      log.success('Analytics routes mounted WITHOUT global auth');
+    }
+    
+    
+    // ============================================
+    // PUBLIC ROUTES (No authentication needed)
+    // ============================================
+    if (routes.authRoutes) {
+      app.use('/api/auth', routes.authRoutes);
+      log.success('Auth routes mounted');
+    }
+    if (routes.locationRoutes) {
+      app.use('/api/location', routes.locationRoutes);
+      log.success('Location routes mounted');
+    }
+    if (routes.reviewRoutes) {
+      app.use('/api/reviews', routes.reviewRoutes);
+      log.success('Review routes mounted');
+    }
+    if (routes.serviceRoutes) {
+      app.use('/api/services', routes.serviceRoutes);
+      log.success('Service routes mounted');
+    }
+    if (routes.servicecategoryRoutes) {
+      app.use('/api/categories', routes.servicecategoryRoutes);
+      log.success('Service category routes mounted');
+    }
+    if (routes.serviceproviderRoutes) {
+      app.use('/api', routes.serviceproviderRoutes);
+      log.success('Service provider routes mounted');
+    }
+    if (routes.tableRoutes) {
+      app.use('/api/tables', routes.tableRoutes);
+      log.success('Table routes mounted');
+    }
+    
+    // ============================================
+    // PROTECTED ROUTES (Authentication required)
+    // ============================================
+    if (routes.userRoutes) {
+      app.use('/api/users', safeAuthenticateToken, safeAuthorize('user'), routes.userRoutes);
+      log.success('User routes mounted');
+    }
+    if (routes.bookingRoutes) {
+      app.use('/api/booking', safeAuthenticateToken, routes.bookingRoutes);
+      log.success('Booking routes mounted');
+    }
+    if (routes.deviceRoutes) {
+      app.use('/api/devices', safeAuthenticateToken, routes.deviceRoutes);
+      log.success('Device routes mounted');
+    }
+    if (routes.invoiceRoutes) {
+      app.use('/api/invoices', safeAuthenticateToken, routes.invoiceRoutes);
+      log.success('Invoice routes mounted');
+    }
+    if (routes.messageRoutes) {
+      app.use('/api/messages', safeAuthenticateToken, routes.messageRoutes);
+      log.success('Message routes mounted');
+    }
+    if (routes.notificationRoutes) {
+      app.use('/api/notifications', safeAuthenticateToken, routes.notificationRoutes);
+      log.success('Notification routes mounted');
+    }
+    if (routes.paymentRoutes) {
+      app.use('/api/payments', safeAuthenticateToken, routes.paymentRoutes);
+      log.success('Payment routes mounted');
+    }
+    if (routes.payoutRoutes) {
+      app.use('/api/payouts', safeAuthenticateToken, safeAuthorize(['provider', 'admin']), routes.payoutRoutes);
+      log.success('Payout routes mounted');
+    }
+    
   } catch (error) {
     log.error('Error applying routes', error);
     // Don't crash if route application fails
@@ -973,6 +1047,60 @@ const safelyApplyRoutes = () => {
 };
 
 safelyApplyRoutes();
+
+// Enhanced route debugging
+console.log('\n=== ADMIN ROUTE DEBUGGING ===');
+console.log('Looking for admin routes...');
+
+// Check if admin routes are properly mounted
+const adminRoutes = app._router.stack.find(layer => {
+  if (layer.regexp && layer.regexp.source.includes('admin')) {
+    return true;
+  }
+  return false;
+});
+
+if (adminRoutes) {
+  console.log('✅ Admin routes found in stack');
+  console.log('📍 Admin route pattern:', adminRoutes.regexp.source);
+  
+  if (adminRoutes.handle && adminRoutes.handle.stack) {
+    console.log('📋 Admin sub-routes:');
+    adminRoutes.handle.stack.forEach((layer, index) => {
+      if (layer.route) {
+        const method = layer.route.stack[0].method.toUpperCase();
+        const path = layer.route.path;
+        console.log(`   ${index + 1}. ${method} /api/admin${path}`);
+      }
+    });
+  }
+} else {
+  console.log('❌ Admin routes NOT found in stack');
+}
+
+console.log('\n=== ALL ROUTES DEBUG ===');
+app._router.stack.forEach(function(r, index){
+  if (r.route && r.route.path){
+    console.log(`${index + 1}. ${r.route.stack[0].method.toUpperCase()} ${r.route.path}`);
+  } else if (r.name === 'router' && r.regexp) {
+    const routePath = r.regexp.source
+      .replace(/\\\//g, '/')
+      .replace(/\^/g, '')
+      .replace(/\$/g, '')
+      .replace(/\?\(\?\=/g, '')
+      .replace(/\\\//g, '/')
+      .replace(/\$\)/g, '')
+      .replace(/\?\(\?\:/g, '')
+      .replace(/\\\//g, '/')
+      .replace(/\(\?\=\\\//g, '')
+      .replace(/\|\\\$\)/g, '')
+      .replace(/\(\?\:\\\//g, '')
+      .replace(/\(\?\:\$\)\?\$\)/g, '');
+    
+    console.log(`${index + 1}. ROUTER: ${routePath}`);
+  }
+});
+console.log('========================\n');
 
 // Add just after the route registration
 console.log('Available routes:');

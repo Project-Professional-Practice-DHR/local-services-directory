@@ -233,4 +233,53 @@ router.get(
   AnalyticsController.getSystemHealth
 );
 
+/**
+ * @swagger
+ * /api/admin/analytics/export:
+ *   get:
+ *     summary: Export analytics data
+ *     description: Export analytics data in various formats
+ *     tags: [Analytics]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: format
+ *         schema:
+ *           type: string
+ *           enum: [csv, pdf]
+ *           default: csv
+ *         description: Export format
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         required: true
+ *         description: Start date for export
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         required: true
+ *         description: End date for export
+ *     responses:
+ *       200:
+ *         description: Analytics data export
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - admin only
+ *       500:
+ *         description: Server error
+ */
+router.get(
+  '/export',
+  verifyToken,
+  authorize(['admin']),
+  validateRequest(dateRangeSchema),
+  AnalyticsController.exportAnalytics
+);
+
 module.exports = router;

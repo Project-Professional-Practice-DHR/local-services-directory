@@ -1,0 +1,174 @@
+/* === General Panel Styles === */
+.admin-moderation-panel {
+  padding: 2rem;
+  background-color: #f9f9fb;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* === Header & Stats === */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.admin-header h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.moderation-stats {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  background: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #444;
+}
+
+.stat-item i {
+  color: #6c63ff;
+}
+
+/* === Tabs === */
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-tab {
+  background: #e8e8f3;
+  padding: 0.6rem 1.25rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #333;
+}
+
+.admin-tab:hover:not(:disabled) {
+  background: #d4d4ee;
+}
+
+.admin-tab.active {
+  background: #6c63ff;
+  color: white;
+}
+
+.admin-tab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* === Filters === */
+.admin-filters {
+  margin-bottom: 1.5rem;
+}
+
+.admin-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-select,
+.admin-input {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+.admin-input:focus,
+.admin-select:focus {
+  outline: none;
+  border-color: #6c63ff;
+}
+
+/* === Status & Severity Badges === */
+.admin-status-badge,
+.severity-badge {
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: inline-block;
+}
+
+.admin-status-badge.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.admin-status-badge.approved {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.admin-status-badge.rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.severity-badge.low {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.severity-badge.medium {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.severity-badge.high {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.severity-badge.critical {
+  background-color: #f5c6cb;
+  color: #721c24;
+}
+
+/* === Loading State === */
+.admin-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+  color: #555;
+}
+
+.admin-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ddd;
+  border-top: 4px solid #6c63ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ModerationController = require('../../controllers/admin/moderationController');
 const { validateRequest } = require('../../middleware/validation');
-const { verifyToken, authorize } = require('../../middleware/auth');
+const { verifyToken, authorize, verifyAdmin } = require('../../middleware/auth');
 const { 
   flaggedContentSchema, 
   moderationActionSchema 
@@ -61,8 +61,7 @@ const {
  */
 router.get(
   '/flagged',
-  verifyToken,
-  authorize(['admin']),
+  verifyAdmin, // Use verifyAdmin instead of verifyToken + authorize
   validateRequest(flaggedContentSchema),
   ModerationController.getFlaggedContent
 );
@@ -116,11 +115,11 @@ router.get(
  */
 router.put(
   '/flagged/:id/action',
-  verifyToken,
-  authorize(['admin']),
+  verifyAdmin, // Use verifyAdmin instead of verifyToken + authorize
   validateRequest(moderationActionSchema),
   ModerationController.moderateContent
 );
+
 
 /**
  * @swagger
@@ -143,8 +142,7 @@ router.put(
  */
 router.get(
   '/stats',
-  verifyToken,
-  authorize(['admin']),
+  verifyAdmin, // Use verifyAdmin instead of verifyToken + authorize
   ModerationController.getModerationStats
 );
 

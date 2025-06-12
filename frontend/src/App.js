@@ -10,24 +10,50 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Profile from './pages/User/Profile';
 import UserBookings from './pages/User/UserBookings';
-import UserBookingDetails from './pages/User/UserBookingDetails'; // Make sure this points to the correct file
+import UserBookingDetails from './pages/User/UserBookingDetails';
 import UserReviews from './pages/User/UserReviews';
 import Booking from './pages/Booking';
 import Payment from './pages/Payment';
 import ListBusiness from './pages/ListBusiness';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import { Navigate } from 'react-router-dom';
 
 const App = () => {
-  // Simple auth guard component for admin routes
+  // Fixed admin auth guard component
   const AdminRoute = ({ children }) => {
-    const isAuthenticated = !!localStorage.getItem('adminToken');
+    // Check for admin token and user data
+    const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
+    const userStr = localStorage.getItem('user') || localStorage.getItem('adminUser');
     
-    if (!isAuthenticated) {
-      return <Login />;
+    console.log('AdminRoute check - Token exists:', !!token);
+    console.log('AdminRoute check - User data exists:', !!userStr);
+    
+    if (!token) {
+      console.log('No token found, redirecting to admin login');
+      return <Navigate to="/admin/login" replace />;
     }
-    
-    return children;
+
+    if (!userStr) {
+      console.log('No user data found, redirecting to admin login');
+      return <Navigate to="/admin/login" replace />;
+    }
+
+    try {
+      const userData = JSON.parse(userStr);
+      console.log('User role:', userData.role);
+      
+      if (userData.role !== 'admin') {
+        console.log('User is not admin, redirecting to admin login');
+        return <Navigate to="/admin/login" replace />;
+      }
+      
+      console.log('Admin authentication successful');
+      return children;
+    } catch (err) {
+      console.error('Error parsing user data:', err);
+      return <Navigate to="/admin/login" replace />;
+    }
   };
 
   return (
@@ -75,7 +101,7 @@ const App = () => {
           }
         />
         
-        {/* User Booking Details with Navbar and Footer - Changed from :reference to :bookingId */}
+        {/* User Booking Details with Navbar and Footer */}
         <Route
           path="/profile/bookings/:bookingId"
           element={
@@ -87,13 +113,12 @@ const App = () => {
           }
         />
         
-        {/* Add additional booking-related routes - Changed from :reference to :bookingId */}
+        {/* Add additional booking-related routes */}
         <Route
           path="/profile/bookings/:bookingId/review"
           element={
             <>
               <Navbar />
-              {/* You'll need to create this component */}
               <div>Review Page - To be implemented</div>
               <Footer />
             </>
@@ -105,7 +130,6 @@ const App = () => {
           element={
             <>
               <Navbar />
-              {/* You'll need to create this component */}
               <div>Reschedule Page - To be implemented</div>
               <Footer />
             </>
@@ -135,7 +159,8 @@ const App = () => {
             </>
           }
         />
-        {/* FIXED: Single booking details route - matches the navigation from UserBookings */}
+        
+        {/* Single booking details route */}
         <Route
           path="/userbooking/:id"
           element={
@@ -219,7 +244,7 @@ const App = () => {
           }
         />
 
-        {/* Admin Routes */}
+        {/* Admin Routes - Fixed */}
         <Route path="/admin/login" element={<AdminLogin />} />
         
         <Route
@@ -250,7 +275,7 @@ const App = () => {
         />
         
         <Route
-          path="/admin/bookings"
+          path="/booking"
           element={
             <AdminRoute>
               <AdminDashboard />
